@@ -1,10 +1,75 @@
-<div class="game">
-  <h1>Idle Game (Angular)</h1>
-  <p>💰 Ouro: {{ gold() }}</p>
-  <p>⏱️ Ouro por segundo: {{ goldPerSecond() }}</p>
+<div class="navbar">
+  <span>🕯️ Essência: {{ darkEssence() | number : "1.0-0" }}</span>
+  <span>💰 Total: {{ totalEssence() | number : "1.0-0" }}</span>
+  <span>⚡ Por segundo: {{ essencePerSecond() | number : "1.0-2" }}</span>
+</div>
 
-  <button (click)="earnGold(1)">Ganhar ouro manualmente</button>
-  <button (click)="buyUpgrade()">
-    Comprar upgrade (+1/s) — Custa {{ 10 * goldPerSecond() }} ouro
-  </button>
+<div class="game">
+  <div class="intro">
+    <h1>🕯️ Culto das Sombras</h1>
+    <p class="intro-animation">As trevas estão despertando...</p>
+  </div>
+
+  <p><strong>Essência Atual:</strong> {{ darkEssence() | number : "1.0-0" }}</p>
+  <p>
+    <strong>Essência Total:</strong> {{ totalEssence() | number : "1.0-0" }}
+  </p>
+  <p>
+    <strong>Ganho por segundo:</strong>
+    {{ essencePerSecond() | number : "1.0-2" }}
+  </p>
+
+  <button (click)="earnEssence(1)">Canalizar essência manualmente</button>
+
+  <div class="purchase-modes">
+    <label *ngFor="let mode of purchaseModes">
+      <input
+        type="radio"
+        name="purchase"
+        [value]="mode"
+        [(ngModel)]="currentPurchaseMode"
+      />
+      {{ mode }}x
+    </label>
+  </div>
+
+  <h2>🔮 Upgrades</h2>
+  <div class="upgrades">
+    <div class="upgrade" *ngFor="let up of upgrades(); let i = index">
+      <ng-container *ngIf="up.unlocked">
+        <img
+          [src]="up.image || 'https://via.placeholder.com/64x64?text=🧟'"
+          [alt]="up.name"
+          width="64"
+          height="64"
+        />
+        <div class="details">
+          <strong>{{ up.name }}</strong>
+          <p>Qtd: {{ up.amount }} | +{{ up.dps }}/s cada</p>
+          <p>Próximo custo: {{ up.cost | number : "1.0-0" }}</p>
+          <button
+            (click)="buyUpgrade(i, currentPurchaseMode)"
+            [disabled]="!canAffordUpgrade(i, currentPurchaseMode)"
+          >
+            Comprar {{ currentPurchaseMode }}x
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <h2>🏆 Troféus</h2>
+  <ul class="trophies">
+    <li *ngFor="let t of trophies()" [class.earned]="t.earned">
+      {{ t.icon }} {{ t.title }}
+    </li>
+  </ul>
+</div>
+
+<div class="modal" *ngIf="showTrophyModal()">
+  <div class="modal-content">
+    <h3>{{ unlockedTrophy()?.icon }} {{ unlockedTrophy()?.title }}</h3>
+    <p>{{ unlockedTrophy()?.description }}</p>
+    <button (click)="closeModal()">Fechar</button>
+  </div>
 </div>

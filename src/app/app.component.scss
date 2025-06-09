@@ -1,0 +1,25 @@
+.game {
+  background: #121212;
+  color: #fff;
+  padding: 2rem;
+  max-width: 400px;
+  margin: 2rem auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+
+  button {
+    display: block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #673ab7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #5e35b1;
+    }
+  }
+}

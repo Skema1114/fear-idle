@@ -34,9 +34,9 @@
   </div>
 
   <h2>🔮 Upgrades</h2>
-  <div class="upgrades">
-    <div class="upgrade" *ngFor="let up of upgrades(); let i = index">
-      <ng-container *ngIf="up.unlocked">
+  <ng-container *ngIf="unlockedUpgrades().length > 0; else noUpgradesAvailable">
+    <div class="upgrades-container">
+      <div class="upgrade" *ngFor="let up of unlockedUpgrades(); let i = index">
         <img
           [src]="up.image || 'https://via.placeholder.com/64x64?text=🧟'"
           [alt]="up.name"
@@ -45,7 +45,7 @@
         />
         <div class="details">
           <strong>{{ up.name }}</strong>
-          <p>Qtd: {{ up.amount }} | +{{ up.dps }}/s cada</p>
+          <p>Qtd: {{ up.amount }} | +{{ up.dps | number : "1.0-2" }}/s cada</p>
           <p>Próximo custo: {{ up.cost | number : "1.0-0" }}</p>
           <button
             (click)="buyUpgrade(i, currentPurchaseMode)"
@@ -54,9 +54,17 @@
             Comprar {{ currentPurchaseMode }}x
           </button>
         </div>
-      </ng-container>
+      </div>
     </div>
-  </div>
+  </ng-container>
+  <ng-template #noUpgradesAvailable>
+    <div class="no-upgrades-message">
+      <p>
+        Você ainda não tem upgrades disponíveis. Continue coletando essência
+        para desbloqueá-los!
+      </p>
+    </div>
+  </ng-template>
 
   <h2>🏆 Troféus</h2>
   <ul class="trophies">

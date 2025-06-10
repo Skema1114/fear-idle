@@ -1,5 +1,5 @@
 /* Dracula-inspired, Gothic, Minimalist Theme */
-@import url("https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Myeongjo:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Myeongjo&family=Roboto+Mono&display=swap");
 
 /* Color Palette */
 $dark-void: #1a1a1a; // Quase preto, para backgrounds base
@@ -14,8 +14,8 @@ $essence-glow-shadow: #ffb86c; // Sombra/brilho para a essência
 
 /* Typography */
 $font-title: "Creepster", cursive; // Para títulos impactantes e "assustadores"
-$font-body: "Nanum Myeongjo", serif; // Para o corpo do texto, elegante e legível
-$font-mono: "Roboto Mono", monospace; // Para valores numéricos e código, se necessário
+$font-body: "Nanum+Myeongjo", serif; // Para o corpo do texto, elegante e legível
+$font-mono: "Roboto+Mono", monospace; // Para valores numéricos e código, se necessário
 
 /* Base Styles */
 body {

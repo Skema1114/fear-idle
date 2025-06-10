@@ -338,7 +338,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.globalMultiplier()
       );
       this.saveGame();
-    }, 1000);
+    }, 300000);
   }
 
   public darkEssence(): number {

@@ -1,0 +1,303 @@
+import { Injectable } from '@angular/core';
+import { ClickUpgrade } from '../interfaces/ClickUpgrade';
+import { Upgrade } from '../interfaces/Upgrade';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UpgradeService {
+  getIdleUpgradesList(): Upgrade[] {
+    return [
+      // Tier 1: Símbolos e manifestações menores (base 10, multi 0.1-8)
+      {
+        name: 'Vela Sussurrante',
+        cost: 10,
+        dps: 0.1,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/907/907933.png',
+      },
+      {
+        name: 'Lamento dos Condenados',
+        cost: 50,
+        dps: 0.5,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3067/3067098.png',
+      },
+      {
+        name: 'Pacto Sanguíneo',
+        cost: 250,
+        dps: 2,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
+      },
+      {
+        name: 'Eco dos Pesadelos',
+        cost: 1000,
+        dps: 8,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/9218/9218151.png',
+      },
+      {
+        name: 'Ídolo Quebrado',
+        cost: 5000,
+        dps: 30,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6743/6743513.png',
+      },
+      // Tier 2: Rituais e invocações menores (base 25k, multi 120-80k)
+      {
+        name: 'Ritual Profano',
+        cost: 25000,
+        dps: 120,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1077/1077209.png',
+      },
+      {
+        name: 'Tomos Proibidos',
+        cost: 120000,
+        dps: 550,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2917/2917409.png',
+      },
+      {
+        name: 'Selo Espectral',
+        cost: 600000,
+        dps: 2800,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3887/3887103.png',
+      },
+      {
+        name: 'Lágrimas da Medusa',
+        cost: 3000000,
+        dps: 15000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3067/3067160.png',
+      },
+      {
+        name: 'Fragmento Estelar',
+        cost: 15000000,
+        dps: 80000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
+      },
+      // Tier 3: Influências e manifestações maiores (base 75M, multi 400k-200M)
+      {
+        name: 'Coro Macabro',
+        cost: 75000000,
+        dps: 400000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/4802/4802061.png',
+      },
+      {
+        name: 'Abismo da Loucura',
+        cost: 350000000,
+        dps: 2000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
+      },
+      {
+        name: 'Sentinela Dimensional',
+        cost: 1500000000,
+        dps: 9000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3887/3887163.png',
+      },
+      {
+        name: 'Véu Interplanar',
+        cost: 6000000000,
+        dps: 45000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/976/976856.png',
+      },
+      {
+        name: 'Tempestade Cósmica',
+        cost: 25000000000,
+        dps: 200000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
+      },
+      // Tier 4: Entidades e portais maiores (base 100B, multi 1B-500B)
+      {
+        name: 'Portal para o Além',
+        cost: 100000000000,
+        dps: 1000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
+      },
+      {
+        name: 'O Sonhador em R´lyeh',
+        cost: 500000000000,
+        dps: 5000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3067/3067149.png',
+      },
+      {
+        name: 'Olho de Azathoth',
+        cost: 2000000000000,
+        dps: 25000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
+      },
+      {
+        name: 'Toque de Nyarlathotep',
+        cost: 8000000000000,
+        dps: 100000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3887/3887081.png',
+      },
+      {
+        name: 'Despertar da Antiga Ameaça',
+        cost: 30000000000000,
+        dps: 500000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/8687/8687102.png',
+      },
+      // Tier 5: Entidades Primordiais e Realidades Distorcidas (novo tier)
+      {
+        name: 'Mente Colossal',
+        cost: 150000000000000,
+        dps: 2500000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3887/3887163.png',
+      },
+      {
+        name: 'Espiral de Desespero',
+        cost: 700000000000000,
+        dps: 10000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
+      },
+      {
+        name: 'Chama Eterna',
+        cost: 3000000000000000,
+        dps: 50000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
+      },
+      {
+        name: 'O Vazio Pulsante',
+        cost: 12000000000000000,
+        dps: 200000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
+      },
+      {
+        name: 'Realidade Fragmentada',
+        cost: 50000000000000000,
+        dps: 800000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
+      },
+    ];
+  }
+
+  getClickUpgradesList(): ClickUpgrade[] {
+    return [
+      {
+        name: 'Toque Sutil',
+        cost: 10,
+        clickMultiplier: 0.1,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1828/1828775.png',
+      },
+      {
+        name: 'Foco Macabro',
+        cost: 100,
+        clickMultiplier: 0.5,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/10423/10423773.png',
+      },
+      {
+        name: 'Ritmo Insano',
+        cost: 500,
+        clickMultiplier: 2,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
+      },
+      {
+        name: 'Canto Hipnótico',
+        cost: 2500,
+        clickMultiplier: 10,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
+      },
+      {
+        name: 'Conexão Psíquica',
+        cost: 12000,
+        clickMultiplier: 50,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903328.png',
+      },
+      {
+        name: 'Pulso Sombrio',
+        cost: 60000,
+        clickMultiplier: 200,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/9218/9218151.png',
+      },
+      {
+        name: 'Memória Amaldiçoada',
+        cost: 300000,
+        clickMultiplier: 1000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6743/6743513.png',
+      },
+      {
+        name: 'Ecos do Vazio',
+        cost: 1500000,
+        clickMultiplier: 5000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
+      },
+      {
+        name: 'Fúria Canalizada',
+        cost: 7500000,
+        clickMultiplier: 25000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/4802/4802061.png',
+      },
+      {
+        name: 'Devaneio Perpétuo',
+        cost: 35000000,
+        clickMultiplier: 120000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3067/3067149.png',
+      },
+      {
+        name: 'Convergência Dimensional',
+        cost: 150000000,
+        clickMultiplier: 500000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
+      },
+      {
+        name: 'Vortex de Essência',
+        cost: 700000000,
+        clickMultiplier: 2000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
+      },
+      {
+        name: 'Canto Cósmico',
+        cost: 3500000000,
+        clickMultiplier: 8000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
+      },
+      {
+        name: 'Pulsar da Realidade',
+        cost: 15000000000,
+        clickMultiplier: 35000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
+      },
+      {
+        name: 'Fragmento do Caos',
+        cost: 70000000000,
+        clickMultiplier: 150000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
+      },
+    ];
+  }
+}

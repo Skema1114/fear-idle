@@ -247,7 +247,6 @@ export class AppComponent implements OnInit, OnDestroy {
     );
   }
 
-  // --- Funções de Save/Load ---
   private saveGame(): void {
     const gameState = {
       essence: this.essence(),
@@ -688,7 +687,6 @@ export class AppComponent implements OnInit, OnDestroy {
     if (type === 'auto') {
       currentUpgrade = this.unlockedUpgrades()[index];
     } else {
-      // type === 'click'
       currentUpgrade = this.unlockedClickUpgrades()[index];
     }
 
@@ -742,7 +740,6 @@ export class AppComponent implements OnInit, OnDestroy {
         return upgradesCopy;
       });
     } else {
-      // type === 'click'
       this.clickUpgradesList.update((currentClickUpgrades) => {
         const clickUpgradesCopy = [...currentClickUpgrades];
         const clickedUpgradeFromUnlockedList =

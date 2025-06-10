@@ -37,14 +37,12 @@
   </div>
 
   <div class="actions-section">
-    <!-- Botão de clique manual que ativa o combo -->
     <button class="primary-button click-button" (click)="manualClick()">
       Canalizar Essência Manualmente <br />
       (+{{ formatNumber(baseClickValue() * comboMultiplier(), true) }} Essência
       / Clique)
     </button>
 
-    <!-- Display de Combo -->
     <div class="combo-display" *ngIf="comboCount() > 0">
       <span>COMBO: {{ formatNumber(comboCount()) }}x</span>
       <span>Multiplicador: x{{ formatNumber(comboMultiplier(), true) }}</span>
@@ -72,7 +70,6 @@
     </div>
   </div>
 
-  <!-- SEÇÃO PARA BOTÕES DE SAVE/EXPORT -->
   <div class="save-export-section">
     <button class="secondary-button" (click)="saveGameManually()">
       Salvar Jogo Manualmente
@@ -103,13 +100,29 @@
           height="64"
         />
         <div class="card-details">
-          <h3 class="upgrade-name">{{ up.name }}</h3>
-          <p class="upgrade-info">
+          <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
+          <p
+            class="upgrade-info"
+            [title]="
+              'Qtd: ' +
+              formatNumber(up.amount) +
+              ' | +' +
+              formatNumber(up.dps, true) +
+              '/s'
+            "
+          >
             Qtd: {{ formatNumber(up.amount) }} | +{{
               formatNumber(up.dps, true)
             }}/s
           </p>
-          <p class="upgrade-cost">
+          <p
+            class="upgrade-cost"
+            [title]="
+              'Custo: ' +
+              formatNumber(getUpgradeCostForCurrentMode(up), false) +
+              ' Essência'
+            "
+          >
             Custo:
             {{ formatNumber(getUpgradeCostForCurrentMode(up), false) }} Essência
           </p>
@@ -156,17 +169,30 @@
           height="64"
         />
         <div class="card-details">
-          <h3 class="upgrade-name">{{ up.name }}</h3>
-          <p class="upgrade-info">
+          <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
+          <p
+            class="upgrade-info"
+            [title]="
+              'Qtd: ' +
+              formatNumber(up.amount) +
+              ' | Multiplicador de Clique: x' +
+              formatNumber(up.clickMultiplier, true)
+            "
+          >
             Qtd: {{ formatNumber(up.amount) }} | Multiplicador de Clique: x{{
               formatNumber(up.clickMultiplier, true)
             }}
           </p>
-          <p class="upgrade-cost">
+          <p
+            class="upgrade-cost"
+            [title]="
+              'Custo: ' +
+              formatNumber(getClickUpgradeCostForCurrentMode(up), false) +
+              ' Essência'
+            "
+          >
             Custo:
-            {{
-              formatNumber(getClickUpgradeCostForCurrentMode(up), false)
-            }}
+            {{ formatNumber(getClickUpgradeCostForCurrentMode(up), false) }}
             Essência
           </p>
           <button

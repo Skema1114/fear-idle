@@ -410,6 +410,8 @@ strong {
     overflow: hidden; /* Esconde o texto que excede */
     text-overflow: ellipsis; /* Adiciona "..." no final */
     display: block; /* Garante que as propriedades de overflow funcionem */
+    /* NOVO: Suavizando o text-shadow para melhorar a leitura */
+    text-shadow: 0 0 3px rgba($shadow-purple, 0.5); /* Diminuído de 10px para 3px e opacidade de 0.8 para 0.5 */
   }
 
   .upgrade-info {
@@ -417,6 +419,10 @@ strong {
     font-size: 0.95rem;
     color: $light-ghost;
     margin-bottom: 0.3rem;
+    white-space: nowrap; /* Impede quebra de linha */
+    overflow: hidden; /* Esconde o texto que excede */
+    text-overflow: ellipsis; /* Adiciona "..." no final */
+    display: block;
   }
 
   .upgrade-cost {
@@ -427,7 +433,7 @@ strong {
     white-space: nowrap; /* Impede quebra de linha */
     overflow: hidden; /* Esconde o texto que excede */
     text-overflow: ellipsis; /* Adiciona "..." no final */
-    display: block; /* Garante que as propriedades de overflow funcionem */
+    display: block;
   }
 
   .action-button {
@@ -634,7 +640,7 @@ strong {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .game-container {
-    padding: 2rem 1rem; /* Ajuste para telas menores */
+    padding: 2rem 1rem;
   }
 
   .intro-section h1 {

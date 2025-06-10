@@ -1,83 +1,266 @@
-<div class="navbar">
-  <span>🕯️ Essência: {{ darkEssence() | number : "1.0-0" }}</span>
-  <span>💰 Total: {{ totalEssence() | number : "1.0-0" }}</span>
-  <span>⚡ Por segundo: {{ essencePerSecond() | number : "1.0-2" }}</span>
+<div class="header">
+  <span class="essence-display"
+    >🕯️ Essência:
+    <span class="value">{{ formatNumber(darkEssence()) }}</span></span
+  >
+  <span class="essence-display"
+    >💰 Total:
+    <span class="value">{{ formatNumber(totalEssence()) }}</span></span
+  >
+  <span class="essence-display"
+    >⚡ Por segundo:
+    <span class="value">{{
+      formatNumber(essencePerSecond(), true)
+    }}</span></span
+  >
 </div>
 
-<div class="game">
-  <div class="intro">
+<div class="game-container">
+  <div class="intro-section">
     <h1>🕯️ Culto das Sombras</h1>
     <p class="intro-animation">As trevas estão despertando...</p>
   </div>
 
-  <p><strong>Essência Atual:</strong> {{ darkEssence() | number : "1.0-0" }}</p>
-  <p>
-    <strong>Essência Total:</strong> {{ totalEssence() | number : "1.0-0" }}
-  </p>
-  <p>
-    <strong>Ganho por segundo:</strong>
-    {{ essencePerSecond() | number : "1.0-2" }}
-  </p>
-
-  <button (click)="earnEssence(1)">Canalizar essência manualmente</button>
-
-  <div class="purchase-modes">
-    <label *ngFor="let mode of purchaseModes">
-      <input
-        type="radio"
-        name="purchase"
-        [value]="mode"
-        [(ngModel)]="currentPurchaseMode"
-      />
-      {{ mode }}x
-    </label>
+  <div class="current-stats">
+    <p>
+      <strong>Essência Atual:</strong>
+      <span class="value">{{ formatNumber(darkEssence()) }}</span>
+    </p>
+    <p>
+      <strong>Essência Total:</strong>
+      <span class="value">{{ formatNumber(totalEssence()) }}</span>
+    </p>
+    <p>
+      <strong>Ganho por segundo:</strong>
+      <span class="value">{{ formatNumber(essencePerSecond(), true) }}</span>
+    </p>
   </div>
 
-  <h2>🔮 Upgrades</h2>
+  <div class="actions-section">
+    <!-- Botão de clique manual que ativa o combo -->
+    <button class="primary-button click-button" (click)="manualClick()">
+      Canalizar Essência Manualmente <br />
+      (+{{ formatNumber(baseClickValue() * comboMultiplier(), true) }} Essência
+      / Clique)
+    </button>
+
+    <!-- Display de Combo -->
+    <div class="combo-display" *ngIf="comboCount() > 0">
+      <span>COMBO: {{ formatNumber(comboCount()) }}x</span>
+      <span>Multiplicador: x{{ formatNumber(comboMultiplier(), true) }}</span>
+    </div>
+
+    <div class="purchase-modes-group">
+      <label *ngFor="let mode of numericPurchaseModes" class="radio-label">
+        <input
+          type="radio"
+          name="purchase"
+          [value]="mode"
+          [(ngModel)]="currentPurchaseMode"
+        />
+        {{ mode }}x
+      </label>
+      <label class="radio-label">
+        <input
+          type="radio"
+          name="purchase"
+          value="max"
+          [(ngModel)]="currentPurchaseMode"
+        />
+        MAX
+      </label>
+    </div>
+  </div>
+
+  <!-- SEÇÃO PARA BOTÕES DE SAVE/EXPORT -->
+  <div class="save-export-section">
+    <button class="secondary-button" (click)="saveGameManually()">
+      Salvar Jogo Manualmente
+    </button>
+    <button class="secondary-button" (click)="exportSave()">
+      Exportar Save
+    </button>
+    <button class="secondary-button" (click)="showImportModal = true">
+      Importar Save
+    </button>
+  </div>
+
+  <h2 class="section-title">🔮 Manifestações Automáticas</h2>
   <ng-container *ngIf="unlockedUpgrades().length > 0; else noUpgradesAvailable">
-    <div class="upgrades-container">
-      <div class="upgrade" *ngFor="let up of unlockedUpgrades(); let i = index">
+    <div class="upgrades-grid">
+      <div
+        class="upgrade-card"
+        *ngFor="
+          let up of unlockedUpgrades();
+          trackBy: trackByUpgradeName;
+          let i = index
+        "
+      >
         <img
-          [src]="up.image || 'https://via.placeholder.com/64x64?text=🧟'"
+          [src]="up.image || 'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'"
           [alt]="up.name"
           width="64"
           height="64"
         />
-        <div class="details">
-          <strong>{{ up.name }}</strong>
-          <p>Qtd: {{ up.amount }} | +{{ up.dps | number : "1.0-2" }}/s cada</p>
-          <p>Próximo custo: {{ up.cost | number : "1.0-0" }}</p>
+        <div class="card-details">
+          <h3 class="upgrade-name">{{ up.name }}</h3>
+          <p class="upgrade-info">
+            Qtd: {{ formatNumber(up.amount) }} | +{{
+              formatNumber(up.dps, true)
+            }}/s
+          </p>
+          <p class="upgrade-cost">
+            Custo:
+            {{ formatNumber(getUpgradeCostForCurrentMode(up), false) }} Essência
+          </p>
           <button
-            (click)="buyUpgrade(i, currentPurchaseMode)"
-            [disabled]="!canAffordUpgrade(i, currentPurchaseMode)"
+            class="action-button"
+            (click)="buyUpgrade(i, currentPurchaseMode, 'auto')"
+            [disabled]="!canAffordUpgrade(i, currentPurchaseMode, 'auto')"
           >
-            Comprar {{ currentPurchaseMode }}x
+            Comprar
+            {{
+              currentPurchaseMode === "max" ? "MAX" : currentPurchaseMode + "x"
+            }}
           </button>
         </div>
       </div>
     </div>
   </ng-container>
   <ng-template #noUpgradesAvailable>
-    <div class="no-upgrades-message">
+    <div class="message-box">
       <p>
-        Você ainda não tem upgrades disponíveis. Continue coletando essência
-        para desbloqueá-los!
+        Nenhuma manifestação sombria à vista. Continue coletando essência para
+        despertá-las!
       </p>
     </div>
   </ng-template>
 
-  <h2>🏆 Troféus</h2>
-  <ul class="trophies">
-    <li *ngFor="let t of trophies()" [class.earned]="t.earned">
-      {{ t.icon }} {{ t.title }}
+  <h2 class="section-title">⚡ Manifestações de Canalização</h2>
+  <ng-container
+    *ngIf="unlockedClickUpgrades().length > 0; else noClickUpgradesAvailable"
+  >
+    <div class="upgrades-grid">
+      <div
+        class="upgrade-card"
+        *ngFor="
+          let up of unlockedClickUpgrades();
+          trackBy: trackByClickUpgradeName;
+          let i = index
+        "
+      >
+        <img
+          [src]="up.image || 'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'"
+          [alt]="up.name"
+          width="64"
+          height="64"
+        />
+        <div class="card-details">
+          <h3 class="upgrade-name">{{ up.name }}</h3>
+          <p class="upgrade-info">
+            Qtd: {{ formatNumber(up.amount) }} | Multiplicador de Clique: x{{
+              formatNumber(up.clickMultiplier, true)
+            }}
+          </p>
+          <p class="upgrade-cost">
+            Custo:
+            {{
+              formatNumber(getClickUpgradeCostForCurrentMode(up), false)
+            }}
+            Essência
+          </p>
+          <button
+            class="action-button"
+            (click)="buyUpgrade(i, currentPurchaseMode, 'click')"
+            [disabled]="!canAffordUpgrade(i, currentPurchaseMode, 'click')"
+          >
+            Comprar
+            {{
+              currentPurchaseMode === "max" ? "MAX" : currentPurchaseMode + "x"
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #noClickUpgradesAvailable>
+    <div class="message-box">
+      <p>
+        Nenhuma manifestação de canalização à vista. Fortaleça sua mente para
+        despertá-las!
+      </p>
+    </div>
+  </ng-template>
+
+  <h2 class="section-title">🏆 Revelações Sombrias</h2>
+  <ul class="trophies-list">
+    <li
+      *ngFor="let t of trophies(); trackBy: trackByTrophyTitle"
+      [class.earned]="t.earned"
+      [class.locked]="!t.earned"
+      class="trophy-item"
+      (click)="viewTrophyDetails(t)"
+    >
+      <span class="trophy-icon">{{ t.icon }}</span>
+      <span class="trophy-title">{{ t.title }}</span>
     </li>
   </ul>
 </div>
 
-<div class="modal" *ngIf="showTrophyModal()">
+<div class="modal-overlay" *ngIf="showTrophyModal()">
   <div class="modal-content">
-    <h3>{{ unlockedTrophy()?.icon }} {{ unlockedTrophy()?.title }}</h3>
-    <p>{{ unlockedTrophy()?.description }}</p>
-    <button (click)="closeModal()">Fechar</button>
+    <h3 class="modal-title">
+      {{ unlockedTrophy()?.icon }} {{ unlockedTrophy()?.title }}
+    </h3>
+    <p class="modal-description">{{ unlockedTrophy()?.description }}</p>
+    <button class="modal-close-button" (click)="closeModal()">Fechar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showImportModal">
+  <div class="modal-content">
+    <h3 class="modal-title">Importar Save</h3>
+    <p class="modal-description">Cole seu save aqui:</p>
+    <textarea class="save-textarea" [(ngModel)]="importedSaveData"></textarea>
+    <div class="modal-actions">
+      <button class="secondary-button" (click)="importSave()">Importar</button>
+      <button class="secondary-button" (click)="showImportModal = false">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showExportTextModal">
+  <div class="modal-content">
+    <h3 class="modal-title">Seu Código de Save</h3>
+    <p class="modal-description">
+      Copie o texto abaixo e salve-o em um local seguro:
+    </p>
+    <textarea
+      class="save-textarea"
+      [value]="exportedSaveText"
+      readonly
+    ></textarea>
+    <div class="modal-actions">
+      <button class="secondary-button" (click)="copyExportedSaveText()">
+        Copiar para Área de Transferência
+      </button>
+      <button class="secondary-button" (click)="showExportTextModal = false">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showTrophyDetailsModal">
+  <div class="modal-content">
+    <h3 class="modal-title">
+      {{ selectedTrophy?.icon }} {{ selectedTrophy?.title }}
+    </h3>
+    <p class="modal-description">{{ selectedTrophy?.description }}</p>
+    <button class="modal-close-button" (click)="closeTrophyDetailsModal()">
+      Fechar
+    </button>
   </div>
 </div>

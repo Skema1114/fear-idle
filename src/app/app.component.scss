@@ -544,6 +544,10 @@ strong {
       cursor: not-allowed;
     }
   }
+
+  .details-button {
+    margin-bottom: 5px;
+  }
 }
 
 .message-box {
@@ -735,7 +739,6 @@ strong {
 
   .header {
     flex-direction: column;
-    padding: 0.5rem;
   }
 
   .essence-display {

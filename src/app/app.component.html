@@ -136,6 +136,12 @@
             {{ formatNumber(getUpgradeCostForCurrentMode(up), false) }} Essência
           </p>
           <button
+            class="action-button details-button"
+            (click)="viewUpgradeDetails(up, 'auto')"
+          >
+            Detalhes
+          </button>
+          <button
             class="action-button"
             (click)="buyUpgrade(i, currentPurchaseMode, 'auto')"
             [disabled]="!canAffordUpgrade(i, currentPurchaseMode, 'auto')"
@@ -204,6 +210,12 @@
             {{ formatNumber(getClickUpgradeCostForCurrentMode(up), false) }}
             Essência
           </p>
+          <button
+            class="action-button details-button"
+            (click)="viewUpgradeDetails(up, 'click')"
+          >
+            Detalhes
+          </button>
           <button
             class="action-button"
             (click)="buyUpgrade(i, currentPurchaseMode, 'click')"
@@ -299,6 +311,12 @@
             Custo: {{ formatNumber(up.cost, false) }} Ancestral
           </p>
           <button
+            class="action-button details-button"
+            (click)="viewUpgradeDetails(up, 'prestige')"
+          >
+            Detalhes
+          </button>
+          <button
             class="action-button prestige-action-button"
             (click)="buyPrestigeUpgrade(i)"
             [disabled]="!canAffordPrestigeUpgrade(i)"
@@ -371,6 +389,61 @@
     </h3>
     <p class="modal-description">{{ selectedTrophy?.description }}</p>
     <button class="modal-close-button" (click)="closeTrophyDetailsModal()">
+      Fechar
+    </button>
+  </div>
+</div>
+
+<!-- NOVO: Modal de Detalhes do Upgrade -->
+<div class="modal-overlay" *ngIf="showUpgradeDetailsModal">
+  <div class="modal-content">
+    <h3 class="modal-title">{{ selectedUpgrade?.name }}</h3>
+    <img
+      [src]="
+        selectedUpgrade?.image ||
+        'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'
+      "
+      [alt]="selectedUpgrade?.name"
+      width="64"
+      height="64"
+      class="modal-upgrade-image"
+    />
+    <p class="modal-description upgrade-details-text">
+      <ng-container *ngIf="selectedUpgradeType === 'auto'">
+        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+        Geração por Segundo: +{{
+          formatNumber(selectedUpgrade?.dps || 0, true)
+        }}/s
+      </ng-container>
+      <ng-container *ngIf="selectedUpgradeType === 'click'">
+        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+        Multiplicador por Clique: x{{
+          formatNumber(selectedUpgrade?.clickMultiplier || 0, true)
+        }}
+      </ng-container>
+      <ng-container *ngIf="selectedUpgradeType === 'prestige'">
+        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+        Multiplicador Permanente: x{{
+          formatNumber(selectedUpgrade?.multiplierValue || 0, true)
+        }}
+        (Afeta:
+        {{
+          selectedUpgrade?.type === "dps"
+            ? "DPS"
+            : selectedUpgrade?.type === "click"
+            ? "Clique"
+            : "Global"
+        }})
+      </ng-container>
+      <br />
+      Custo Atual:
+      {{ formatNumber(selectedUpgrade?.cost || 0, false) }} Essência <br />
+      <br />
+      <span class="upgrade-description-long">{{
+        selectedUpgrade?.description
+      }}</span>
+    </p>
+    <button class="modal-close-button" (click)="closeUpgradeDetailsModal()">
       Fechar
     </button>
   </div>

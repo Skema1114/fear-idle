@@ -172,7 +172,7 @@ export class TrophyService {
         description: 'Alcance 1.000.000.000.000.000.000 essências totais.',
         earned: false,
         icon: '🌀',
-      }, // 1 Quintillion
+      },
       {
         title: 'A Essência Primordial',
         description: 'Alcance 10.000.000.000.000.000.000 essências totais.',
@@ -190,7 +190,27 @@ export class TrophyService {
         description: 'Alcance 1.000.000.000.000.000.000.000 essências totais.',
         earned: false,
         icon: '👑',
-      }, // 1 Sextillion
+      },
+      {
+        title: 'Infinito e Além',
+        description: 'Alcance 10.000.000.000.000.000.000.000 essências totais.',
+        earned: false,
+        icon: '♾️',
+      },
+      {
+        title: 'A Última Transcedência',
+        description:
+          'Alcance 100.000.000.000.000.000.000.000 essências totais.',
+        earned: false,
+        icon: '✨',
+      },
+      {
+        title: 'Rei do Multiverso',
+        description:
+          'Alcance 1.000.000.000.000.000.000.000.000 essências totais.',
+        earned: false,
+        icon: '👑',
+      },
 
       // Troféus de Clique Manual
       {
@@ -258,6 +278,18 @@ export class TrophyService {
         description: 'Realize 100.000.000.000 cliques manuais totais.',
         earned: false,
         icon: '🎶',
+      },
+      {
+        title: 'Voz da Criação',
+        description: 'Realize 1.000.000.000.000 cliques manuais totais.',
+        earned: false,
+        icon: '🗣️',
+      },
+      {
+        title: 'O Último Toque',
+        description: 'Realize 10.000.000.000.000 cliques manuais totais.',
+        earned: false,
+        icon: '🖐️',
       },
 
       // Troféus de Combo
@@ -333,6 +365,18 @@ export class TrophyService {
         earned: false,
         icon: '👑',
       },
+      {
+        title: 'Combo Lenda (500x)',
+        description: 'Alcance um combo de 500 cliques.',
+        earned: false,
+        icon: '🏆',
+      },
+      {
+        title: 'Combo Mítico (1000x)',
+        description: 'Alcance um combo de 1000 cliques.',
+        earned: false,
+        icon: '🐉',
+      },
 
       // Troféus de Upgrades Automáticos
       {
@@ -385,7 +429,7 @@ export class TrophyService {
       },
       {
         title: 'Legado do Medo',
-        description: 'Compre todos os upgrades automáticos.',
+        description: 'Compre todos os upgrades automáticos do Tier 1.',
         earned: false,
         icon: '💀',
       },
@@ -403,9 +447,33 @@ export class TrophyService {
       },
       {
         title: 'Essência da Existência',
-        description: 'Tenha 100 unidades de cada upgrade automático.',
+        description: 'Tenha 100 unidades de cada upgrade automático do Tier 3.',
         earned: false,
         icon: '✨',
+      },
+      {
+        title: 'Senhor dos Portais',
+        description: 'Tenha 100 unidades de cada upgrade automático do Tier 4.',
+        earned: false,
+        icon: '🪐',
+      },
+      {
+        title: 'Titã da Realidade',
+        description: 'Tenha 100 unidades de cada upgrade automático do Tier 5.',
+        earned: false,
+        icon: '🌋',
+      },
+      {
+        title: 'Arquimago do Vazio',
+        description: 'Tenha 100 unidades de cada upgrade automático do Tier 6.',
+        earned: false,
+        icon: '🧙',
+      },
+      {
+        title: 'Monarca das Trevas',
+        description: 'Tenha 100 unidades de cada upgrade automático.',
+        earned: false,
+        icon: '👑',
       },
 
       // Troféus de Upgrades de Clique
@@ -467,9 +535,16 @@ export class TrophyService {
       },
       {
         title: 'Pulsação Primordial',
-        description: 'Tenha 100 unidades de cada upgrade de canalização.',
+        description:
+          'Tenha 100 unidades de cada upgrade de canalização do Tier 3.',
         earned: false,
         icon: '💖',
+      },
+      {
+        title: 'Mãos da Criação',
+        description: 'Tenha 100 unidades de cada upgrade de canalização.',
+        earned: false,
+        icon: '🖐️',
       },
 
       // Troféus Híbridos/Finais
@@ -490,6 +565,81 @@ export class TrophyService {
       {
         title: 'Verdade Final',
         description: 'Desbloqueie todos os outros troféus.',
+        earned: false,
+        icon: '✨',
+      },
+
+      // Troféus de Prestígio
+      {
+        title: 'Primeiro Legado',
+        description: 'Prestigie pela primeira vez.',
+        earned: false,
+        icon: '✨',
+      },
+      {
+        title: 'Legado Consolidado',
+        description: 'Prestigie 5 vezes.',
+        earned: false,
+        icon: '🌟',
+      },
+      {
+        title: 'Mestre do Legado',
+        description: 'Prestigie 10 vezes.',
+        earned: false,
+        icon: '👑',
+      },
+      {
+        title: 'Herdeiro do Vazio',
+        description: 'Prestigie 25 vezes.',
+        earned: false,
+        icon: '💎',
+      },
+      {
+        title: 'Lorde da Transcedência',
+        description: 'Prestigie 50 vezes.',
+        earned: false,
+        icon: '🌌',
+      },
+      {
+        title: 'Poder Ancestral',
+        description: 'Compre um upgrade de legado.',
+        earned: false,
+        icon: 'Ancestral',
+      },
+      {
+        title: 'Força Eterna',
+        description: 'Compre 5 upgrades de legado diferentes.',
+        earned: false,
+        icon: '♾️',
+      },
+      {
+        title: 'Multiplicador Divino',
+        description: 'Alcance um multiplicador permanente total de 100x.',
+        earned: false,
+        icon: '✨',
+      },
+      {
+        title: 'Ascensão do Vazio',
+        description: 'Alcance um multiplicador permanente total de 1000x.',
+        earned: false,
+        icon: '🌌',
+      },
+      {
+        title: 'A Essência Absoluta',
+        description: 'Alcance um multiplicador permanente total de 1.000.000x.',
+        earned: false,
+        icon: '👑',
+      },
+      {
+        title: 'Legado Completo',
+        description: 'Compre todos os upgrades de legado.',
+        earned: false,
+        icon: '🏆',
+      },
+      {
+        title: 'O Verdadeiro Absoluto',
+        description:
+          'Alcance um multiplicador permanente total de 1.000.000.000x.',
         earned: false,
         icon: '✨',
       },

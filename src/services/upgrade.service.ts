@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ClickUpgrade } from '../interfaces/ClickUpgrade';
+import { PrestigeUpgrade } from '../interfaces/PrestigeUpgrade';
 import { Upgrade } from '../interfaces/Upgrade';
 
 @Injectable({
@@ -8,7 +9,7 @@ import { Upgrade } from '../interfaces/Upgrade';
 export class UpgradeService {
   getIdleUpgradesList(): Upgrade[] {
     return [
-      // Tier 1: Símbolos e manifestações menores (base 10, multi 0.1-8)
+      // Tier 1: Símbolos e manifestações menores (base 10, multi 0.1-30)
       {
         name: 'Vela Sussurrante',
         cost: 10,
@@ -152,7 +153,7 @@ export class UpgradeService {
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/8687/8687102.png',
       },
-      // Tier 5: Entidades Primordiais e Realidades Distorcidas (novo tier)
+      // Tier 5: Entidades Primordiais e Realidades Distorcidas (base 150T, multi 2.5T-800T)
       {
         name: 'Mente Colossal',
         cost: 150000000000000,
@@ -187,6 +188,42 @@ export class UpgradeService {
         dps: 800000000000000,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
+      },
+      // Tier 6: Existências além do tempo e espaço (novo tier)
+      {
+        name: 'Eco do Caos Primordial',
+        cost: 200000000000000000,
+        dps: 3000000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
+      },
+      {
+        name: 'Tecelão de Universos',
+        cost: 800000000000000000,
+        dps: 12000000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/976/976856.png',
+      },
+      {
+        name: 'Vontade Cósmica Indomável',
+        cost: 3000000000000000000,
+        dps: 50000000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3887/3887081.png',
+      },
+      {
+        name: 'O Ponto de Singularidade',
+        cost: 12000000000000000000,
+        dps: 200000000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
+      },
+      {
+        name: 'A Não-Existência',
+        cost: 50000000000000000000,
+        dps: 800000000000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3067/3067098.png',
       },
     ];
   }
@@ -297,6 +334,160 @@ export class UpgradeService {
         clickMultiplier: 150000000,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
+      },
+      // Novo Tier de cliques
+      {
+        name: 'Mão Eterna',
+        cost: 300000000000,
+        clickMultiplier: 500000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
+      },
+      {
+        name: 'Eco do Além',
+        cost: 1500000000000,
+        clickMultiplier: 2000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3067/3067098.png',
+      },
+      {
+        name: 'Batida Estelar',
+        cost: 7000000000000,
+        clickMultiplier: 8000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
+      },
+      {
+        name: 'Ritmo Cósmico',
+        cost: 30000000000000,
+        clickMultiplier: 30000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
+      },
+      {
+        name: 'Voz do Vazio',
+        cost: 120000000000000,
+        clickMultiplier: 100000000000,
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
+      },
+    ];
+  }
+
+  getPrestigeUpgradesList(): PrestigeUpgrade[] {
+    return [
+      {
+        name: 'Visão Aprimorada (DPS)',
+        cost: 1,
+        multiplierValue: 1.05,
+        type: 'dps',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
+      },
+      {
+        name: 'Toque Ressonante (Clique)',
+        cost: 1,
+        multiplierValue: 1.05,
+        type: 'click',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1828/1828775.png',
+      },
+      {
+        name: 'Selo do Profano (DPS)',
+        cost: 5,
+        multiplierValue: 1.1,
+        type: 'dps',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/3887/3887103.png',
+      },
+      {
+        name: 'Ritmo da Existência (Clique)',
+        cost: 5,
+        multiplierValue: 1.1,
+        type: 'click',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
+      },
+      {
+        name: 'Portal da Abundância (DPS)',
+        cost: 25,
+        multiplierValue: 1.2,
+        type: 'dps',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
+      },
+      {
+        name: 'Mente Cósmica (Clique)',
+        cost: 25,
+        multiplierValue: 1.2,
+        type: 'click',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903328.png',
+      },
+      {
+        name: 'Essência Primordial (Global)',
+        cost: 100,
+        multiplierValue: 1.5,
+        type: 'global',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
+      },
+      {
+        name: 'Devorador de Estrelas (Global)',
+        cost: 500,
+        multiplierValue: 2.0,
+        type: 'global',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
+      },
+      {
+        name: 'Fragmento do Absoluto (Global)',
+        cost: 2500,
+        multiplierValue: 5.0,
+        type: 'global',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/8687/8687102.png',
+      },
+      // Novos upgrades de prestígio
+      {
+        name: 'Anel do Vazio (DPS)',
+        cost: 10000,
+        multiplierValue: 1.3,
+        type: 'dps',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1077/1077209.png',
+      },
+      {
+        name: 'Caminho Quebrado (Clique)',
+        cost: 10000,
+        multiplierValue: 1.3,
+        type: 'click',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/6743/6743513.png',
+      },
+      {
+        name: 'Coroa de Sombria (Global)',
+        cost: 50000,
+        multiplierValue: 10.0,
+        type: 'global',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/4802/4802061.png',
+      },
+      {
+        name: 'O Grande Olho (Global)',
+        cost: 250000,
+        multiplierValue: 25.0,
+        type: 'global',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
+      },
+      {
+        name: 'Coração do Caos (Global)',
+        cost: 1000000,
+        multiplierValue: 100.0,
+        type: 'global',
+        amount: 0,
+        image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
       },
     ];
   }

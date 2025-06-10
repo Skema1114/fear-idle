@@ -13,6 +13,10 @@
       formatNumber(essencePerSecond(), true)
     }}</span></span
   >
+  <span class="essence-display prestige-essence"
+    >💎 Ancestral:
+    <span class="value">{{ formatNumber(prestigeEssence()) }}</span></span
+  >
 </div>
 
 <div class="game-container">
@@ -39,8 +43,13 @@
   <div class="actions-section">
     <button class="primary-button click-button" (click)="manualClick()">
       Canalizar Essência Manualmente <br />
-      (+{{ formatNumber(baseClickValue() * comboMultiplier(), true) }} Essência
-      / Clique)
+      (+{{
+        formatNumber(
+          baseClickValue() * comboMultiplier() * globalMultiplier(),
+          true
+        )
+      }}
+      Essência / Clique)
     </button>
 
     <div class="combo-display" *ngIf="comboCount() > 0">
@@ -231,6 +240,82 @@
       <span class="trophy-title">{{ t.title }}</span>
     </li>
   </ul>
+</div>
+
+<h2 class="section-title">💎 Despertar do Legado</h2>
+<div class="prestige-section">
+  <p class="prestige-info">
+    Você alcançou um poder inimaginável. Ao despertar seu legado, você retornará
+    ao início com suas memórias intactas (troféus) e com Essência Ancestral, que
+    concederá um multiplicador permanente em todo o seu ganho de essência.
+  </p>
+  <p class="prestige-level">Nível de Legado: {{ prestigeLevel() }}</p>
+  <p class="prestige-multiplier">
+    Multiplicador Permanente Total: x{{
+      formatNumber(globalMultiplier(), true)
+    }}
+  </p>
+
+  <button
+    class="primary-button prestige-button"
+    (click)="prestigeGame()"
+    [disabled]="calculatePrestigeGain() < 1"
+  >
+    Despertar Legado <br />
+    (+{{ formatNumber(calculatePrestigeGain(), false) }} Essência Ancestral)
+  </button>
+
+  <h3 class="section-subtitle">Upgrades de Legado (Permenantes)</h3>
+  <ng-container
+    *ngIf="
+      unlockedPrestigeUpgrades().length > 0;
+      else noPrestigeUpgradesAvailable
+    "
+  >
+    <div class="upgrades-grid prestige-upgrades-grid">
+      <div
+        class="upgrade-card prestige-upgrade-card"
+        *ngFor="
+          let up of unlockedPrestigeUpgrades();
+          trackBy: trackByPrestigeUpgradeName;
+          let i = index
+        "
+      >
+        <img
+          [src]="up.image || 'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'"
+          [alt]="up.name"
+          width="64"
+          height="64"
+        />
+        <div class="card-details">
+          <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
+          <p class="upgrade-info">Qtd: {{ formatNumber(up.amount) }}</p>
+          <p class="upgrade-info">
+            Multiplicador: x{{ formatNumber(up.multiplierValue, true) }} ({{
+              up.type === "dps" ? "DPS" : "Clique"
+            }})
+          </p>
+          <p class="upgrade-cost">
+            Custo: {{ formatNumber(up.cost, false) }} Ancestral
+          </p>
+          <button
+            class="action-button prestige-action-button"
+            (click)="buyPrestigeUpgrade(i)"
+            [disabled]="!canAffordPrestigeUpgrade(i)"
+          >
+            Comprar
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #noPrestigeUpgradesAvailable>
+    <div class="message-box">
+      <p>
+        Nenhum upgrade de legado disponível. Acumule mais Essência Ancestral!
+      </p>
+    </div>
+  </ng-template>
 </div>
 
 <div class="modal-overlay" *ngIf="showTrophyModal()">

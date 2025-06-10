@@ -1,5 +1,5 @@
 /* Dracula-inspired, Gothic, Minimalist Theme */
-@import url("https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Myeongjo&family=Roboto+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Myeongjo:wght@400;700&display=swap");
 
 /* Color Palette */
 $dark-void: #1a1a1a; // Quase preto, para backgrounds base
@@ -14,8 +14,8 @@ $essence-glow-shadow: #ffb86c; // Sombra/brilho para a essência
 
 /* Typography */
 $font-title: "Creepster", cursive; // Para títulos impactantes e "assustadores"
-$font-body: "Nanum+Myeongjo", serif; // Para o corpo do texto, elegante e legível
-$font-mono: "Roboto+Mono", monospace; // Para valores numéricos e código, se necessário
+$font-body: "Nanum Myeongjo", serif; // Para o corpo do texto, elegante e legível
+$font-mono: "Roboto Mono", monospace; // Para valores numéricos e código, se necessário
 
 /* Base Styles */
 body {
@@ -52,10 +52,10 @@ strong {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: $deep-charcoal; /* Fundo sólido para cobrir o conteúdo por baixo */
+  background: $deep-charcoal;
   border-bottom: 1px solid $faded-stone;
   padding: 0.8rem 0;
-  z-index: 1000; /* Z-index alto para ficar acima do conteúdo */
+  z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
@@ -72,6 +72,12 @@ strong {
     margin-left: 0.5rem;
     font-size: 1.2em;
     white-space: nowrap;
+  }
+
+  &.prestige-essence .value {
+    color: $shadow-purple; /* Cor diferente para essência de prestígio */
+    text-shadow: 0 0 5px lighten($shadow-purple, 10%),
+      0 0 10px rgba($shadow-purple, 0.3);
   }
 }
 
@@ -314,6 +320,86 @@ strong {
   flex-wrap: wrap;
 }
 
+/* Prestige Section */
+.prestige-section {
+  background-color: $deep-charcoal;
+  border: 2px solid $shadow-purple;
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 0 20px rgba($shadow-purple, 0.5);
+
+  .prestige-info {
+    font-size: 1.1rem;
+    color: $light-ghost;
+    margin-bottom: 1.5rem;
+  }
+
+  .prestige-level,
+  .prestige-multiplier {
+    font-family: $font-title;
+    font-size: 1.5rem;
+    color: $essence-glow;
+    text-shadow: 0 0 5px $essence-glow-shadow;
+    margin-bottom: 0.5rem;
+  }
+
+  .prestige-button {
+    background-color: $shadow-purple;
+    border-color: lighten($shadow-purple, 10%);
+    color: $light-ghost;
+    font-size: 1.3rem;
+    padding: 1.2rem 3rem;
+    margin-top: 1.5rem;
+
+    &:hover:not([disabled]) {
+      background-color: darken($shadow-purple, 10%);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7),
+        0 0 15px rgba($shadow-purple, 0.8);
+    }
+    &:disabled {
+      background-color: $faded-stone;
+      color: lighten($faded-stone, 30%);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  .section-subtitle {
+    font-family: $font-body; /* Subtítulo com fonte de corpo, mas em negrito */
+    font-size: 1.3rem;
+    color: $spectral-green;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 5px rgba($spectral-green, 0.3);
+  }
+
+  .prestige-upgrades-grid {
+    /* Estilos da grid de upgrades já estão definidos, apenas garantir que se apliquem */
+    /* Pode adicionar estilos específicos se precisar de espaçamento extra para esta grid */
+  }
+
+  .prestige-upgrade-card {
+    /* Estilos do upgrade-card já definidos, apenas garantir que se apliquem */
+    border-color: $shadow-purple; /* Borda roxa para upgrades de prestígio */
+
+    &:hover {
+      box-shadow: 0 0 15px rgba($shadow-purple, 0.8),
+        0 0 8px rgba($spectral-green, 0.6) inset;
+    }
+
+    .prestige-action-button {
+      background-color: $shadow-purple;
+      border-color: lighten($shadow-purple, 10%);
+      &:hover:not([disabled]) {
+        background-color: darken($shadow-purple, 10%);
+      }
+    }
+  }
+}
+
 /* Sections Titles (H2) */
 .section-title {
   font-size: 2rem;
@@ -347,12 +433,13 @@ strong {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
-  max-height: none;
-  overflow-y: visible;
+  max-height: none; /* Removido para permitir rolagem do body */
+  overflow-y: visible; /* Removido scroll interno */
   padding: 1rem;
-  padding-right: 1rem;
+  padding-left: 1.5rem; /* Ajustado padding para evitar scroll horizontal */
+  padding-right: 1.5rem; /* Ajustado padding para evitar scroll horizontal */
   box-sizing: border-box;
-  justify-content: center;
+  justify-content: center; /* Centraliza a grid */
 }
 
 .upgrade-card {
@@ -367,7 +454,7 @@ strong {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease-in-out;
   width: 100%;
-  max-width: 250px;
+  max-width: 250px; /* Adicionado max-width para desktop */
   box-sizing: border-box;
 
   &:hover {
@@ -406,12 +493,11 @@ strong {
     font-size: 1.4rem;
     color: $shadow-purple;
     margin-bottom: 0.5rem;
-    white-space: nowrap; /* Impede quebra de linha */
-    overflow: hidden; /* Esconde o texto que excede */
-    text-overflow: ellipsis; /* Adiciona "..." no final */
-    display: block; /* Garante que as propriedades de overflow funcionem */
-    /* NOVO: Suavizando o text-shadow para melhorar a leitura */
-    text-shadow: 0 0 3px rgba($shadow-purple, 0.5); /* Diminuído de 10px para 3px e opacidade de 0.8 para 0.5 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-shadow: 0 0 3px rgba($shadow-purple, 0.5);
   }
 
   .upgrade-info {
@@ -419,9 +505,9 @@ strong {
     font-size: 0.95rem;
     color: $light-ghost;
     margin-bottom: 0.3rem;
-    white-space: nowrap; /* Impede quebra de linha */
-    overflow: hidden; /* Esconde o texto que excede */
-    text-overflow: ellipsis; /* Adiciona "..." no final */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: block;
   }
 
@@ -430,9 +516,9 @@ strong {
     font-size: 1rem;
     color: $essence-glow;
     margin-bottom: 1rem;
-    white-space: nowrap; /* Impede quebra de linha */
-    overflow: hidden; /* Esconde o texto que excede */
-    text-overflow: ellipsis; /* Adiciona "..." no final */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: block;
   }
 

@@ -60,6 +60,8 @@ export class AppComponent implements OnInit, OnDestroy {
   selectedUpgrade: Upgrade | ClickUpgrade | PrestigeUpgrade | any | null = null;
   selectedUpgradeType: 'auto' | 'click' | 'prestige' | null = null;
 
+  showStatsModal: boolean = false;
+
   prestigeEssence = signal(0);
   prestigeLevel = signal(0);
 
@@ -67,6 +69,7 @@ export class AppComponent implements OnInit, OnDestroy {
   comboCount = signal(0);
   highestCombo = signal(0);
   totalManualClicks = signal(0);
+  totalPlaytime = signal(0);
   private comboResetTimeout: any;
 
   globalMultiplier = computed(() => {
@@ -285,6 +288,22 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.upgrades().filter((up) => up.unlocked);
   });
 
+  totalAutoUpgradesBought = computed(() => {
+    return this.upgradesList().reduce((sum, up) => sum + up.amount, 0);
+  });
+
+  totalClickUpgradesBought = computed(() => {
+    return this.clickUpgradesList().reduce((sum, up) => sum + up.amount, 0);
+  });
+
+  totalPrestigeUpgradesBought = computed(() => {
+    return this.prestigeUpgradesList().reduce((sum, up) => sum + up.amount, 0);
+  });
+
+  unlockedTrophiesCount = computed(() => {
+    return this.trophiesList().filter((t) => t.earned).length;
+  });
+
   private gameInterval: any;
 
   constructor() {}
@@ -308,15 +327,16 @@ export class AppComponent implements OnInit, OnDestroy {
       if (gain > 0) {
         this.essence.update((v) => v + gain);
         this.totalEssence.update((v) => v + gain);
-        this.checkTrophyProgress(
-          this.totalEssence(),
-          this.totalManualClicks(),
-          this.highestCombo(),
-          this.prestigeLevel(),
-          this.prestigeEssence(),
-          this.globalMultiplier()
-        );
       }
+      this.totalPlaytime.update((v) => v + 1);
+      this.checkTrophyProgress(
+        this.totalEssence(),
+        this.totalManualClicks(),
+        this.highestCombo(),
+        this.prestigeLevel(),
+        this.prestigeEssence(),
+        this.globalMultiplier()
+      );
       this.saveGame();
     }, 1000);
   }
@@ -368,6 +388,7 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeEssence: this.prestigeEssence(),
       prestigeLevel: this.prestigeLevel(),
       prestigeUpgradesList: this.prestigeUpgradesList(),
+      totalPlaytime: this.totalPlaytime(),
     };
     try {
       const jsonString = JSON.stringify(gameState);
@@ -398,6 +419,7 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeEssence: this.prestigeEssence(),
       prestigeLevel: this.prestigeLevel(),
       prestigeUpgradesList: this.prestigeUpgradesList(),
+      totalPlaytime: this.totalPlaytime(),
     };
     try {
       const jsonString = JSON.stringify(gameState);
@@ -471,22 +493,25 @@ export class AppComponent implements OnInit, OnDestroy {
           !Array.isArray(gameState.clickUpgradesList) ||
           typeof gameState.prestigeEssence !== 'number' ||
           typeof gameState.prestigeLevel !== 'number' ||
-          !Array.isArray(gameState.prestigeUpgradesList)
+          !Array.isArray(gameState.prestigeUpgradesList) ||
+          typeof gameState.totalPlaytime !== 'number'
         ) {
           console.warn(
-            'Dados de clique/combo/prestígio do save não encontrados ou corrompidos. Usando valores padrão.'
+            'Dados de clique/combo/prestígio/tempo de jogo do save não encontrados ou corrompidos. Usando valores padrão.'
           );
           this.highestCombo.set(0);
           this.totalManualClicks.set(0);
           this.prestigeEssence.set(0);
           this.prestigeLevel.set(0);
+          this.totalPlaytime.set(0);
         } else {
           this.highestCombo.set(gameState.highestCombo);
           this.totalManualClicks.set(gameState.totalManualClicks);
           this.prestigeEssence.set(gameState.prestigeEssence);
           this.prestigeLevel.set(gameState.prestigeLevel);
+          this.totalPlaytime.set(gameState.totalPlaytime);
         }
-        this.comboCount.set(0); // Sempre zera o combo ao carregar um jogo
+        this.comboCount.set(0);
 
         this.essence.set(gameState.essence || 0);
         this.totalEssence.set(gameState.totalEssence || 0);
@@ -596,10 +621,11 @@ export class AppComponent implements OnInit, OnDestroy {
         typeof gameState.prestigeEssence !== 'number' ||
         typeof gameState.prestigeLevel !== 'number' ||
         !Array.isArray(gameState.clickUpgradesList) ||
-        !Array.isArray(gameState.prestigeUpgradesList)
+        !Array.isArray(gameState.prestigeUpgradesList) ||
+        typeof gameState.totalPlaytime !== 'number'
       ) {
         throw new Error(
-          'Dados de save inválidos: propriedades de clique/combo/prestígio ausentes ou corrompidas.'
+          'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes ou corrompidas.'
         );
       }
 
@@ -662,6 +688,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.totalManualClicks.set(gameState.totalManualClicks);
       this.prestigeEssence.set(gameState.prestigeEssence);
       this.prestigeLevel.set(gameState.prestigeLevel);
+      this.totalPlaytime.set(gameState.totalPlaytime);
 
       const loadedUpgrades: Upgrade[] = gameState.upgradesList;
       const currentUpgrades: Upgrade[] = this.upgradesList();
@@ -737,6 +764,26 @@ export class AppComponent implements OnInit, OnDestroy {
           (e.message || 'Erro desconhecido.')
       );
     }
+  }
+
+  public formatPlaytime(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  }
+
+  viewStats(): void {
+    this.showStatsModal = true;
+  }
+
+  closeStatsModal(): void {
+    this.showStatsModal = false;
   }
 
   calculatePrestigeGain(): number {
@@ -1298,6 +1345,10 @@ export class AppComponent implements OnInit, OnDestroy {
             if (currentTotalManualClicks >= 100000000000000000)
               this.unlockTrophy(trophy.title);
             break;
+          case 'A Punho do Multiverso':
+            if (currentTotalManualClicks >= 1000000000000000000)
+              this.unlockTrophy(trophy.title);
+            break;
 
           case 'Combo Iniciante (2x)':
             if (currentHighestCombo >= 2) this.unlockTrophy(trophy.title);
@@ -1352,6 +1403,12 @@ export class AppComponent implements OnInit, OnDestroy {
             break;
           case 'Combo do Vazio (25000x)':
             if (currentHighestCombo >= 25000) this.unlockTrophy(trophy.title);
+            break;
+          case 'Combo da Anarquia (50000x)':
+            if (currentHighestCombo >= 50000) this.unlockTrophy(trophy.title);
+            break;
+          case 'O Ritmo Final (100000x)':
+            if (currentHighestCombo >= 100000) this.unlockTrophy(trophy.title);
             break;
 
           case 'Primeira Manifestação':
@@ -1594,6 +1651,10 @@ export class AppComponent implements OnInit, OnDestroy {
             if (this.upgradesList().every((up) => up.amount >= 5000))
               this.unlockTrophy(trophy.title);
             break;
+          case 'Criador do Terror':
+            if (this.upgradesList().every((up) => up.amount >= 10000))
+              this.unlockTrophy(trophy.title);
+            break;
 
           case 'Primeira Canalização':
             if (this.clickUpgradesList().some((up) => up.amount > 0))
@@ -1769,6 +1830,10 @@ export class AppComponent implements OnInit, OnDestroy {
             if (this.clickUpgradesList().every((up) => up.amount >= 5000))
               this.unlockTrophy(trophy.title);
             break;
+          case 'Sinfonia do Horror':
+            if (this.clickUpgradesList().every((up) => up.amount >= 10000))
+              this.unlockTrophy(trophy.title);
+            break;
 
           case 'Equilíbrio Sombrio':
             const allAutoPresent = this.upgradesList().every(
@@ -1834,6 +1899,16 @@ export class AppComponent implements OnInit, OnDestroy {
               (up) => up.amount >= 5000
             );
             if (allAuto5000Units && allClick5000Units)
+              this.unlockTrophy(trophy.title);
+            break;
+          case 'Poder Dual':
+            const allAuto10000Units = this.upgradesList().every(
+              (up) => up.amount >= 10000
+            );
+            const allClick10000Units = this.clickUpgradesList().every(
+              (up) => up.amount >= 10000
+            );
+            if (allAuto10000Units && allClick10000Units)
               this.unlockTrophy(trophy.title);
             break;
 
@@ -1916,6 +1991,14 @@ export class AppComponent implements OnInit, OnDestroy {
               this.prestigeUpgradesList().filter((up) => up.amount > 0)
                 .length >= 1000
             )
+              this.unlockTrophy(trophy.title);
+            break;
+          case 'Legado do Vazio':
+            if (this.prestigeUpgradesList().every((up) => up.amount >= 2500))
+              this.unlockTrophy(trophy.title);
+            break;
+          case 'Trono do Conhecimento':
+            if (this.prestigeUpgradesList().every((up) => up.amount >= 5000))
               this.unlockTrophy(trophy.title);
             break;
         }

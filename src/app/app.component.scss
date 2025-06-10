@@ -75,7 +75,7 @@ strong {
   }
 
   &.prestige-essence .value {
-    color: $shadow-purple; /* Cor diferente para essência de prestígio */
+    color: $shadow-purple;
     text-shadow: 0 0 5px lighten($shadow-purple, 10%),
       0 0 10px rgba($shadow-purple, 0.3);
   }
@@ -368,7 +368,7 @@ strong {
   }
 
   .section-subtitle {
-    font-family: $font-body; /* Subtítulo com fonte de corpo, mas em negrito */
+    font-family: $font-body;
     font-size: 1.3rem;
     color: $spectral-green;
     margin-top: 2rem;
@@ -378,12 +378,11 @@ strong {
 
   .prestige-upgrades-grid {
     /* Estilos da grid de upgrades já estão definidos, apenas garantir que se apliquem */
-    /* Pode adicionar estilos específicos se precisar de espaçamento extra para esta grid */
   }
 
   .prestige-upgrade-card {
     /* Estilos do upgrade-card já definidos, apenas garantir que se apliquem */
-    border-color: $shadow-purple; /* Borda roxa para upgrades de prestígio */
+    border-color: $shadow-purple;
 
     &:hover {
       box-shadow: 0 0 15px rgba($shadow-purple, 0.8),
@@ -433,13 +432,13 @@ strong {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
-  max-height: none; /* Removido para permitir rolagem do body */
-  overflow-y: visible; /* Removido scroll interno */
+  max-height: none;
+  overflow-y: visible;
   padding: 1rem;
-  padding-left: 1.5rem; /* Ajustado padding para evitar scroll horizontal */
-  padding-right: 1.5rem; /* Ajustado padding para evitar scroll horizontal */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
   box-sizing: border-box;
-  justify-content: center; /* Centraliza a grid */
+  justify-content: center;
 }
 
 .upgrade-card {
@@ -454,7 +453,7 @@ strong {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease-in-out;
   width: 100%;
-  max-width: 250px; /* Adicionado max-width para desktop */
+  max-width: 250px;
   box-sizing: border-box;
 
   &:hover {
@@ -482,10 +481,10 @@ strong {
 
   .card-details {
     width: 100%;
-    min-height: 120px; /* Altura mínima para o bloco de detalhes */
+    min-height: 120px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Espalha o conteúdo verticalmente */
+    justify-content: space-between;
   }
 
   .upgrade-name {
@@ -532,16 +531,17 @@ strong {
     border: none;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-shrink: 0;
 
-    &:hover:not([disabled]) {
-      background-color: lighten($spectral-green, 10%);
-      transform: translateY(-1px);
-    }
-
-    &:disabled {
+    &.details-button {
       background-color: $faded-stone;
-      color: lighten($faded-stone, 30%);
-      cursor: not-allowed;
+      color: $light-ghost;
+      border: 1px solid darken($faded-stone, 10%);
+      margin-bottom: 0.5rem;
+      &:hover:not([disabled]) {
+        background-color: lighten($faded-stone, 5%);
+        transform: translateY(-1px);
+      }
     }
   }
 
@@ -637,7 +637,7 @@ strong {
   }
 }
 
-/* Modal Geral (usado por trophyModal, showImportModal, showExportTextModal, showTrophyDetailsModal) */
+/* Modal Geral (usado por trophyModal, showImportModal, showExportTextModal, showTrophyDetailsModal, showUpgradeDetailsModal) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -727,6 +727,69 @@ strong {
   }
 }
 
+/* NOVO: Estilos para o Modal de Detalhes do Upgrade */
+.modal-upgrade-image {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid $spectral-green;
+  box-shadow: 0 0 10px rgba($spectral-green, 0.7);
+}
+
+.upgrade-details-text {
+  text-align: left;
+  padding: 0 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid $faded-stone;
+  border-radius: 5px;
+  padding: 1rem;
+  background-color: darken($deep-charcoal, 3%);
+  line-height: 1.5;
+}
+
+/* NOVO: Estilos para o Modal de Estatísticas Gerais */
+.stats-modal-content {
+  max-width: 600px; /* Mais largo para acomodar mais estatísticas */
+  text-align: left; /* Alinha o texto das estatísticas à esquerda */
+  padding: 2.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Duas colunas para estatísticas */
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  background-color: darken($deep-charcoal, 3%);
+  padding: 0.8rem;
+  border-radius: 5px;
+  border: 1px solid $faded-stone;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinha labels e valores à esquerda */
+}
+
+.stat-label {
+  font-family: $font-body;
+  font-size: 0.9rem;
+  color: $faded-stone;
+  margin-bottom: 0.2rem;
+}
+
+.stat-value {
+  font-family: $font-mono;
+  font-size: 1.1rem;
+  color: $spectral-green;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba($spectral-green, 0.5);
+  white-space: nowrap; /* Evita quebra de linha em números longos */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .game-container {
@@ -739,6 +802,7 @@ strong {
 
   .header {
     flex-direction: column;
+    padding: 0.5rem;
   }
 
   .essence-display {
@@ -849,6 +913,15 @@ strong {
 
   .save-textarea {
     width: 95%;
+  }
+
+  /* Estatísticas Modal Responsividade */
+  .stats-modal-content {
+    max-width: 95%;
+    padding: 1.5rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr; /* Uma coluna em mobile */
   }
 }
 

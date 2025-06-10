@@ -377,6 +377,13 @@ export class TrophyService {
         earned: false,
         icon: '💪',
       },
+      {
+        title: 'A Punho do Multiverso',
+        description:
+          'Seu punho agora abrange múltiplas dimensões, impactando o universo a cada clique. 1.000.000.000.000.000.000 cliques totais.',
+        earned: false,
+        icon: '👊',
+      },
 
       {
         title: 'Combo Iniciante (2x)',
@@ -501,6 +508,20 @@ export class TrophyService {
           'Seu combo transcende a forma e o espaço. Alcance um combo de 25000 cliques.',
         earned: false,
         icon: '⚫',
+      },
+      {
+        title: 'Combo da Anarquia (50000x)',
+        description:
+          'Sua cadência de cliques leva ao caos total. Alcance um combo de 50000 cliques.',
+        earned: false,
+        icon: ' anarchist',
+      },
+      {
+        title: 'O Ritmo Final (100000x)',
+        description:
+          'O ritmo que encerra todas as coisas. Alcance um combo de 100000 cliques.',
+        earned: false,
+        icon: '⏱️',
       },
 
       // Troféus de Upgrades Automáticos
@@ -647,6 +668,12 @@ export class TrophyService {
         earned: false,
         icon: '👹',
       },
+      {
+        title: 'Criador do Terror',
+        description: 'Tenha 10000 unidades de cada upgrade automático.',
+        earned: false,
+        icon: '👾',
+      },
 
       // Troféus de Upgrades de Clique
       {
@@ -756,6 +783,12 @@ export class TrophyService {
         earned: false,
         icon: '👑',
       },
+      {
+        title: 'Sinfonia do Horror',
+        description: 'Tenha 10000 unidades de cada upgrade de canalização.',
+        earned: false,
+        icon: '🎶',
+      },
 
       // Troféus Híbridos/Finais
       {
@@ -796,16 +829,23 @@ export class TrophyService {
       {
         title: 'Sinfonia do Vazio',
         description:
-          'Tenha 2000 unidades de cada upgrade automático e de canalização.',
+          'Sua manipulação do medo ressoa por todo o vazio. Tenha 2000 unidades de cada upgrade automático e de canalização.',
         earned: false,
         icon: '🎶',
       },
       {
         title: 'Monarca da Existência',
         description:
-          'Tenha 5000 unidades de cada upgrade automático e de canalização.',
+          'Você se tornou a força dominante em todas as esferas. Tenha 5000 unidades de cada upgrade automático e de canalização.',
         earned: false,
         icon: '👑',
+      },
+      {
+        title: 'Poder Dual',
+        description:
+          'Tenha 10000 unidades de cada upgrade automático e de canalização.',
+        earned: false,
+        icon: '☯️',
       },
 
       // Troféus de Prestígio
@@ -923,21 +963,33 @@ export class TrophyService {
       },
       {
         title: 'Fonte da Essência Ancestral',
-        description: 'Tenha 100 upgrades de legado diferentes.',
+        description: 'Tenha 100 unidades de upgrades de legado.',
         earned: false,
         icon: '💎',
       },
       {
         title: 'Sabedoria Eterna',
-        description: 'Tenha 500 upgrades de legado diferentes.',
+        description: 'Tenha 500 unidades de upgrades de legado.',
         earned: false,
         icon: '📚',
       },
       {
         title: 'O Conhecimento Proibido',
-        description: 'Tenha 1000 upgrades de legado diferentes.',
+        description: 'Tenha 1000 unidades de upgrades de legado.',
         earned: false,
         icon: '👁️',
+      },
+      {
+        title: 'Legado do Vazio',
+        description: 'Tenha 2500 unidades de upgrades de legado.',
+        earned: false,
+        icon: '🌌',
+      },
+      {
+        title: 'Trono do Conhecimento',
+        description: 'Tenha 5000 unidades de upgrades de legado.',
+        earned: false,
+        icon: '👑',
       },
     ];
   }

@@ -192,8 +192,9 @@ strong {
   }
 
   &:disabled {
-    background-color: $faded-stone;
-    color: lighten($faded-stone, 30%);
+    background-color: lighten($faded-stone, 5%);
+    color: darken($light-ghost, 20%);
+    border-color: $faded-stone;
     cursor: not-allowed;
     box-shadow: none;
   }
@@ -230,8 +231,9 @@ strong {
   }
 
   &:disabled {
-    background-color: darken($faded-stone, 5%);
-    color: lighten($faded-stone, 20%);
+    background-color: lighten($faded-stone, 5%);
+    color: darken($light-ghost, 20%);
+    border-color: $faded-stone;
     cursor: not-allowed;
     box-shadow: none;
   }
@@ -359,9 +361,11 @@ strong {
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7),
         0 0 15px rgba($shadow-purple, 0.8);
     }
+
     &:disabled {
-      background-color: $faded-stone;
-      color: lighten($faded-stone, 30%);
+      background-color: lighten($faded-stone, 5%);
+      color: darken($light-ghost, 20%);
+      border-color: $faded-stone;
       cursor: not-allowed;
       box-shadow: none;
     }
@@ -394,6 +398,14 @@ strong {
       border-color: lighten($shadow-purple, 10%);
       &:hover:not([disabled]) {
         background-color: darken($shadow-purple, 10%);
+      }
+
+      &:disabled {
+        background-color: lighten($faded-stone, 5%);
+        color: darken($light-ghost, 20%);
+        border-color: $faded-stone;
+        cursor: not-allowed;
+        box-shadow: none;
       }
     }
   }
@@ -545,8 +557,12 @@ strong {
     }
   }
 
-  .details-button {
-    margin-bottom: 5px;
+  .action-button:disabled {
+    background-color: lighten($faded-stone, 5%);
+    color: darken($light-ghost, 20%);
+    border-color: $faded-stone;
+    cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
@@ -750,14 +766,14 @@ strong {
 
 /* NOVO: Estilos para o Modal de Estatísticas Gerais */
 .stats-modal-content {
-  max-width: 600px; /* Mais largo para acomodar mais estatísticas */
-  text-align: left; /* Alinha o texto das estatísticas à esquerda */
+  max-width: 600px;
+  text-align: left;
   padding: 2.5rem;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas para estatísticas */
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -769,7 +785,7 @@ strong {
   border: 1px solid $faded-stone;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Alinha labels e valores à esquerda */
+  align-items: flex-start;
 }
 
 .stat-label {
@@ -785,7 +801,7 @@ strong {
   color: $spectral-green;
   font-weight: bold;
   text-shadow: 0 0 3px rgba($spectral-green, 0.5);
-  white-space: nowrap; /* Evita quebra de linha em números longos */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }

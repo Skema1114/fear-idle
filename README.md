@@ -1,4 +1,4 @@
-# Culto das Sombras: O Despertar Ancestral v1.0
+# Culto das Sombras: O Despertar Ancestral
 
 ## 🕯️ Invoque o Medo, Conquiste o Vazio 🌑
 
@@ -8,7 +8,7 @@ Este é o "Culto das Sombras", um jogo **idle/clicker** com tema de horror góti
 
 "Culto das Sombras" combina a jogabilidade viciante de clickers idle com uma atmosfera sombria e uma progressão profunda. Gerencie sua essência, compre upgrades que automatizam sua coleta ou aprimoram seus cliques, mantenha combos frenéticos e descubra os segredos das revelações sombrias.
 
-## 🎮 Recursos Principais da v1.0
+## 🎮 Recursos Principais da v1
 
 - **Jogabilidade Híbrida Idle/Clicker:** Progrida passivamente com manifestações automáticas ou ativamente com cliques manuais e combos.
 - **Upgrades Diversificados:**

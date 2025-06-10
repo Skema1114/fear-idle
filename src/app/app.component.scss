@@ -24,7 +24,7 @@ body {
   color: $light-ghost;
   font-family: $font-body;
   line-height: 1.6;
-  overflow-x: hidden; /* Garante que não haja scroll horizontal no body */
+  overflow-x: hidden;
   min-height: 100vh;
   padding: 0;
 }
@@ -52,10 +52,10 @@ strong {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: $deep-charcoal;
+  background: $deep-charcoal; /* Fundo sólido para cobrir o conteúdo por baixo */
   border-bottom: 1px solid $faded-stone;
   padding: 0.8rem 0;
-  z-index: 1000;
+  z-index: 1000; /* Z-index alto para ficar acima do conteúdo */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
@@ -83,7 +83,7 @@ strong {
   border-radius: 0;
   box-shadow: none;
   min-height: calc(100vh - 60px);
-  box-sizing: border-box; /* Garante que padding e borda sejam incluídos na largura/altura */
+  box-sizing: border-box;
 }
 
 /* Intro Section */
@@ -311,7 +311,7 @@ strong {
   gap: 1.5rem;
   margin-top: 2rem;
   margin-bottom: 3rem;
-  flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas menores */
+  flex-wrap: wrap;
 }
 
 /* Sections Titles (H2) */
@@ -345,20 +345,13 @@ strong {
 /* Upgrades Grid (Agora para ambas as seções de upgrades) */
 .upgrades-grid {
   display: grid;
-  /* `minmax(0, 1fr)` permite que os itens se encolham completamente,
-     evitando overflow se o gap for muito grande ou o contêiner pequeno. */
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
-  /* Removendo max-height e overflow-y para que a seção role com o body */
   max-height: none;
   overflow-y: visible;
   padding: 1rem;
-  /* Padding extra para garantir que os efeitos de hover não sejam cortados
-     e que a grid tenha espaço nas laterais. */
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-right: 1rem;
   box-sizing: border-box;
-  /* Centraliza a grid se houver espaço extra */
   justify-content: center;
 }
 
@@ -373,10 +366,9 @@ strong {
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease-in-out;
-  /* Garante que o card ocupe o espaço disponível e não crie scroll */
   width: 100%;
-  max-width: 250px; /* Adicionado um max-width para desktop, para que os cards não fiquem muito largos */
-  box-sizing: border-box; /* Crucial para que o padding não adicione largura extra */
+  max-width: 250px;
+  box-sizing: border-box;
 
   &:hover {
     transform: scale(1.03);
@@ -403,6 +395,10 @@ strong {
 
   .card-details {
     width: 100%;
+    min-height: 120px; /* Altura mínima para o bloco de detalhes */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Espalha o conteúdo verticalmente */
   }
 
   .upgrade-name {
@@ -410,6 +406,10 @@ strong {
     font-size: 1.4rem;
     color: $shadow-purple;
     margin-bottom: 0.5rem;
+    white-space: nowrap; /* Impede quebra de linha */
+    overflow: hidden; /* Esconde o texto que excede */
+    text-overflow: ellipsis; /* Adiciona "..." no final */
+    display: block; /* Garante que as propriedades de overflow funcionem */
   }
 
   .upgrade-info {
@@ -424,6 +424,10 @@ strong {
     font-size: 1rem;
     color: $essence-glow;
     margin-bottom: 1rem;
+    white-space: nowrap; /* Impede quebra de linha */
+    overflow: hidden; /* Esconde o texto que excede */
+    text-overflow: ellipsis; /* Adiciona "..." no final */
+    display: block; /* Garante que as propriedades de overflow funcionem */
   }
 
   .action-button {
@@ -639,7 +643,7 @@ strong {
 
   .header {
     flex-direction: column;
-    // padding: 0.5rem;
+    padding: 0.5rem;
   }
 
   .essence-display {
@@ -700,14 +704,14 @@ strong {
   }
 
   .upgrades-grid {
-    grid-template-columns: 1fr; /* Uma coluna em telas menores para melhor visualização */
+    grid-template-columns: 1fr;
     padding: 0.5rem;
     gap: 1rem;
   }
 
   .upgrade-card {
     width: 100%;
-    max-width: unset; /* Remove max-width para mobile */
+    max-width: unset;
     padding: 1rem;
   }
 
@@ -754,7 +758,6 @@ strong {
 }
 
 @media (max-width: 480px) {
-  /* Para telas muito pequenas */
   .game-container {
     padding: 1.5rem 0.5rem;
   }

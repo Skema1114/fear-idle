@@ -323,7 +323,7 @@ export class UpgradeService {
       {
         name: 'Toque Sutil',
         cost: 10,
-        clickMultiplier: 0.1,
+        clickMultiplier: 0.001,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1828/1828775.png',
         description:
@@ -332,7 +332,7 @@ export class UpgradeService {
       {
         name: 'Foco Macabro',
         cost: 100,
-        clickMultiplier: 0.5,
+        clickMultiplier: 0.002,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/10423/10423773.png',
         description:
@@ -341,7 +341,7 @@ export class UpgradeService {
       {
         name: 'Ritmo Insano',
         cost: 500,
-        clickMultiplier: 2,
+        clickMultiplier: 0.003,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
         description:
@@ -350,7 +350,7 @@ export class UpgradeService {
       {
         name: 'Canto Hipnótico',
         cost: 2500,
-        clickMultiplier: 10,
+        clickMultiplier: 0.004,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
@@ -359,7 +359,7 @@ export class UpgradeService {
       {
         name: 'Conexão Psíquica',
         cost: 12000,
-        clickMultiplier: 50,
+        clickMultiplier: 0.005,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903328.png',
         description:
@@ -368,7 +368,7 @@ export class UpgradeService {
       {
         name: 'Pulso Sombrio',
         cost: 60000,
-        clickMultiplier: 200,
+        clickMultiplier: 0.006,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9218/9218151.png',
         description:
@@ -377,7 +377,7 @@ export class UpgradeService {
       {
         name: 'Memória Amaldiçoada',
         cost: 300000,
-        clickMultiplier: 1000,
+        clickMultiplier: 0.007,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/6743/6743513.png',
         description:
@@ -386,7 +386,7 @@ export class UpgradeService {
       {
         name: 'Ecos do Vazio',
         cost: 1500000,
-        clickMultiplier: 5000,
+        clickMultiplier: 0.008,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
         description:
@@ -395,7 +395,7 @@ export class UpgradeService {
       {
         name: 'Fúria Canalizada',
         cost: 7500000,
-        clickMultiplier: 25000,
+        clickMultiplier: 0.009,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/4802/4802061.png',
         description:
@@ -404,7 +404,7 @@ export class UpgradeService {
       {
         name: 'Devaneio Perpétuo',
         cost: 35000000,
-        clickMultiplier: 120000,
+        clickMultiplier: 0.01,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/3067/3067149.png',
         description:
@@ -413,7 +413,7 @@ export class UpgradeService {
       {
         name: 'Convergência Dimensional',
         cost: 150000000,
-        clickMultiplier: 500000,
+        clickMultiplier: 0.02,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
         description:
@@ -422,7 +422,7 @@ export class UpgradeService {
       {
         name: 'Vortex de Essência',
         cost: 700000000,
-        clickMultiplier: 2000000,
+        clickMultiplier: 0.03,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
         description:
@@ -431,7 +431,7 @@ export class UpgradeService {
       {
         name: 'Canto Cósmico',
         cost: 3500000000,
-        clickMultiplier: 8000000,
+        clickMultiplier: 0.04,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
@@ -440,7 +440,7 @@ export class UpgradeService {
       {
         name: 'Pulsar da Realidade',
         cost: 15000000000,
-        clickMultiplier: 35000000,
+        clickMultiplier: 0.05,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
@@ -449,7 +449,7 @@ export class UpgradeService {
       {
         name: 'Fragmento do Caos',
         cost: 70000000000,
-        clickMultiplier: 150000000,
+        clickMultiplier: 0.06,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
         description:
@@ -458,7 +458,7 @@ export class UpgradeService {
       {
         name: 'Mão Eterna',
         cost: 300000000000,
-        clickMultiplier: 500000000,
+        clickMultiplier: 0.07,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
         description:
@@ -467,7 +467,7 @@ export class UpgradeService {
       {
         name: 'Eco do Além',
         cost: 1500000000000,
-        clickMultiplier: 2000000000,
+        clickMultiplier: 0.08,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/3067/3067098.png',
         description:
@@ -476,7 +476,7 @@ export class UpgradeService {
       {
         name: 'Batida Estelar',
         cost: 7000000000000,
-        clickMultiplier: 8000000000,
+        clickMultiplier: 0.09,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
@@ -485,7 +485,7 @@ export class UpgradeService {
       {
         name: 'Ritmo Cósmico',
         cost: 30000000000000,
-        clickMultiplier: 30000000000,
+        clickMultiplier: 0.1,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
         description:
@@ -494,7 +494,7 @@ export class UpgradeService {
       {
         name: 'Voz do Vazio',
         cost: 120000000000000,
-        clickMultiplier: 100000000000,
+        clickMultiplier: 0.2,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
@@ -503,7 +503,7 @@ export class UpgradeService {
       {
         name: 'Pulso da Não-Existência',
         cost: 500000000000000,
-        clickMultiplier: 400000000000,
+        clickMultiplier: 0.3,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9218/9218151.png',
         description:
@@ -512,7 +512,7 @@ export class UpgradeService {
       {
         name: 'Consciência Amaldiçoada',
         cost: 2000000000000000,
-        clickMultiplier: 1500000000000,
+        clickMultiplier: 0.4,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/10423/10423773.png',
         description:
@@ -521,7 +521,7 @@ export class UpgradeService {
       {
         name: 'Ecos do Além-Concebível',
         cost: 8000000000000000,
-        clickMultiplier: 5000000000000,
+        clickMultiplier: 0.5,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
         description:
@@ -530,7 +530,7 @@ export class UpgradeService {
       {
         name: 'Sussurros do Crepúsculo',
         cost: 30000000000000000,
-        clickMultiplier: 20000000000000,
+        clickMultiplier: 0.6,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/907/907933.png',
         description:
@@ -554,7 +554,7 @@ export class UpgradeService {
       {
         name: 'Toque Ressonante (Clique)',
         cost: 1,
-        multiplierValue: 1.05,
+        multiplierValue: 0.05,
         type: 'click',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1828/1828775.png',
@@ -574,7 +574,7 @@ export class UpgradeService {
       {
         name: 'Ritmo da Existência (Clique)',
         cost: 5,
-        multiplierValue: 1.1,
+        multiplierValue: 0.1,
         type: 'click',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
@@ -594,7 +594,7 @@ export class UpgradeService {
       {
         name: 'Mente Cósmica (Clique)',
         cost: 25,
-        multiplierValue: 1.2,
+        multiplierValue: 0.2,
         type: 'click',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903328.png',
@@ -644,7 +644,7 @@ export class UpgradeService {
       {
         name: 'Caminho Quebrado (Clique)',
         cost: 10000,
-        multiplierValue: 1.3,
+        multiplierValue: 0.3,
         type: 'click',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/6743/6743513.png',
@@ -694,7 +694,7 @@ export class UpgradeService {
       {
         name: 'Fúria da Realidade (Clique)',
         cost: 5000000,
-        multiplierValue: 1.4,
+        multiplierValue: 0.4,
         type: 'click',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
@@ -744,7 +744,7 @@ export class UpgradeService {
       {
         name: 'Aperto do Além (Clique)',
         cost: 2500000000,
-        multiplierValue: 1.5,
+        multiplierValue: 0.5,
         type: 'click',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/3067/3067160.png',

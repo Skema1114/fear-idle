@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { ClickUpgrade } from '../interfaces/ClickUpgrade';
 import { PrestigeUpgrade } from '../interfaces/PrestigeUpgrade';
+import { Toast } from '../interfaces/Toast';
 import { Trophy } from '../interfaces/Trophy';
 import { Upgrade } from '../interfaces/Upgrade';
 import { TrophyService } from '../services/trophy.service';
@@ -44,9 +45,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   currentPurchaseMode: number | string = 1;
 
-  trophyModal = signal(false);
-  lastUnlockedTrophy = signal<Trophy | null>(null);
-
   showImportModal: boolean = false;
   importedSaveData: string = '';
 
@@ -71,6 +69,9 @@ export class AppComponent implements OnInit, OnDestroy {
   totalManualClicks = signal(0);
   totalPlaytime = signal(0);
   private comboResetTimeout: any;
+
+  activeToasts = signal<Toast[]>([]);
+  private nextToastId = 0;
 
   globalMultiplier = computed(() => {
     let multiplier = 1;
@@ -318,6 +319,9 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.comboResetTimeout) {
       clearTimeout(this.comboResetTimeout);
     }
+    this.activeToasts().forEach((toast) => {
+      if (toast.timeoutId) clearTimeout(toast.timeoutId);
+    });
     this.saveGame();
   }
 
@@ -528,6 +532,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 ...defaultUpgrade,
                 amount: savedUpgrade.amount,
                 cost: savedUpgrade.cost,
+                description:
+                  savedUpgrade.description || defaultUpgrade.description,
               }
             : defaultUpgrade;
         });
@@ -547,6 +553,8 @@ export class AppComponent implements OnInit, OnDestroy {
                   ...defaultUpgrade,
                   amount: savedUpgrade.amount,
                   cost: savedUpgrade.cost,
+                  description:
+                    savedUpgrade.description || defaultUpgrade.description,
                 }
               : defaultUpgrade;
           }
@@ -564,7 +572,12 @@ export class AppComponent implements OnInit, OnDestroy {
               (lu) => lu.name === defaultUpgrade.name
             );
             return savedUpgrade
-              ? { ...defaultUpgrade, amount: savedUpgrade.amount }
+              ? {
+                  ...defaultUpgrade,
+                  amount: savedUpgrade.amount,
+                  description:
+                    savedUpgrade.description || defaultUpgrade.description,
+                }
               : defaultUpgrade;
           }
         );
@@ -578,7 +591,12 @@ export class AppComponent implements OnInit, OnDestroy {
             (lt) => lt.title === defaultTrophy.title
           );
           return savedTrophy
-            ? { ...defaultTrophy, earned: savedTrophy.earned }
+            ? {
+                ...defaultTrophy,
+                earned: savedTrophy.earned,
+                description:
+                  savedTrophy.description || defaultTrophy.description,
+              }
             : defaultTrophy;
         });
         this.trophiesList.set(mergedTrophies);
@@ -634,10 +652,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.name !== 'string' ||
           typeof up.cost !== 'number' ||
           typeof up.dps !== 'number' ||
-          typeof up.amount !== 'number'
+          typeof up.amount !== 'number' ||
+          typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade automático com formato incorreto.'
+            'Dados de save inválidos: upgrade automático com formato incorreto ou descrição ausente.'
           );
         }
       }
@@ -647,10 +666,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.name !== 'string' ||
           typeof up.cost !== 'number' ||
           typeof up.clickMultiplier !== 'number' ||
-          typeof up.amount !== 'number'
+          typeof up.amount !== 'number' ||
+          typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de clique com formato incorreto.'
+            'Dados de save inválidos: upgrade de clique com formato incorreto ou descrição ausente.'
           );
         }
       }
@@ -660,10 +680,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.cost !== 'number' ||
           typeof up.multiplierValue !== 'number' ||
           typeof up.type !== 'string' ||
-          typeof up.amount !== 'number'
+          typeof up.amount !== 'number' ||
+          typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de prestígio com formato incorreto.'
+            'Dados de save inválidos: upgrade de prestígio com formato incorreto ou descrição ausente.'
           );
         }
       }
@@ -702,6 +723,8 @@ export class AppComponent implements OnInit, OnDestroy {
               ...defaultUpgrade,
               amount: savedUpgrade.amount,
               cost: savedUpgrade.cost,
+              description:
+                savedUpgrade.description || defaultUpgrade.description,
             }
           : defaultUpgrade;
       });
@@ -719,6 +742,8 @@ export class AppComponent implements OnInit, OnDestroy {
               ...defaultUpgrade,
               amount: savedUpgrade.amount,
               cost: savedUpgrade.cost,
+              description:
+                savedUpgrade.description || defaultUpgrade.description,
             }
           : defaultUpgrade;
       });
@@ -735,7 +760,12 @@ export class AppComponent implements OnInit, OnDestroy {
             (lu) => lu.name === defaultUpgrade.name
           );
           return savedUpgrade
-            ? { ...defaultUpgrade, amount: savedUpgrade.amount }
+            ? {
+                ...defaultUpgrade,
+                amount: savedUpgrade.amount,
+                description:
+                  savedUpgrade.description || defaultUpgrade.description,
+              }
             : defaultUpgrade;
         }
       );
@@ -749,7 +779,11 @@ export class AppComponent implements OnInit, OnDestroy {
           (lt) => lt.title === defaultTrophy.title
         );
         return savedTrophy
-          ? { ...defaultTrophy, earned: savedTrophy.earned }
+          ? {
+              ...defaultTrophy,
+              earned: savedTrophy.earned,
+              description: savedTrophy.description || defaultTrophy.description,
+            }
           : defaultTrophy;
       });
       this.trophiesList.set(mergedTrophies);
@@ -2013,8 +2047,29 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (trophy && !trophy.earned) {
         trophy.earned = true;
-        this.lastUnlockedTrophy.set(trophy);
-        this.trophyModal.set(true);
+
+        const newToast: Toast = {
+          id: this.nextToastId++,
+          message: `🏆 ${trophy.title}`,
+          icon: trophy.icon,
+        };
+        this.activeToasts.update((toasts) => [...toasts, newToast]);
+
+        this.activeToasts.update((toasts) => {
+          let currentBottom = 20;
+          const toastHeight = 70;
+          return toasts.map((t, index) => {
+            t.bottom = currentBottom;
+            currentBottom += toastHeight;
+            return t;
+          });
+        });
+
+        newToast.timeoutId = setTimeout(() => {
+          this.activeToasts.update((toasts) =>
+            toasts.filter((t) => t.id !== newToast.id)
+          );
+        }, 10000);
 
         const audio = new Audio(
           'https://assets.mixkit.co/sfx/preview/mixkit-fairy-win-sound-2011.mp3'
@@ -2026,16 +2081,7 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  showTrophyModal() {
-    return this.trophyModal();
-  }
-
-  unlockedTrophy() {
-    return this.lastUnlockedTrophy();
-  }
-
-  closeModal() {
-    this.trophyModal.set(false);
-    this.lastUnlockedTrophy.set(null);
+  trackByToastId(index: number, toast: Toast): number {
+    return toast.id;
   }
 }

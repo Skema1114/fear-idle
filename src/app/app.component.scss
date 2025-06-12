@@ -361,7 +361,6 @@ strong {
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7),
         0 0 15px rgba($shadow-purple, 0.8);
     }
-
     &:disabled {
       background-color: lighten($faded-stone, 5%);
       color: darken($light-ghost, 20%);
@@ -399,7 +398,6 @@ strong {
       &:hover:not([disabled]) {
         background-color: darken($shadow-purple, 10%);
       }
-
       &:disabled {
         background-color: lighten($faded-stone, 5%);
         color: darken($light-ghost, 20%);
@@ -806,6 +804,54 @@ strong {
   text-overflow: ellipsis;
 }
 
+/* Toast de Notificação de Troféu */
+.toast-container {
+  position: fixed;
+  bottom: 20px; /* Posição inicial na parte inferior */
+  right: 20px; /* Alinhado à direita */
+  z-index: 1001; /* Acima de outros modais, mas abaixo de modais de popup */
+  display: flex;
+  flex-direction: column; /* Empilha os toasts verticalmente */
+  align-items: flex-end; /* Alinha os toasts à direita */
+  gap: 10px; /* Espaçamento entre os toasts */
+  pointer-events: none; /* Permite que o clique passe através do container */
+}
+
+.toast-notification {
+  background-color: $spectral-green; /* Cor de sucesso para troféu */
+  color: $dark-void;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: $font-body;
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0; /* Inicia invisível */
+  transform: translateX(100%); /* Fora da tela */
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out,
+    bottom 0.3s ease-out; /* Transição para aparecer/desaparecer e mover */
+  pointer-events: auto; /* Torna o toast clicável (se tiver botão de fechar, etc.) */
+  min-width: 200px;
+  max-width: 300px; /* Limita a largura para evitar toasts muito longos */
+  box-sizing: border-box; /* Garante que padding não adicione largura extra */
+  white-space: nowrap; /* Tenta manter em uma linha */
+  overflow: hidden; /* Esconde o texto que excede */
+  text-overflow: ellipsis; /* Adiciona "..." no final */
+
+  &.show {
+    opacity: 1; /* Torna visível */
+    transform: translateX(0); /* Desliza para dentro da tela */
+  }
+}
+
+.toast-icon {
+  font-size: 1.3em; /* Ícone um pouco maior */
+  flex-shrink: 0; /* Impede que o ícone encolha */
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .game-container {
@@ -937,7 +983,18 @@ strong {
     padding: 1.5rem;
   }
   .stats-grid {
-    grid-template-columns: 1fr; /* Uma coluna em mobile */
+    grid-template-columns: 1fr;
+  }
+
+  .toast-notification {
+    bottom: auto; /* Desabilita posicionamento fixo bottom */
+    top: 10px; /* Posição no topo em mobile */
+    right: 10px;
+    left: 10px;
+    width: auto;
+    font-size: 0.9rem;
+    padding: 0.8rem 1rem;
+    /* Para empilhar no topo em mobile, você pode usar flexbox vertical no toast-container */
   }
 }
 

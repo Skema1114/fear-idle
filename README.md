@@ -4,6 +4,68 @@
 
 Um jogo **idle/clicker** com tema de horror gotico e cosmico, construido com Angular 18. Canalize a essencia do medo, desperte entidades ancestrais e domine o vazio.
 
+![Hero](src/assets/screenshots/01-hero.png)
+
+---
+
+## Screenshots
+
+### Header - Status em Tempo Real
+
+Essencia atual, total nesta vida, ganho por segundo e essencia ancestral sempre visiveis.
+
+![Header](src/assets/screenshots/02-header.png)
+
+### Estatisticas Rapidas
+
+Painel central com resumo dos seus recursos.
+
+![Stats Bar](src/assets/screenshots/04-stats-bar.png)
+
+### Area de Clique + Combo
+
+Botao principal de canalizacao com floating numbers animados e sistema de combo dinamico.
+
+![Click Area](src/assets/screenshots/03-click-area.png)
+
+### Manifestacoes Automaticas (DPS)
+
+34 upgrades em 6 tiers que geram essencia passivamente. Cards com glassmorphism e informacoes de custo/dps.
+
+![Auto Upgrades](src/assets/screenshots/05-auto-upgrades.png)
+
+### Manifestacoes de Canalizacao (Click)
+
+24 upgrades que multiplicam o valor de cada clique. Desbloqueio progressivo por cliques totais.
+
+![Click Upgrades](src/assets/screenshots/06-click-upgrades.png)
+
+### Revelacoes Sombrias (Trofeus)
+
+143 trofeus organizados em grid. Conquistados brilham em verde, bloqueados ficam esmaecidos. Clique para ver detalhes.
+
+![Trophies](src/assets/screenshots/07-trophies.png)
+
+### Despertar do Legado (Prestigio)
+
+Sistema de prestigio com upgrades permanentes. Resete para ganhar Essencia Ancestral e multiplicadores globais.
+
+![Prestige](src/assets/screenshots/08-prestige.png)
+
+### Estatisticas do Culto
+
+Modal com 13 metricas detalhadas da sua jornada.
+
+![Stats Modal](src/assets/screenshots/09-stats-modal.png)
+
+### Mobile
+
+Design responsivo completo para dispositivos moveis.
+
+![Mobile](src/assets/screenshots/10-mobile.png)
+
+---
+
 ## Recursos
 
 - **Idle + Clicker**: Progrida passivamente com 34 manifestacoes automaticas (6 tiers) ou ativamente com cliques manuais e combos

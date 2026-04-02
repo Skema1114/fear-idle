@@ -1,4 +1,40 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-  background-color: #000000;
-  margin: 0px;
+  margin: 0;
+  padding: 0;
+  background-color: #0d0d12;
+  color: #e8e8f0;
+  font-family: "Nanum Myeongjo", serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0d12;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a4f;
+  border-radius: 4px;
+
+  &:hover {
+    background: #4a4a5f;
+  }
+}
+
+::selection {
+  background: rgba(179, 136, 255, 0.3);
+  color: #e8e8f0;
 }

@@ -209,8 +209,8 @@ export class UpgradeService {
       },
       {
         name: 'Chama Eterna',
-        cost: 3000000000000000,
-        dps: 50000000000000,
+        cost: 3e15,
+        dps: 5e13,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
         description:
@@ -218,8 +218,8 @@ export class UpgradeService {
       },
       {
         name: 'O Vazio Pulsante',
-        cost: 12000000000000000,
-        dps: 200000000000000,
+        cost: 12e15,
+        dps: 2e14,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
         description:
@@ -227,8 +227,8 @@ export class UpgradeService {
       },
       {
         name: 'Realidade Fragmentada',
-        cost: 50000000000000000,
-        dps: 800000000000000,
+        cost: 5e16,
+        dps: 8e14,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
@@ -236,8 +236,8 @@ export class UpgradeService {
       },
       {
         name: 'Eco do Caos Primordial',
-        cost: 200000000000000000,
-        dps: 3000000000000000,
+        cost: 2e17,
+        dps: 3e15,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
         description:
@@ -245,8 +245,8 @@ export class UpgradeService {
       },
       {
         name: 'Tecelão de Universos',
-        cost: 800000000000000000,
-        dps: 12000000000000000,
+        cost: 8e17,
+        dps: 12e15,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/976/976856.png',
         description:
@@ -254,8 +254,8 @@ export class UpgradeService {
       },
       {
         name: 'Vontade Cósmica Indomável',
-        cost: 3000000000000000000,
-        dps: 50000000000000000,
+        cost: 3e18,
+        dps: 5e16,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/3887/3887081.png',
         description:
@@ -263,8 +263,8 @@ export class UpgradeService {
       },
       {
         name: 'O Ponto de Singularidade',
-        cost: 12000000000000000000,
-        dps: 200000000000000000,
+        cost: 12e18,
+        dps: 2e17,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
         description:
@@ -272,8 +272,8 @@ export class UpgradeService {
       },
       {
         name: 'A Não-Existência',
-        cost: 50000000000000000000,
-        dps: 800000000000000000,
+        cost: 5e19,
+        dps: 8e17,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/3067/3067098.png',
         description:
@@ -281,8 +281,8 @@ export class UpgradeService {
       },
       {
         name: 'Vácuo Inominável',
-        cost: 200000000000000000000,
-        dps: 3000000000000000000,
+        cost: 2e20,
+        dps: 3e18,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
         description:
@@ -290,8 +290,8 @@ export class UpgradeService {
       },
       {
         name: 'A Distorção Primordial',
-        cost: 800000000000000000000,
-        dps: 12000000000000000000,
+        cost: 8e20,
+        dps: 12e18,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
@@ -299,8 +299,8 @@ export class UpgradeService {
       },
       {
         name: 'O Pavor Inconcebível',
-        cost: 3000000000000000000000,
-        dps: 50000000000000000000,
+        cost: 3e21,
+        dps: 5e19,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/8687/8687102.png',
         description:
@@ -308,8 +308,8 @@ export class UpgradeService {
       },
       {
         name: 'Sombra de Yog-Sothoth',
-        cost: 12000000000000000000000,
-        dps: 200000000000000000000,
+        cost: 12e21,
+        dps: 2e20,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
         description:
@@ -323,7 +323,7 @@ export class UpgradeService {
       {
         name: 'Toque Sutil',
         cost: 10,
-        clickMultiplier: 0.001,
+        clickMultiplier: 0.02,
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1828/1828775.png',
         description:
@@ -332,8 +332,10 @@ export class UpgradeService {
       {
         name: 'Foco Macabro',
         cost: 100,
-        clickMultiplier: 0.002,
+        clickMultiplier: 0.025,
         amount: 0,
+        unlockClicks: 50,
+        unlockAfter: 'Toque Sutil',
         image: 'https://cdn-icons-png.flaticon.com/128/10423/10423773.png',
         description:
           'A concentração em visões grotescas amplifica a energia canalizada, tornando seus toques mais potentes.',
@@ -341,8 +343,10 @@ export class UpgradeService {
       {
         name: 'Ritmo Insano',
         cost: 500,
-        clickMultiplier: 0.003,
+        clickMultiplier: 0.03,
         amount: 0,
+        unlockClicks: 200,
+        unlockAfter: 'Foco Macabro',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
         description:
           'Uma batida frenética que reverbera através do seu ser, acelerando o fluxo de essência a cada clique.',
@@ -350,8 +354,10 @@ export class UpgradeService {
       {
         name: 'Canto Hipnótico',
         cost: 2500,
-        clickMultiplier: 0.004,
+        clickMultiplier: 0.035,
         amount: 0,
+        unlockClicks: 1000,
+        unlockAfter: 'Ritmo Insano',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
           'Vozes sussurrantes de antigas invocações, hipnotizando a realidade para liberar mais essência por clique.',
@@ -359,8 +365,10 @@ export class UpgradeService {
       {
         name: 'Conexão Psíquica',
         cost: 12000,
-        clickMultiplier: 0.005,
+        clickMultiplier: 0.04,
         amount: 0,
+        unlockClicks: 5000,
+        unlockAfter: 'Canto Hipnótico',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903328.png',
         description:
           'Um elo direto com as correntes de medo da psique coletiva, multiplicando o impacto de cada canalização.',
@@ -368,8 +376,10 @@ export class UpgradeService {
       {
         name: 'Pulso Sombrio',
         cost: 60000,
-        clickMultiplier: 0.006,
+        clickMultiplier: 0.05,
         amount: 0,
+        unlockClicks: 15000,
+        unlockAfter: 'Conexão Psíquica',
         image: 'https://cdn-icons-png.flaticon.com/128/9218/9218151.png',
         description:
           'Cada clique envia um pulso de energia sombria, extraindo mais essência de reinos etéreos.',
@@ -377,8 +387,10 @@ export class UpgradeService {
       {
         name: 'Memória Amaldiçoada',
         cost: 300000,
-        clickMultiplier: 0.007,
+        clickMultiplier: 0.06,
         amount: 0,
+        unlockClicks: 50000,
+        unlockAfter: 'Pulso Sombrio',
         image: 'https://cdn-icons-png.flaticon.com/128/6743/6743513.png',
         description:
           'Lembranças proibidas de horrores esquecidos são desbloqueadas, imbuindo seus cliques com poder terrível.',
@@ -386,8 +398,10 @@ export class UpgradeService {
       {
         name: 'Ecos do Vazio',
         cost: 1500000,
-        clickMultiplier: 0.008,
+        clickMultiplier: 0.07,
         amount: 0,
+        unlockClicks: 200000,
+        unlockAfter: 'Memória Amaldiçoada',
         image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
         description:
           'Seus toques despertam ecos do vazio primordial, de onde jorra uma torrente de essência bruta.',
@@ -395,8 +409,10 @@ export class UpgradeService {
       {
         name: 'Fúria Canalizada',
         cost: 7500000,
-        clickMultiplier: 0.009,
+        clickMultiplier: 0.08,
         amount: 0,
+        unlockClicks: 1000000,
+        unlockAfter: 'Ecos do Vazio',
         image: 'https://cdn-icons-png.flaticon.com/128/4802/4802061.png',
         description:
           'A raiva dos condenados canalizada através de seus dedos, transformando-se em pura essência.',
@@ -404,8 +420,10 @@ export class UpgradeService {
       {
         name: 'Devaneio Perpétuo',
         cost: 35000000,
-        clickMultiplier: 0.01,
+        clickMultiplier: 0.1,
         amount: 0,
+        unlockClicks: 5000000,
+        unlockAfter: 'Fúria Canalizada',
         image: 'https://cdn-icons-png.flaticon.com/128/3067/3067149.png',
         description:
           'Sua mente flutua em um devaneio sem fim, constantemente extraindo essência de realidades de pesadelo.',
@@ -413,7 +431,9 @@ export class UpgradeService {
       {
         name: 'Convergência Dimensional',
         cost: 150000000,
-        clickMultiplier: 0.02,
+        clickMultiplier: 0.12,
+        unlockClicks: 20000000,
+        unlockAfter: 'Devaneio Perpétuo',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
         description:
@@ -422,8 +442,10 @@ export class UpgradeService {
       {
         name: 'Vortex de Essência',
         cost: 700000000,
-        clickMultiplier: 0.03,
+        clickMultiplier: 0.15,
         amount: 0,
+        unlockClicks: 100000000,
+        unlockAfter: 'Convergência Dimensional',
         image: 'https://cdn-icons-png.flaticon.com/128/601/601053.png',
         description:
           'Um redemoinho de poder se forma sob seus dedos, sugando o medo do éter com voracidade.',
@@ -431,8 +453,10 @@ export class UpgradeService {
       {
         name: 'Canto Cósmico',
         cost: 3500000000,
-        clickMultiplier: 0.04,
+        clickMultiplier: 0.18,
         amount: 0,
+        unlockClicks: 500000000,
+        unlockAfter: 'Vortex de Essência',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
           'Seu canto reverbera pelo cosmos, forçando a própria realidade a ceder mais essência.',
@@ -440,8 +464,10 @@ export class UpgradeService {
       {
         name: 'Pulsar da Realidade',
         cost: 15000000000,
-        clickMultiplier: 0.05,
+        clickMultiplier: 0.2,
         amount: 0,
+        unlockClicks: 2000000000,
+        unlockAfter: 'Canto Cósmico',
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
           'O ritmo dos seus cliques ecoa com o pulsar do universo, extraindo essência em cada batida.',
@@ -449,8 +475,10 @@ export class UpgradeService {
       {
         name: 'Fragmento do Caos',
         cost: 70000000000,
-        clickMultiplier: 0.06,
+        clickMultiplier: 0.25,
         amount: 0,
+        unlockClicks: 10000000000,
+        unlockAfter: 'Pulsar da Realidade',
         image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
         description:
           'Cada toque seu invoca uma minúscula porção do caos primordial, enriquecendo a essência canalizada.',
@@ -458,8 +486,10 @@ export class UpgradeService {
       {
         name: 'Mão Eterna',
         cost: 300000000000,
-        clickMultiplier: 0.07,
+        clickMultiplier: 0.3,
         amount: 0,
+        unlockClicks: 30000000000,
+        unlockAfter: 'Fragmento do Caos',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
         description:
           'Uma mão espectral que replica seus toques infinitamente, multiplicando seus ganhos.',
@@ -467,8 +497,10 @@ export class UpgradeService {
       {
         name: 'Eco do Além',
         cost: 1500000000000,
-        clickMultiplier: 0.08,
+        clickMultiplier: 0.35,
         amount: 0,
+        unlockClicks: 150000000000,
+        unlockAfter: 'Mão Eterna',
         image: 'https://cdn-icons-png.flaticon.com/128/3067/3067098.png',
         description:
           'O eco de toques de outras dimensões amplifica sua própria canalização, um murmúrio eterno de essência.',
@@ -476,8 +508,10 @@ export class UpgradeService {
       {
         name: 'Batida Estelar',
         cost: 7000000000000,
-        clickMultiplier: 0.09,
+        clickMultiplier: 0.4,
         amount: 0,
+        unlockClicks: 700000000000,
+        unlockAfter: 'Eco do Além',
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
           'Seus cliques sincronizam com as pulsações de estrelas moribundas, liberando ondas de essência.',
@@ -487,6 +521,8 @@ export class UpgradeService {
         cost: 30000000000000,
         clickMultiplier: 0.1,
         amount: 0,
+        unlockClicks: 3000000000000,
+        unlockAfter: 'Batida Estelar',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903330.png',
         description:
           'O ritmo de seus toques se torna a batida do universo, convocando essência em uma escala inimaginável.',
@@ -496,6 +532,8 @@ export class UpgradeService {
         cost: 120000000000000,
         clickMultiplier: 0.2,
         amount: 0,
+        unlockClicks: 12000000000000,
+        unlockAfter: 'Ritmo Cósmico',
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
           'Seus sussurros se tornam clamores que ressoam na não-existência, forçando o vazio a render sua essência.',
@@ -505,33 +543,41 @@ export class UpgradeService {
         cost: 500000000000000,
         clickMultiplier: 0.3,
         amount: 0,
+        unlockClicks: 50000000000000,
+        unlockAfter: 'Voz do Vazio',
         image: 'https://cdn-icons-png.flaticon.com/128/9218/9218151.png',
         description:
           'Um pulso que emana da própria ausência, multiplicando seus cliques com o poder do nada.',
       },
       {
         name: 'Consciência Amaldiçoada',
-        cost: 2000000000000000,
+        cost: 2e15,
         clickMultiplier: 0.4,
         amount: 0,
+        unlockClicks: 200000000000000,
+        unlockAfter: 'Pulso da Não-Existência',
         image: 'https://cdn-icons-png.flaticon.com/128/10423/10423773.png',
         description:
           'Sua mente se torna uma prisão para o medo, onde ele se intensifica e se liberta a cada toque.',
       },
       {
         name: 'Ecos do Além-Concebível',
-        cost: 8000000000000000,
+        cost: 8e15,
         clickMultiplier: 0.5,
         amount: 0,
+        unlockClicks: 800000000000000,
+        unlockAfter: 'Consciência Amaldiçoada',
         image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
         description:
           'Seus toques despertam ecos de realidades tão distorcidas que apenas sua essência pode ser compreendida.',
       },
       {
         name: 'Sussurros do Crepúsculo',
-        cost: 30000000000000000,
+        cost: 3e16,
         clickMultiplier: 0.6,
         amount: 0,
+        unlockClicks: 3e15,
+        unlockAfter: 'Ecos do Além-Concebível',
         image: 'https://cdn-icons-png.flaticon.com/128/907/907933.png',
         description:
           'Vozes que vêm do limiar da existência, ampliando seus cliques com o medo do fim e do começo.',
@@ -609,7 +655,7 @@ export class UpgradeService {
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
-          'Um fragmento da própria essência do medo primordial, que aumenta TODAS as suas fontes de ganho em 50%.',
+          'Um fragmento da própria essência do medo primordial, que multiplica TODAS as suas fontes de ganho por 1.5x.',
       },
       {
         name: 'Devorador de Estrelas (Global)',
@@ -619,17 +665,17 @@ export class UpgradeService {
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/6007/6007323.png',
         description:
-          'Uma entidade que consome o brilho celestial, dobrando todo o seu ganho de essência.',
+          'Uma entidade que consome o brilho celestial, multiplicando todo o seu ganho de essência por 2x.',
       },
       {
         name: 'Fragmento do Absoluto (Global)',
         cost: 2500,
-        multiplierValue: 5.0,
+        multiplierValue: 3.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/8687/8687102.png',
         description:
-          'Um caco do poder onipotente, que multiplica seu ganho total por 5.',
+          'Um caco do poder onipotente, que multiplica seu ganho total por 3x.',
       },
       {
         name: 'Anel do Vazio (DPS)',
@@ -654,32 +700,32 @@ export class UpgradeService {
       {
         name: 'Coroa de Sombria (Global)',
         cost: 50000,
-        multiplierValue: 10.0,
+        multiplierValue: 5.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/4802/4802061.png',
         description:
-          'Uma coroa tecida a partir das sombras mais densas, multiplicando todo o seu ganho por 10.',
+          'Uma coroa tecida a partir das sombras mais densas, multiplicando todo o seu ganho por 5x.',
       },
       {
         name: 'O Grande Olho (Global)',
         cost: 250000,
-        multiplierValue: 25.0,
+        multiplierValue: 8.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/1628/1628795.png',
         description:
-          'A visão onisciente que penetra todas as realidades, aumentando seu ganho total por 25.',
+          'A visão onisciente que penetra todas as realidades, multiplicando seu ganho total por 8x.',
       },
       {
         name: 'Coração do Caos (Global)',
         cost: 1000000,
-        multiplierValue: 100.0,
+        multiplierValue: 15.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903332.png',
         description:
-          'Um coração pulsante de desordem cósmica, que multiplica todo o seu ganho por 100.',
+          'Um coração pulsante de desordem cósmica, que multiplica todo o seu ganho por 15x.',
       },
       {
         name: 'Vontade Inflexível (DPS)',
@@ -704,32 +750,32 @@ export class UpgradeService {
       {
         name: 'Alma Fragmentada (Global)',
         cost: 25000000,
-        multiplierValue: 500.0,
+        multiplierValue: 25.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/869/869819.png',
         description:
-          'Um estilhaço da alma do universo, que multiplica seu ganho total por 500.',
+          'Um estilhaço da alma do universo, que multiplica seu ganho total por 25x.',
       },
       {
         name: 'Vazio Iridescente (Global)',
         cost: 100000000,
-        multiplierValue: 1000.0,
+        multiplierValue: 50.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/976/976856.png',
         description:
-          'O próprio vazio irradia poder, multiplicando todo o seu ganho por 1.000.',
+          'O próprio vazio irradia poder, multiplicando todo o seu ganho por 50x.',
       },
       {
         name: 'Trono do Caos (Global)',
         cost: 500000000,
-        multiplierValue: 5000.0,
+        multiplierValue: 100.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/8687/8687102.png',
         description:
-          'Você ascendeu ao trono do caos primordial, multiplicando seu ganho por 5.000.',
+          'Você ascendeu ao trono do caos primordial, multiplicando seu ganho por 100x.',
       },
       {
         name: 'Consciência Infinita (DPS)',
@@ -754,22 +800,22 @@ export class UpgradeService {
       {
         name: 'Canto da Criação (Global)',
         cost: 10000000000,
-        multiplierValue: 25000.0,
+        multiplierValue: 200.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/2903/2903336.png',
         description:
-          'Seu canto ressoa com o som da própria criação, multiplicando seu ganho por 25.000.',
+          'Seu canto ressoa com o som da própria criação, multiplicando seu ganho por 200x.',
       },
       {
         name: 'Dominus Vácuo (Global)',
         cost: 50000000000,
-        multiplierValue: 100000.0,
+        multiplierValue: 500.0,
         type: 'global',
         amount: 0,
         image: 'https://cdn-icons-png.flaticon.com/128/9804/9804595.png',
         description:
-          'Você é o mestre do vazio, multiplicando todo o seu ganho por 100.000.',
+          'Você é o mestre do vazio, multiplicando todo o seu ganho por 500x.',
       },
     ];
   }

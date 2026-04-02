@@ -5,4 +5,6 @@ export interface ClickUpgrade {
   amount: number;
   image?: string;
   description: string;
+  unlockClicks?: number;
+  unlockAfter?: string;
 }

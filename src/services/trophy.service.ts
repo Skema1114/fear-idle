@@ -1,6 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Trophy } from '../interfaces/Trophy';
 
+export interface TrophyCheckState {
+  totalEssence: number;
+  totalManualClicks: number;
+  highestCombo: number;
+  prestigeLevel: number;
+  globalMultiplier: number;
+  upgrades: { name: string; amount: number }[];
+  clickUpgrades: { name: string; amount: number }[];
+  prestigeUpgrades: { name: string; amount: number; type: string }[];
+  allTrophies: { title: string; earned: boolean }[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -225,7 +237,7 @@ export class TrophyService {
         icon: '♾️',
       },
       {
-        title: 'A Última Transcedência',
+        title: 'A Última Transcendência',
         description:
           'Você é a própria tecelã do destino cósmico: alcance 100.000.000.000.000.000.000.000 essências totais.',
         earned: false,
@@ -514,7 +526,7 @@ export class TrophyService {
         description:
           'Sua cadência de cliques leva ao caos total. Alcance um combo de 50000 cliques.',
         earned: false,
-        icon: ' anarchist',
+        icon: '💀',
       },
       {
         title: 'O Ritmo Final (100000x)',
@@ -876,7 +888,7 @@ export class TrophyService {
         icon: '💎',
       },
       {
-        title: 'Lorde da Transcedência',
+        title: 'Lorde da Transcendência',
         description:
           'Sua alma viajou por inumeráveis ciclos. Prestigie 50 vezes.',
         earned: false,
@@ -963,19 +975,19 @@ export class TrophyService {
       },
       {
         title: 'Fonte da Essência Ancestral',
-        description: 'Tenha 100 unidades de upgrades de legado.',
+        description: 'Acumule 100 unidades totais de upgrades de legado.',
         earned: false,
         icon: '💎',
       },
       {
         title: 'Sabedoria Eterna',
-        description: 'Tenha 500 unidades de upgrades de legado.',
+        description: 'Acumule 500 unidades totais de upgrades de legado.',
         earned: false,
         icon: '📚',
       },
       {
         title: 'O Conhecimento Proibido',
-        description: 'Tenha 1000 unidades de upgrades de legado.',
+        description: 'Acumule 1000 unidades totais de upgrades de legado.',
         earned: false,
         icon: '👁️',
       },
@@ -992,5 +1004,199 @@ export class TrophyService {
         icon: '👑',
       },
     ];
+  }
+
+  getTrophyConditions(): Map<string, (s: TrophyCheckState) => boolean> {
+    const tierHasAll = (list: { name: string; amount: number }[], names: string[]) =>
+      names.every(n => (list.find(u => u.name === n)?.amount ?? 0) > 0);
+    const tierHasAllAtLeast = (list: { name: string; amount: number }[], names: string[], min: number) =>
+      names.every(n => (list.find(u => u.name === n)?.amount ?? 0) >= min);
+
+    // Auto upgrade tiers
+    const autoTier1 = ['Vela Sussurrante', 'Lamento dos Condenados', 'Pacto Sanguíneo', 'Eco dos Pesadelos', 'Ídolo Quebrado'];
+    const autoTier2 = ['Ritual Profano', 'Tomos Proibidos', 'Selo Espectral', 'Lágrimas da Medusa', 'Fragmento Estelar'];
+    const autoTier3 = ['Coro Macabro', 'Abismo da Loucura', 'Sentinela Dimensional', 'Véu Interplanar', 'Tempestade Cósmica'];
+    const autoTier4 = ['Portal para o Além', "O Sonhador em R'lyeh", 'Olho de Azathoth', 'Toque de Nyarlathotep', 'Despertar da Antiga Ameaça'];
+    const autoTier5 = ['Mente Colossal', 'Espiral de Desespero', 'Chama Eterna', 'O Vazio Pulsante', 'Realidade Fragmentada'];
+    const autoTier6 = ['Eco do Caos Primordial', 'Tecelão de Universos', 'Vontade Cósmica Indomável', 'O Ponto de Singularidade', 'A Não-Existência'];
+
+    // Click upgrade tiers
+    const clickTier1 = ['Toque Sutil', 'Foco Macabro', 'Ritmo Insano', 'Canto Hipnótico', 'Conexão Psíquica'];
+    const clickTier2 = ['Pulso Sombrio', 'Memória Amaldiçoada', 'Ecos do Vazio', 'Fúria Canalizada', 'Devaneio Perpétuo'];
+    const clickTier3 = ['Convergência Dimensional', 'Vortex de Essência', 'Canto Cósmico', 'Pulsar da Realidade', 'Fragmento do Caos'];
+    const clickTier4 = ['Mão Eterna', 'Eco do Além', 'Batida Estelar', 'Ritmo Cósmico', 'Voz do Vazio'];
+    const clickTier5 = ['Pulso da Não-Existência', 'Consciência Amaldiçoada', 'Ecos do Além-Concebível', 'Sussurros do Crepúsculo'];
+
+    const m = new Map<string, (s: TrophyCheckState) => boolean>();
+
+    // === Essence trophies ===
+    m.set('Primeira Brasa', s => s.totalEssence >= 1);
+    m.set('Eco Inicial', s => s.totalEssence >= 100);
+    m.set('Voto de Sangue', s => s.totalEssence >= 1000);
+    m.set('Sussurros na Escuridão', s => s.totalEssence >= 10000);
+    m.set('Ídolo Restaurado', s => s.totalEssence >= 50000);
+    m.set('Conhecimento Proibido', s => s.totalEssence >= 100000);
+    m.set('Marca do Selo', s => s.totalEssence >= 500000);
+    m.set('Fonte da Agonia', s => s.totalEssence >= 2500000);
+    m.set('Rito Completo', s => s.totalEssence >= 10000000);
+    m.set('Harmonia Dissonante', s => s.totalEssence >= 50000000);
+    m.set('Profundezas Insanas', s => s.totalEssence >= 250000000);
+    m.set('Guardião do Limiar', s => s.totalEssence >= 1000000000);
+    m.set('Véu Rasgado', s => s.totalEssence >= 5000000000);
+    m.set('Cólera Cósmica', s => s.totalEssence >= 25000000000);
+    m.set('Limiar Dimensional', s => s.totalEssence >= 100000000000);
+    m.set('O Sonho Interrompido', s => s.totalEssence >= 500000000000);
+    m.set('Visão do Caos', s => s.totalEssence >= 2000000000000);
+    m.set('A Voz do Horror', s => s.totalEssence >= 8000000000000);
+    m.set('O Despertar Final', s => s.totalEssence >= 30000000000000);
+    m.set('Mestre do Vazio', s => s.totalEssence >= 100000000000000);
+    m.set('Conquistador da Realidade', s => s.totalEssence >= 500000000000000);
+    m.set('A Ascensão', s => s.totalEssence >= 1000000000000000);
+    m.set('União Cósmica', s => s.totalEssence >= 5000000000000000);
+    m.set('Além dos Sonhos', s => s.totalEssence >= 25e15);
+    m.set('Deus Exterior', s => s.totalEssence >= 1e17);
+    m.set('O Vácuo Insondável', s => s.totalEssence >= 5e17);
+    m.set('Criador de Universos', s => s.totalEssence >= 1e18);
+    m.set('A Essência Primordial', s => s.totalEssence >= 1e19);
+    m.set('Além de Toda Compreensão', s => s.totalEssence >= 1e20);
+    m.set('O Absoluto', s => s.totalEssence >= 1e21);
+    m.set('Infinito e Além', s => s.totalEssence >= 1e22);
+    m.set('A Última Transcendência', s => s.totalEssence >= 1e23);
+    m.set('Rei do Multiverso', s => s.totalEssence >= 1e24);
+    m.set('A Conclusão Inevitável', s => s.totalEssence >= 1e25);
+    m.set('Além da Realidade', s => s.totalEssence >= 1e26);
+    m.set('O Vazio Profundo', s => s.totalEssence >= 1e27);
+
+    // === Manual click trophies ===
+    m.set('Primeiro Sussurro', s => s.totalManualClicks >= 1);
+    m.set('Toque Persistente', s => s.totalManualClicks >= 100);
+    m.set('Dedo Veloz', s => s.totalManualClicks >= 1000);
+    m.set('Ritmo Implacável', s => s.totalManualClicks >= 10000);
+    m.set('Pulsar da Essência', s => s.totalManualClicks >= 100000);
+    m.set('Canalizador Incansável', s => s.totalManualClicks >= 1000000);
+    m.set('Batedor Cósmico', s => s.totalManualClicks >= 10000000);
+    m.set('Mão da Loucura', s => s.totalManualClicks >= 100000000);
+    m.set('Pulsar do Vazio', s => s.totalManualClicks >= 1000000000);
+    m.set('Dedo Dimensional', s => s.totalManualClicks >= 10000000000);
+    m.set('Mestre do Ritmo Cósmico', s => s.totalManualClicks >= 100000000000);
+    m.set('Voz da Criação', s => s.totalManualClicks >= 1000000000000);
+    m.set('O Último Toque', s => s.totalManualClicks >= 10000000000000);
+    m.set('Conexão Absoluta', s => s.totalManualClicks >= 100000000000000);
+    m.set('O Toque do Caos', s => s.totalManualClicks >= 1e15);
+    m.set('A Dança dos Universos', s => s.totalManualClicks >= 1e16);
+    m.set('Vontade Inominável', s => s.totalManualClicks >= 1e17);
+    m.set('A Punho do Multiverso', s => s.totalManualClicks >= 1e18);
+
+    // === Combo trophies ===
+    m.set('Combo Iniciante (2x)', s => s.highestCombo >= 2);
+    m.set('Combo Místico (5x)', s => s.highestCombo >= 5);
+    m.set('Combo Febril (10x)', s => s.highestCombo >= 10);
+    m.set('Combo Intenso (15x)', s => s.highestCombo >= 15);
+    m.set('Combo Transcendental (20x)', s => s.highestCombo >= 20);
+    m.set('Combo Perfeito (30x)', s => s.highestCombo >= 30);
+    m.set('Combo Infinito (50x)', s => s.highestCombo >= 50);
+    m.set('Combo Além (75x)', s => s.highestCombo >= 75);
+    m.set('Combo Cósmico (100x)', s => s.highestCombo >= 100);
+    m.set('Combo Celestial (150x)', s => s.highestCombo >= 150);
+    m.set('Combo Divino (200x)', s => s.highestCombo >= 200);
+    m.set('O Último Combo (300x)', s => s.highestCombo >= 300);
+    m.set('Combo Lenda (500x)', s => s.highestCombo >= 500);
+    m.set('Combo Mítico (1000x)', s => s.highestCombo >= 1000);
+    m.set('Combo Abissal (2000x)', s => s.highestCombo >= 2000);
+    m.set('Combo Inconcebível (5000x)', s => s.highestCombo >= 5000);
+    m.set('Combo Primordial (10000x)', s => s.highestCombo >= 10000);
+    m.set('Combo do Vazio (25000x)', s => s.highestCombo >= 25000);
+    m.set('Combo da Anarquia (50000x)', s => s.highestCombo >= 50000);
+    m.set('O Ritmo Final (100000x)', s => s.highestCombo >= 100000);
+
+    // === Auto upgrade trophies ===
+    m.set('Primeira Manifestação', s => s.upgrades.some(up => up.amount > 0));
+    m.set('Despertar de Símbolos', s => s.upgrades.filter(up => up.amount > 0).length >= 5);
+    m.set('Mestre dos Rituais', s => tierHasAll(s.upgrades, autoTier2));
+    m.set('Invocador de Horrores', s => tierHasAll(s.upgrades, autoTier3));
+    m.set('Forjador de Portais', s => tierHasAll(s.upgrades, autoTier4));
+    m.set('Conjurador Primordial', s => tierHasAll(s.upgrades, autoTier5));
+    m.set('Conjurador Além', s => tierHasAll(s.upgrades, autoTier6));
+    m.set('Arsenal do Terror', s => s.upgrades.filter(up => up.amount > 0).length >= 10);
+    m.set('Força Oculta', s => s.upgrades.filter(up => up.amount > 0).length >= 15);
+    m.set('Legado do Medo', s => tierHasAll(s.upgrades, autoTier1));
+    m.set('Domínio das Sombras', s => tierHasAllAtLeast(s.upgrades, autoTier1, 100));
+    m.set('Poder de Azathoth', s => tierHasAllAtLeast(s.upgrades, autoTier2, 100));
+    m.set('Essência da Existência', s => tierHasAllAtLeast(s.upgrades, autoTier3, 100));
+    m.set('Senhor dos Portais', s => tierHasAllAtLeast(s.upgrades, autoTier4, 100));
+    m.set('Titã da Realidade', s => tierHasAllAtLeast(s.upgrades, autoTier5, 100));
+    m.set('Arquimago do Vazio', s => tierHasAllAtLeast(s.upgrades, autoTier6, 100));
+    m.set('Monarca das Trevas', s => s.upgrades.every(up => up.amount >= 100));
+    m.set('Poder Infinito', s => s.upgrades.every(up => up.amount >= 500));
+    m.set('Realidade Dominada', s => s.upgrades.every(up => up.amount >= 1000));
+    m.set('Conjurador Final', s => s.upgrades.every(up => up.amount >= 2000));
+    m.set('Senhor do Medo', s => s.upgrades.every(up => up.amount >= 5000));
+    m.set('Criador do Terror', s => s.upgrades.every(up => up.amount >= 10000));
+
+    // === Click upgrade trophies ===
+    m.set('Primeira Canalização', s => s.clickUpgrades.some(up => up.amount > 0));
+    m.set('Maestria da Canalização', s => s.clickUpgrades.filter(up => up.amount > 0).length >= 3);
+    m.set('Ritmo Absoluto', s => tierHasAll(s.clickUpgrades, clickTier2));
+    m.set('Canto das Trevas', s => tierHasAll(s.clickUpgrades, clickTier3));
+    m.set('Canalizador Supremo', s => tierHasAll(s.clickUpgrades, clickTier4));
+    m.set('Conexão Eterna', s => s.clickUpgrades.filter(up => up.amount > 0).length >= 5);
+    m.set('Mente Sombria', s => s.clickUpgrades.filter(up => up.amount > 0).length >= 10);
+    m.set('Devorador de Pensamentos', s => tierHasAllAtLeast(s.clickUpgrades, clickTier1, 100));
+    m.set('Voz do Vácuo', s => tierHasAllAtLeast(s.clickUpgrades, clickTier2, 100));
+    m.set('Pulsação Primordial', s => tierHasAllAtLeast(s.clickUpgrades, clickTier3, 100));
+    m.set('Mãos da Criação', s => tierHasAllAtLeast(s.clickUpgrades, clickTier4, 100));
+    m.set('Toque Final', s => tierHasAllAtLeast(s.clickUpgrades, clickTier5, 100));
+    m.set('Ritmo da Existência', s => s.clickUpgrades.every(up => up.amount >= 500));
+    m.set('Pulso do Multiverso', s => s.clickUpgrades.every(up => up.amount >= 1000));
+    m.set('Toque Divino', s => s.clickUpgrades.every(up => up.amount >= 2000));
+    m.set('Mão Onipotente', s => s.clickUpgrades.every(up => up.amount >= 5000));
+    m.set('Sinfonia do Horror', s => s.clickUpgrades.every(up => up.amount >= 10000));
+
+    // === Hybrid/Final trophies ===
+    m.set('Equilíbrio Sombrio', s =>
+      s.upgrades.every(up => up.amount > 0) && s.clickUpgrades.every(up => up.amount > 0));
+    m.set('Poder Onisciente', s =>
+      s.upgrades.every(up => up.amount >= 100) && s.clickUpgrades.every(up => up.amount >= 100));
+    m.set('Verdade Final', s =>
+      s.allTrophies.filter(t => t.title !== 'Verdade Final').every(t => t.earned));
+    m.set('Equilíbrio Absoluto', s =>
+      s.upgrades.every(up => up.amount >= 500) && s.clickUpgrades.every(up => up.amount >= 500));
+    m.set('Ascensão Gêmea', s =>
+      s.upgrades.every(up => up.amount >= 1000) && s.clickUpgrades.every(up => up.amount >= 1000));
+    m.set('Sinfonia do Vazio', s =>
+      s.upgrades.every(up => up.amount >= 2000) && s.clickUpgrades.every(up => up.amount >= 2000));
+    m.set('Monarca da Existência', s =>
+      s.upgrades.every(up => up.amount >= 5000) && s.clickUpgrades.every(up => up.amount >= 5000));
+    m.set('Poder Dual', s =>
+      s.upgrades.every(up => up.amount >= 10000) && s.clickUpgrades.every(up => up.amount >= 10000));
+
+    // === Prestige trophies ===
+    m.set('Primeiro Legado', s => s.prestigeLevel >= 1);
+    m.set('Legado Consolidado', s => s.prestigeLevel >= 5);
+    m.set('Mestre do Legado', s => s.prestigeLevel >= 10);
+    m.set('Herdeiro do Vazio', s => s.prestigeLevel >= 25);
+    m.set('Lorde da Transcendência', s => s.prestigeLevel >= 50);
+    m.set('Poder Ancestral', s => s.prestigeUpgrades.some(up => up.amount > 0));
+    m.set('Força Eterna', s => s.prestigeUpgrades.filter(up => up.amount > 0).length >= 5);
+    m.set('Multiplicador Divino', s => s.globalMultiplier >= 100);
+    m.set('Ascensão do Vazio', s => s.globalMultiplier >= 1000);
+    m.set('A Essência Absoluta', s => s.globalMultiplier >= 1000000);
+    m.set('Legado Completo', s => s.prestigeUpgrades.every(up => up.amount > 0));
+    m.set('O Verdadeiro Absoluto', s => s.globalMultiplier >= 1000000000);
+    m.set('Rei do Legado', s => s.prestigeLevel >= 100);
+    m.set('Fenda na Realidade', s => s.prestigeLevel >= 250);
+    m.set('O Ciclo Infinito', s => s.prestigeLevel >= 500);
+    m.set('Avatar do Vazio', s => s.prestigeLevel >= 1000);
+    m.set('O Vazio Imortal', s => s.prestigeLevel >= 2500);
+    m.set('Fonte da Essência Ancestral', s =>
+      s.prestigeUpgrades.reduce((sum, up) => sum + up.amount, 0) >= 100);
+    m.set('Sabedoria Eterna', s =>
+      s.prestigeUpgrades.reduce((sum, up) => sum + up.amount, 0) >= 500);
+    m.set('O Conhecimento Proibido', s =>
+      s.prestigeUpgrades.reduce((sum, up) => sum + up.amount, 0) >= 1000);
+    m.set('Legado do Vazio', s => s.prestigeUpgrades.every(up => up.amount >= 2500));
+    m.set('Trono do Conhecimento', s => s.prestigeUpgrades.every(up => up.amount >= 5000));
+
+    return m;
   }
 }

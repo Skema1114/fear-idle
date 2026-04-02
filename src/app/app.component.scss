@@ -1,40 +1,60 @@
-/* Dracula-inspired, Gothic, Minimalist Theme */
-@import url("https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Myeongjo&family=Roboto+Mono&display=swap");
+/* Culto das Sombras - Dark Cosmic Horror Theme */
+/* Fonts loaded via index.html <link> for performance */
 
 /* Color Palette */
-$dark-void: #1a1a1a; // Quase preto, para backgrounds base
-$deep-charcoal: #2a2a2a; // Cinza muito escuro, para painéis e cards
-$faded-stone: #44475a; // Um cinza azulado, para bordas e linhas
-$light-ghost: #f8f8f2; // Branco suave, para texto principal
-$blood-red: #ff5555; // Vermelho para alertas, erros, perigo
-$shadow-purple: #bd93f9; // Roxo profundo, para títulos e destaque
-$spectral-green: #50fa7b; // Verde vibrante, para elementos interativos (botões)
-$essence-glow: #e0ac10; // Amarelo/laranja queimado para a essência
-$essence-glow-shadow: #ffb86c; // Sombra/brilho para a essência
+$dark-void: #0d0d12;
+$deep-charcoal: #16161e;
+$card-bg: #1c1c28;
+$card-bg-hover: #22222f;
+$faded-stone: #3a3a4f;
+$muted-text: #8888a0;
+$light-ghost: #e8e8f0;
+$blood-red: #e63946;
+$blood-red-glow: rgba(230, 57, 70, 0.4);
+$shadow-purple: #b388ff;
+$shadow-purple-glow: rgba(179, 136, 255, 0.35);
+$spectral-green: #69f0ae;
+$spectral-green-glow: rgba(105, 240, 174, 0.35);
+$essence-glow: #ffd54f;
+$essence-glow-shadow: rgba(255, 213, 79, 0.4);
+$prestige-blue: #82b1ff;
+$prestige-blue-glow: rgba(130, 177, 255, 0.3);
 
 /* Typography */
-$font-title: "Creepster", cursive; // Para títulos impactantes e "assustadores"
-$font-body: "Nanum+Myeongjo", serif; // Para o corpo do texto, elegante e legível
-$font-mono: "Roboto+Mono", monospace; // Para valores numéricos e código, se necessário
+$font-title: "Creepster", cursive;
+$font-body: "Nanum Myeongjo", serif;
+$font-mono: "Roboto Mono", monospace;
+
+/* Mixins */
+@mixin glass($bg: rgba(28, 28, 40, 0.6), $border: rgba(58, 58, 79, 0.4)) {
+  background: $bg;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid $border;
+}
+
+@mixin glow-text($color, $intensity: 8px) {
+  text-shadow: 0 0 $intensity $color;
+}
 
 /* Base Styles */
-body {
-  margin: 0;
-  background-color: $dark-void;
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $dark-void;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(179, 136, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(230, 57, 70, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(105, 240, 174, 0.02) 0%, transparent 40%);
   color: $light-ghost;
   font-family: $font-body;
   line-height: 1.6;
-  overflow-x: hidden;
-  min-height: 100vh;
-  padding: 0;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   font-family: $font-title;
   color: $shadow-purple;
-  text-shadow: 0 0 5px lighten($shadow-purple, 10%);
+  @include glow-text($shadow-purple-glow, 6px);
   margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
@@ -43,251 +63,249 @@ strong {
   color: $spectral-green;
 }
 
-/* Header (Antiga Navbar) */
+/* ========== HEADER ========== */
 .header {
   position: sticky;
   top: 0;
   left: 0;
   width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  background: $deep-charcoal;
-  border-bottom: 1px solid $faded-stone;
-  padding: 0.8rem 0;
+  gap: 2rem;
+  @include glass(rgba(13, 13, 18, 0.85), rgba(58, 58, 79, 0.3));
+  padding: 0.6rem 1rem;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
 }
 
 .essence-display {
   font-family: $font-mono;
-  font-size: 1.1rem;
-  color: $light-ghost;
+  font-size: 0.9rem;
+  color: $muted-text;
   display: flex;
   align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
 
   .value {
     color: $essence-glow;
-    text-shadow: 0 0 5px $essence-glow-shadow, 0 0 10px rgba($essence-glow, 0.3);
-    margin-left: 0.5rem;
-    font-size: 1.2em;
-    white-space: nowrap;
+    @include glow-text($essence-glow-shadow, 6px);
+    font-size: 1.05rem;
+    font-weight: 700;
   }
 
   &.prestige-essence .value {
     color: $shadow-purple;
-    text-shadow: 0 0 5px lighten($shadow-purple, 10%),
-      0 0 10px rgba($shadow-purple, 0.3);
+    @include glow-text($shadow-purple-glow, 6px);
+  }
+
+  &.dps-display .value {
+    color: $spectral-green;
+    @include glow-text($spectral-green-glow, 6px);
   }
 }
 
-/* Game Container */
+/* ========== GAME CONTAINER ========== */
 .game-container {
   width: 100%;
-  padding: 2rem;
-  background-color: $dark-void;
-  border-radius: 0;
-  box-shadow: none;
-  min-height: calc(100vh - 60px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
   box-sizing: border-box;
+  min-height: calc(100vh - 50px);
 }
 
-/* Intro Section */
+/* ========== INTRO ========== */
 .intro-section {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  padding-top: 1rem;
 
   h1 {
-    font-size: 3.5rem;
+    font-size: 3rem;
     color: $shadow-purple;
-    text-shadow: 0 0 10px rgba($shadow-purple, 0.8);
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
+    @include glow-text(rgba(179, 136, 255, 0.5), 12px);
+    margin-bottom: 0.5rem;
+    letter-spacing: 3px;
   }
 
   .intro-animation {
     font-family: $font-body;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: $blood-red;
     font-style: italic;
+    opacity: 0;
     animation: fadeInOut 5s ease-in-out forwards;
-  }
-
-  @keyframes fadeInOut {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    20% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    80% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
   }
 }
 
-/* Current Stats */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(15px); }
+  15% { opacity: 1; transform: translateY(0); }
+  75% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ========== CURRENT STATS ========== */
 .current-stats {
-  margin-bottom: 2rem;
-  text-align: center;
+  @include glass();
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
 
   p {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    margin: 0;
 
     strong {
-      color: $spectral-green;
+      color: $muted-text;
       font-weight: normal;
+      font-family: $font-body;
     }
 
     .value {
       font-family: $font-mono;
       color: $essence-glow;
-      text-shadow: 0 0 3px $essence-glow-shadow,
-        0 0 6px rgba($essence-glow, 0.2);
-      margin-left: 0.5rem;
+      @include glow-text($essence-glow-shadow, 4px);
+      margin-left: 0.4rem;
+      font-weight: 700;
     }
   }
 }
 
-/* Actions Section */
+/* ========== ACTIONS ========== */
 .actions-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.click-area {
+  position: relative;
 }
 
 .primary-button {
-  background-color: $blood-red;
+  background: linear-gradient(135deg, $blood-red, darken($blood-red, 12%));
   color: $light-ghost;
-  border: 1px solid darken($blood-red, 10%);
+  border: 1px solid lighten($blood-red, 8%);
   padding: 1rem 2.5rem;
   font-family: $font-title;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 5px;
+  letter-spacing: 1.5px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 15px $blood-red-glow;
+  position: relative;
+  overflow: hidden;
 
   &:hover:not([disabled]) {
-    background-color: darken($blood-red, 10%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.6);
   }
 
   &:active:not([disabled]) {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 8px $blood-red-glow;
   }
 
   &:disabled {
-    background-color: lighten($faded-stone, 5%);
-    color: darken($light-ghost, 20%);
+    background: $faded-stone;
+    color: $muted-text;
     border-color: $faded-stone;
     cursor: not-allowed;
     box-shadow: none;
   }
 }
 
-/* Estilo para o botão de clique manual */
 .click-button {
-  min-width: 250px;
-  line-height: 1.3;
+  min-width: 280px;
+  line-height: 1.4;
+  font-size: 1.1rem;
 }
 
-/* Secondary Button (para Save/Export/Import) */
-.secondary-button {
-  background-color: $faded-stone;
-  color: $light-ghost;
-  border: 1.5px solid darken($faded-stone, 10%);
-  padding: 0.8rem 1.5rem;
-  font-family: $font-body;
-  font-size: 0.95rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-
-  &:hover:not([disabled]) {
-    background-color: lighten($faded-stone, 5%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  }
-
-  &:active:not([disabled]) {
-    transform: translateY(0);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
-
-  &:disabled {
-    background-color: lighten($faded-stone, 5%);
-    color: darken($light-ghost, 20%);
-    border-color: $faded-stone;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-}
-
-/* Display de Combo */
-.combo-display {
-  background-color: $spectral-green;
-  color: $dark-void;
+/* Click floating numbers */
+.click-floater {
+  position: absolute;
+  color: $essence-glow;
   font-family: $font-mono;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  pointer-events: none;
+  @include glow-text($essence-glow-shadow, 8px);
+  animation: floatUp 1.2s ease-out forwards;
+  z-index: 10;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  70% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-60px) scale(0.7); }
+}
+
+/* Combo Display */
+.combo-display {
+  @include glass(rgba(105, 240, 174, 0.12), rgba(105, 240, 174, 0.3));
+  color: $spectral-green;
+  font-family: $font-mono;
+  font-size: 1rem;
   padding: 0.5rem 1.5rem;
-  border-radius: 5px;
-  margin-top: -0.5rem;
-  box-shadow: 0 0 15px rgba($spectral-green, 0.6);
-  animation: comboPulse 1s infinite alternate;
+  border-radius: 8px;
+  box-shadow: 0 0 15px $spectral-green-glow;
+  animation: comboPulse 1.5s infinite alternate;
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   align-items: center;
-  justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 @keyframes comboPulse {
-  from {
-    box-shadow: 0 0 10px rgba($spectral-green, 0.4);
-  }
-  to {
-    box-shadow: 0 0 20px rgba($spectral-green, 0.8);
-  }
+  from { box-shadow: 0 0 10px $spectral-green-glow; }
+  to { box-shadow: 0 0 25px rgba(105, 240, 174, 0.5); }
 }
 
+/* Purchase Modes */
 .purchase-modes-group {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   justify-content: center;
 
   .radio-label {
     display: flex;
     align-items: center;
     cursor: pointer;
-    color: $light-ghost;
-    font-family: $font-body;
-    font-size: 0.95rem;
+    color: $muted-text;
+    font-family: $font-mono;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid $faded-stone;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $shadow-purple;
+      color: $light-ghost;
+    }
 
     input[type="radio"] {
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid $shadow-purple;
+      width: 14px;
+      height: 14px;
+      border: 2px solid $faded-stone;
       border-radius: 50%;
-      margin-right: 8px;
+      margin-right: 6px;
       background-color: transparent;
       outline: none;
       transition: all 0.2s ease;
@@ -296,13 +314,14 @@ strong {
       &:checked {
         background-color: $shadow-purple;
         border-color: $shadow-purple;
+        box-shadow: 0 0 6px $shadow-purple-glow;
         &:after {
           content: "";
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 8px;
-          height: 8px;
+          width: 6px;
+          height: 6px;
           background: $light-ghost;
           border-radius: 50%;
           transform: translate(-50%, -50%);
@@ -312,58 +331,322 @@ strong {
   }
 }
 
-/* Save/Export Section */
+.danger-button {
+  border-color: rgba(230, 57, 70, 0.4) !important;
+  color: $blood-red !important;
+
+  &:hover:not([disabled]) {
+    border-color: $blood-red !important;
+    background: rgba(230, 57, 70, 0.15) !important;
+  }
+}
+
+/* ========== SECONDARY BUTTONS ========== */
+.secondary-button {
+  @include glass();
+  color: $light-ghost;
+  padding: 0.6rem 1.2rem;
+  font-family: $font-body;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not([disabled]) {
+    background: rgba(58, 58, 79, 0.6);
+    transform: translateY(-1px);
+    border-color: $shadow-purple;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
 .save-export-section {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  margin-bottom: 3rem;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
   flex-wrap: wrap;
 }
 
-/* Prestige Section */
-.prestige-section {
-  background-color: $deep-charcoal;
-  border: 2px solid $shadow-purple;
-  border-radius: 10px;
+/* ========== SECTION TITLES ========== */
+.section-title {
+  font-size: 1.8rem;
+  color: $shadow-purple;
+  text-align: center;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 2px;
+  @include glow-text($shadow-purple-glow, 6px);
+  position: relative;
+
+  &:before, &:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 15%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, $faded-stone, transparent);
+    transform: translateY(-50%);
+  }
+  &:before { left: 5%; }
+  &:after { right: 5%; }
+}
+
+/* ========== UPGRADE GRID ========== */
+.upgrades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.upgrade-card {
+  @include glass();
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+
+  &:hover {
+    transform: translateY(-3px);
+    background: rgba(34, 34, 47, 0.7);
+    border-color: $shadow-purple;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px $shadow-purple-glow;
+  }
+
+  img {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 0.8rem;
+    border-radius: 10px;
+    border: 1px solid $faded-stone;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s ease;
+    background: $deep-charcoal;
+    padding: 4px;
+  }
+
+  &:hover img {
+    border-color: $spectral-green;
+    box-shadow: 0 0 12px $spectral-green-glow;
+  }
+
+  .card-details {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+  }
+
+  .upgrade-name {
+    font-family: $font-title;
+    font-size: 1.15rem;
+    color: $shadow-purple;
+    margin: 0 0 0.2rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @include glow-text($shadow-purple-glow, 3px);
+  }
+
+  .upgrade-info {
+    font-family: $font-mono;
+    font-size: 0.8rem;
+    color: $muted-text;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .upgrade-cost {
+    font-family: $font-mono;
+    font-size: 0.85rem;
+    color: $essence-glow;
+    margin: 0.3rem 0 0.6rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @include glow-text($essence-glow-shadow, 3px);
+  }
+
+  .action-button {
+    background: linear-gradient(135deg, $spectral-green, darken($spectral-green, 15%));
+    color: $dark-void;
+    font-family: $font-mono;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover:not([disabled]) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px $spectral-green-glow;
+    }
+
+    &:active:not([disabled]) {
+      transform: translateY(0);
+    }
+
+    &.details-button {
+      background: transparent;
+      color: $muted-text;
+      border: 1px solid $faded-stone;
+      font-weight: normal;
+      text-transform: none;
+      margin-bottom: 0.4rem;
+
+      &:hover:not([disabled]) {
+        background: rgba(58, 58, 79, 0.4);
+        color: $light-ghost;
+        border-color: $shadow-purple;
+        box-shadow: none;
+      }
+    }
+
+    &:disabled {
+      background: $faded-stone;
+      color: darken($muted-text, 15%);
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.5;
+    }
+  }
+}
+
+/* ========== MESSAGE BOX ========== */
+.message-box {
+  @include glass();
+  border-radius: 12px;
   padding: 2rem;
   text-align: center;
-  margin-top: 3rem;
-  margin-bottom: 3rem;
-  box-shadow: 0 0 20px rgba($shadow-purple, 0.5);
+  color: $muted-text;
+  font-style: italic;
+  margin: 1.5rem auto;
+  max-width: 500px;
+  border: 1px dashed $faded-stone;
+}
+
+/* ========== TROPHIES ========== */
+.trophies-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+.trophy-item {
+  @include glass(rgba(22, 22, 30, 0.5));
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  color: $muted-text;
+
+  &.earned {
+    border-color: $spectral-green;
+    color: $spectral-green;
+    box-shadow: 0 0 10px $spectral-green-glow;
+    background: rgba(105, 240, 174, 0.05);
+
+    .trophy-icon {
+      filter: none;
+    }
+  }
+
+  &.locked {
+    opacity: 0.35;
+    filter: grayscale(60%);
+
+    &:hover {
+      opacity: 0.6;
+      filter: grayscale(30%);
+      transform: translateY(-1px);
+    }
+  }
+
+  .trophy-icon {
+    font-size: 1.2em;
+    flex-shrink: 0;
+  }
+
+  .trophy-title {
+    font-weight: 700;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ========== PRESTIGE SECTION ========== */
+.prestige-section {
+  @include glass(rgba(130, 177, 255, 0.04), rgba(130, 177, 255, 0.15));
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 30px rgba(130, 177, 255, 0.08);
 
   .prestige-info {
-    font-size: 1.1rem;
-    color: $light-ghost;
+    font-size: 1rem;
+    color: $muted-text;
     margin-bottom: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
   }
 
   .prestige-level,
   .prestige-multiplier {
     font-family: $font-title;
-    font-size: 1.5rem;
-    color: $essence-glow;
-    text-shadow: 0 0 5px $essence-glow-shadow;
-    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    color: $prestige-blue;
+    @include glow-text($prestige-blue-glow, 6px);
+    margin-bottom: 0.3rem;
   }
 
   .prestige-button {
-    background-color: $shadow-purple;
+    background: linear-gradient(135deg, $shadow-purple, darken($shadow-purple, 18%));
     border-color: lighten($shadow-purple, 10%);
     color: $light-ghost;
-    font-size: 1.3rem;
-    padding: 1.2rem 3rem;
+    font-size: 1.15rem;
+    padding: 1rem 2.5rem;
     margin-top: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px $shadow-purple-glow;
 
     &:hover:not([disabled]) {
-      background-color: darken($shadow-purple, 10%);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7),
-        0 0 15px rgba($shadow-purple, 0.8);
+      box-shadow: 0 8px 30px rgba(179, 136, 255, 0.6);
+      transform: translateY(-2px);
     }
+
     &:disabled {
-      background-color: lighten($faded-stone, 5%);
-      color: darken($light-ghost, 20%);
+      background: $faded-stone;
+      color: $muted-text;
       border-color: $faded-stone;
       cursor: not-allowed;
       box-shadow: none;
@@ -371,515 +654,288 @@ strong {
   }
 
   .section-subtitle {
-    font-family: $font-body;
+    font-family: $font-title;
     font-size: 1.3rem;
-    color: $spectral-green;
+    color: $prestige-blue;
     margin-top: 2rem;
     margin-bottom: 1.5rem;
-    text-shadow: 0 0 5px rgba($spectral-green, 0.3);
-  }
-
-  .prestige-upgrades-grid {
-    /* Estilos da grid de upgrades já estão definidos, apenas garantir que se apliquem */
+    @include glow-text($prestige-blue-glow, 4px);
   }
 
   .prestige-upgrade-card {
-    /* Estilos do upgrade-card já definidos, apenas garantir que se apliquem */
-    border-color: $shadow-purple;
+    border-color: rgba(130, 177, 255, 0.2);
 
     &:hover {
-      box-shadow: 0 0 15px rgba($shadow-purple, 0.8),
-        0 0 8px rgba($spectral-green, 0.6) inset;
+      border-color: $prestige-blue;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px $prestige-blue-glow;
     }
 
     .prestige-action-button {
-      background-color: $shadow-purple;
-      border-color: lighten($shadow-purple, 10%);
+      background: linear-gradient(135deg, $shadow-purple, darken($shadow-purple, 15%));
+      color: $light-ghost;
+
       &:hover:not([disabled]) {
-        background-color: darken($shadow-purple, 10%);
+        box-shadow: 0 4px 12px $shadow-purple-glow;
       }
+
       &:disabled {
-        background-color: lighten($faded-stone, 5%);
-        color: darken($light-ghost, 20%);
-        border-color: $faded-stone;
+        background: $faded-stone;
+        color: darken($muted-text, 15%);
         cursor: not-allowed;
         box-shadow: none;
+        opacity: 0.5;
       }
     }
   }
 }
 
-/* Sections Titles (H2) */
-.section-title {
-  font-size: 2rem;
-  color: $shadow-purple;
-  text-align: center;
-  margin-top: 3rem;
-  margin-bottom: 2rem;
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 5px rgba($shadow-purple, 0.5);
-  position: relative;
-  &:before,
-  &:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    width: 20%;
-    height: 1px;
-    background: $faded-stone;
-    transform: translateY(-50%);
-  }
-  &:before {
-    left: 0;
-  }
-  &:after {
-    right: 0;
-  }
-}
-
-/* Upgrades Grid (Agora para ambas as seções de upgrades) */
-.upgrades-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
-  max-height: none;
-  overflow-y: visible;
-  padding: 1rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  box-sizing: border-box;
-  justify-content: center;
-}
-
-.upgrade-card {
-  background-color: $deep-charcoal;
-  border: 1px solid $faded-stone;
-  border-radius: 8px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease-in-out;
-  width: 100%;
-  max-width: 250px;
-  box-sizing: border-box;
-
-  &:hover {
-    transform: scale(1.03);
-    background-color: lighten($deep-charcoal, 5%);
-    border-color: $shadow-purple;
-    box-shadow: 0 0 10px rgba($shadow-purple, 0.7),
-      0 0 5px rgba($spectral-green, 0.5) inset;
-    cursor: pointer;
-  }
-
-  img {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 1rem;
-    border-radius: 5px;
-    border: 1px solid $spectral-green;
-    box-shadow: 0 0 8px rgba($spectral-green, 0.5);
-    transition: box-shadow 0.3s ease;
-  }
-
-  &:hover img {
-    box-shadow: 0 0 10px rgba($spectral-green, 0.8);
-  }
-
-  .card-details {
-    width: 100%;
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .upgrade-name {
-    font-family: $font-title;
-    font-size: 1.4rem;
-    color: $shadow-purple;
-    margin-bottom: 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    text-shadow: 0 0 3px rgba($shadow-purple, 0.5);
-  }
-
-  .upgrade-info {
-    font-family: $font-body;
-    font-size: 0.95rem;
-    color: $light-ghost;
-    margin-bottom: 0.3rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-  }
-
-  .upgrade-cost {
-    font-family: $font-mono;
-    font-size: 1rem;
-    color: $essence-glow;
-    margin-bottom: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-  }
-
-  .action-button {
-    background-color: $spectral-green;
-    color: $dark-void;
-    font-family: $font-body;
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    flex-shrink: 0;
-
-    &.details-button {
-      background-color: $faded-stone;
-      color: $light-ghost;
-      border: 1px solid darken($faded-stone, 10%);
-      margin-bottom: 0.5rem;
-      &:hover:not([disabled]) {
-        background-color: lighten($faded-stone, 5%);
-        transform: translateY(-1px);
-      }
-    }
-  }
-
-  .action-button:disabled {
-    background-color: lighten($faded-stone, 5%);
-    color: darken($light-ghost, 20%);
-    border-color: $faded-stone;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-}
-
-.message-box {
-  padding: 2rem;
-  background-color: $deep-charcoal;
-  border: 1px dashed $blood-red;
-  border-radius: 8px;
-  text-align: center;
-  color: $faded-stone;
-  font-family: $font-body;
-  font-size: 1.1rem;
-  font-style: italic;
-  margin-top: 2rem;
-  animation: pulseBorderRed 2s infinite alternate;
-}
-
-@keyframes pulseBorderRed {
-  from {
-    border-color: $blood-red;
-  }
-  to {
-    border-color: darken($blood-red, 20%);
-  }
-}
-
-/* Trophies List */
-.trophies-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.trophy-item {
-  background-color: $deep-charcoal;
-  border: 1px solid $faded-stone;
-  border-radius: 5px;
-  padding: 0.8rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: $faded-stone;
-  font-family: $font-body;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &.earned {
-    background-color: $faded-stone;
-    border-color: $spectral-green;
-    color: $spectral-green;
-    opacity: 1;
-    box-shadow: 0 0 10px rgba($spectral-green, 0.5);
-    animation: trophyGlow 1.5s infinite alternate;
-  }
-
-  &.locked {
-    filter: grayscale(80%) brightness(50%);
-    opacity: 0.4;
-    &:hover {
-      opacity: 0.7;
-      filter: grayscale(50%) brightness(70%);
-      transform: translateY(-2px);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    }
-  }
-
-  .trophy-icon {
-    font-size: 1.2em;
-  }
-
-  .trophy-title {
-    font-weight: bold;
-  }
-}
-
-@keyframes trophyGlow {
-  from {
-    box-shadow: 0 0 5px rgba($spectral-green, 0.5);
-  }
-  to {
-    box-shadow: 0 0 15px rgba($spectral-green, 0.8),
-      0 0 5px rgba($shadow-purple, 0.3);
-  }
-}
-
-/* Modal Geral (usado por trophyModal, showImportModal, showExportTextModal, showTrophyDetailsModal, showUpgradeDetailsModal) */
+/* ========== MODALS ========== */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .modal-content {
-  background-color: $deep-charcoal;
-  border: 2px solid $blood-red;
-  border-radius: 10px;
-  padding: 3rem;
-  max-width: 450px;
+  @include glass(rgba(22, 22, 30, 0.95), $faded-stone);
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 480px;
+  width: 90%;
   text-align: center;
-  box-shadow: 0 0 25px rgba($blood-red, 0.7);
-  animation: modalScaleIn 0.3s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: modalScaleIn 0.25s ease-out;
 }
 
 .modal-title {
   font-family: $font-title;
-  font-size: 2rem;
-  color: $spectral-green;
-  margin-bottom: 1rem;
-  text-shadow: 0 0 10px rgba($spectral-green, 0.7);
+  font-size: 1.8rem;
+  color: $shadow-purple;
+  margin-bottom: 0.8rem;
+  @include glow-text($shadow-purple-glow, 8px);
 }
 
 .modal-description {
-  font-family: $font-body;
-  font-size: 1.1rem;
-  color: $light-ghost;
-  margin-bottom: 2rem;
+  font-size: 1rem;
+  color: $muted-text;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
 }
 
 .save-textarea {
-  width: 90%;
-  height: 150px;
-  background-color: $dark-void;
+  width: 100%;
+  height: 120px;
+  background: $dark-void;
   color: $light-ghost;
   border: 1px solid $faded-stone;
-  border-radius: 5px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 0.8rem;
   font-family: $font-mono;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   resize: vertical;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: $shadow-purple;
+    box-shadow: 0 0 10px $shadow-purple-glow;
+  }
 }
 
 .modal-actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .modal-close-button {
-  background-color: $shadow-purple;
+  background: linear-gradient(135deg, $shadow-purple, darken($shadow-purple, 12%));
   color: $light-ghost;
   font-family: $font-body;
-  font-size: 1rem;
-  padding: 0.8rem 2rem;
-  border: 1px solid darken($shadow-purple, 10%);
-  border-radius: 5px;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.8rem;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: darken($shadow-purple, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px $shadow-purple-glow;
   }
 }
 
 @keyframes modalScaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-/* NOVO: Estilos para o Modal de Detalhes do Upgrade */
+/* Upgrade Details Modal */
 .modal-upgrade-image {
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 8px;
-  border: 2px solid $spectral-green;
-  box-shadow: 0 0 10px rgba($spectral-green, 0.7);
+  margin: 0.8rem 0 1rem 0;
+  border-radius: 12px;
+  border: 1px solid $faded-stone;
+  background: $deep-charcoal;
+  padding: 6px;
 }
 
 .upgrade-details-text {
   text-align: left;
-  padding: 0 1rem;
+  padding: 1rem;
   max-height: 200px;
   overflow-y: auto;
   border: 1px solid $faded-stone;
-  border-radius: 5px;
-  padding: 1rem;
-  background-color: darken($deep-charcoal, 3%);
-  line-height: 1.5;
+  border-radius: 8px;
+  background: rgba(13, 13, 18, 0.5);
+  line-height: 1.6;
+  font-size: 0.95rem;
 }
 
-/* NOVO: Estilos para o Modal de Estatísticas Gerais */
+.upgrade-description-long {
+  color: $muted-text;
+  font-style: italic;
+}
+
+/* Stats Modal */
 .stats-modal-content {
   max-width: 600px;
   text-align: left;
-  padding: 2.5rem;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-item {
-  background-color: darken($deep-charcoal, 3%);
-  padding: 0.8rem;
-  border-radius: 5px;
-  border: 1px solid $faded-stone;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  background: rgba(13, 13, 18, 0.4);
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(58, 58, 79, 0.3);
 }
 
 .stat-label {
-  font-family: $font-body;
-  font-size: 0.9rem;
-  color: $faded-stone;
-  margin-bottom: 0.2rem;
+  font-size: 0.8rem;
+  color: $muted-text;
+  margin-bottom: 0.15rem;
+  display: block;
 }
 
 .stat-value {
   font-family: $font-mono;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: $spectral-green;
-  font-weight: bold;
-  text-shadow: 0 0 3px rgba($spectral-green, 0.5);
+  font-weight: 700;
+  @include glow-text($spectral-green-glow, 3px);
+}
+
+/* ========== TOASTS ========== */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast-notification {
+  @include glass(rgba(105, 240, 174, 0.15), rgba(105, 240, 174, 0.4));
+  color: $spectral-green;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 10px $spectral-green-glow;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-mono;
+  font-size: 0.9rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  pointer-events: auto;
+  min-width: 180px;
+  max-width: 320px;
+  box-sizing: border-box;
+
+  &.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-icon {
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
+
+.toast-message {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Toast de Notificação de Troféu */
-.toast-container {
-  position: fixed;
-  bottom: 20px; /* Posição inicial na parte inferior */
-  right: 20px; /* Alinhado à direita */
-  z-index: 1001; /* Acima de outros modais, mas abaixo de modais de popup */
-  display: flex;
-  flex-direction: column; /* Empilha os toasts verticalmente */
-  align-items: flex-end; /* Alinha os toasts à direita */
-  gap: 10px; /* Espaçamento entre os toasts */
-  pointer-events: none; /* Permite que o clique passe através do container */
-}
+/* ========== FOOTER ========== */
+.game-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: $faded-stone;
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(58, 58, 79, 0.2);
+  margin-top: 3rem;
 
-.toast-notification {
-  background-color: $spectral-green; /* Cor de sucesso para troféu */
-  color: $dark-void;
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: $font-body;
-  font-size: 1rem;
-  font-weight: bold;
-  opacity: 0; /* Inicia invisível */
-  transform: translateX(100%); /* Fora da tela */
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out,
-    bottom 0.3s ease-out; /* Transição para aparecer/desaparecer e mover */
-  pointer-events: auto; /* Torna o toast clicável (se tiver botão de fechar, etc.) */
-  min-width: 200px;
-  max-width: 300px; /* Limita a largura para evitar toasts muito longos */
-  box-sizing: border-box; /* Garante que padding não adicione largura extra */
-  white-space: nowrap; /* Tenta manter em uma linha */
-  overflow: hidden; /* Esconde o texto que excede */
-  text-overflow: ellipsis; /* Adiciona "..." no final */
-
-  &.show {
-    opacity: 1; /* Torna visível */
-    transform: translateX(0); /* Desliza para dentro da tela */
+  a {
+    color: $shadow-purple;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
   }
 }
 
-.toast-icon {
-  font-size: 1.3em; /* Ícone um pouco maior */
-  flex-shrink: 0; /* Impede que o ícone encolha */
-}
-
-/* Responsive adjustments */
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .game-container {
-    padding: 2rem 1rem;
+    padding: 1rem;
   }
 
   .intro-section h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
 
   .header {
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     padding: 0.5rem;
   }
 
   .essence-display {
-    font-size: 0.9rem;
-    .value {
-      font-size: 1em;
-    }
+    font-size: 0.8rem;
+    .value { font-size: 0.9rem; }
   }
 
-  .current-stats p {
-    font-size: 1rem;
+  .current-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    p { font-size: 0.9rem; }
   }
 
   .primary-button {
-    padding: 0.8rem 2rem;
+    padding: 0.8rem 1.5rem;
     font-size: 1rem;
   }
 
@@ -889,163 +945,69 @@ strong {
   }
 
   .combo-display {
-    font-size: 1rem;
+    font-size: 0.9rem;
     padding: 0.4rem 1rem;
   }
 
   .purchase-modes-group {
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.8rem;
-  }
-
-  .radio-label {
-    font-size: 0.85rem;
-    input[type="radio"] {
-      width: 16px;
-      height: 16px;
-    }
+    gap: 0.4rem;
   }
 
   .save-export-section {
     flex-direction: column;
-    gap: 0.8rem;
-  }
+    gap: 0.5rem;
 
-  .secondary-button {
-    width: 100%;
+    .secondary-button { width: 100%; }
   }
 
   .section-title {
-    font-size: 1.8rem;
-    &:before,
-    &:after {
-      width: 10%;
-    }
+    font-size: 1.5rem;
+    &:before, &:after { width: 8%; }
   }
 
   .upgrades-grid {
     grid-template-columns: 1fr;
-    padding: 0.5rem;
-    gap: 1rem;
-  }
-
-  .upgrade-card {
-    width: 100%;
-    max-width: unset;
-    padding: 1rem;
-  }
-
-  .upgrade-name {
-    font-size: 1.2rem;
-  }
-
-  .upgrade-info,
-  .upgrade-cost {
-    font-size: 0.8rem;
-  }
-  .action-button {
-    font-size: 0.85rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .trophies-list {
     gap: 0.8rem;
   }
 
+  .trophies-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+  }
+
   .trophy-item {
-    padding: 0.6rem 1rem;
-    font-size: 0.85rem;
-    flex-grow: 1;
-    max-width: 100%;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8rem;
   }
 
   .modal-content {
-    max-width: 90%;
     padding: 1.5rem;
   }
 
-  .modal-title {
-    font-size: 1.5rem;
-  }
+  .modal-title { font-size: 1.4rem; }
 
-  .modal-description {
-    font-size: 1rem;
-  }
+  .stats-grid { grid-template-columns: 1fr; }
 
-  .save-textarea {
-    width: 95%;
-  }
-
-  /* Estatísticas Modal Responsividade */
-  .stats-modal-content {
-    max-width: 95%;
-    padding: 1.5rem;
-  }
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .toast-notification {
-    bottom: auto; /* Desabilita posicionamento fixo bottom */
-    top: 10px; /* Posição no topo em mobile */
-    right: 10px;
-    left: 10px;
-    width: auto;
-    font-size: 0.9rem;
-    padding: 0.8rem 1rem;
-    /* Para empilhar no topo em mobile, você pode usar flexbox vertical no toast-container */
-  }
+  .prestige-section { padding: 1.5rem 1rem; }
 }
 
 @media (max-width: 480px) {
-  .game-container {
-    padding: 1.5rem 0.5rem;
-  }
+  .game-container { padding: 0.8rem 0.5rem; }
 
-  .intro-section h1 {
-    font-size: 2rem;
-  }
-  .intro-animation {
-    font-size: 1.2rem;
-  }
-
-  .header {
-    font-size: 0.9rem;
-  }
-  .essence-display .value {
-    font-size: 1em;
-  }
+  .intro-section h1 { font-size: 1.8rem; }
 
   .section-title {
-    font-size: 1.5rem;
-    &:before,
-    &:after {
-      width: 5%;
-    }
+    font-size: 1.3rem;
+    &:before, &:after { width: 3%; }
   }
 
   .upgrade-card {
-    padding: 0.8rem;
-  }
-  .upgrade-name {
-    font-size: 1.1rem;
-  }
-  .upgrade-info,
-  .upgrade-cost {
-    font-size: 0.8rem;
-  }
-  .action-button {
-    font-size: 0.85rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .trophy-item {
-    font-size: 0.8rem;
-    padding: 0.5rem 0.8rem;
-  }
-
-  .modal-content {
     padding: 1rem;
+    .upgrade-name { font-size: 1rem; }
+  }
+
+  .trophies-list {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
 }

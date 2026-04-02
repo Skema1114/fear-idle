@@ -4,4 +4,7 @@ export interface ClickUpgrade {
   clickMultiplier: number;
   amount: number;
   image?: string;
+  description: string;
+  unlockClicks?: number;
+  unlockAfter?: string;
 }

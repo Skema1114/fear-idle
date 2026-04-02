@@ -4,4 +4,5 @@ export interface Upgrade {
   dps: number;
   amount: number;
   image?: string;
+  description: string;
 }

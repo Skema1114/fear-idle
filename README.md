@@ -1,138 +1,105 @@
-# Culto das Sombras: O Despertar Ancestral
+# Culto das Sombras
 
-## 🕯️ Invoque o Medo, Conquiste o Vazio 🌑
+## Invoque o Medo, Conquiste o Vazio
 
-Este é um jogo **idle/clicker** com tema de horror gótico e cósmico, onde seu objetivo é canalizar a essência do medo e despertar entidades ancestrais. Colete essência, aprimore suas habilidades de canalização, invoque manifestações e desbloqueie troféus enquanto mergulha nas profundezas da loucura.
+Um jogo **idle/clicker** com tema de horror gotico e cosmico, construido com Angular 18. Canalize a essencia do medo, desperte entidades ancestrais e domine o vazio.
 
-## ✨ Sumário do Jogo
+## Recursos
 
-"Culto das Sombras" combina a jogabilidade viciante de clickers idle com uma atmosfera sombria e uma progressão profunda. Gerencie sua essência, compre upgrades que automatizam sua coleta ou aprimoram seus cliques, mantenha combos frenéticos e descubra os segredos das revelações sombrias.
+- **Idle + Clicker**: Progrida passivamente com 34 manifestacoes automaticas (6 tiers) ou ativamente com cliques manuais e combos
+- **24 Upgrades de Clique**: Cadeia progressiva de desbloqueio por cliques totais ou prerequisito anterior
+- **Sistema de Combo**: Cliques consecutivos (timeout 3s) aumentam um multiplicador dinamico
+- **Prestigio**: Resete para ganhar Essencia Ancestral e comprar 24 upgrades permanentes (DPS, Clique, Global)
+- **143 Trofeus**: Marcos de essencia, cliques, combos, upgrades e prestigio
+- **Save/Load**: Auto-save a cada 5 min, export/import em Base64, backup automatico em caso de corrupcao
+- **Novo Jogo**: Botao de reset com confirmacao dupla via modal customizado
+- **Design Responsivo**: Glassmorphism, tema dark cosmico, animacoes fluidas, floating click numbers
 
-## 🎮 Recursos Principais
+## Stack
 
-- **Jogabilidade Híbrida Idle/Clicker:** Progrida passivamente com manifestações automáticas ou ativamente com cliques manuais e combos.
-- **Upgrades Abrangentes:**
-  - **Manifestações Automáticas:** Invoque criaturas e rituais que geram essência por segundo.
-  - **Manifestações de Canalização:** Aprimore o valor de cada clique manual para ganhos explosivos.
-- **Sistema de Combo Dinâmico:** Mantenha uma sequência de cliques para aumentar um multiplicador de combo e maximizar seus ganhos manuais. O combo zera se não houver cliques por 2 segundos.
-- **Progressão de Troféus:** Desbloqueie uma vasta coleção de "Revelações Sombrias" por marcos de essência, número de cliques, combos alcançados e upgrades comprados.
-  - **Detalhes de Troféus:** Clique em qualquer troféu (mesmo os bloqueados) para ver sua descrição e objetivo.
-  - **Visibilidade de Troféus:** Troféus bloqueados são exibidos com um visual embaçado/acinzentado, incentivando a exploração.
-- **Persistência de Dados:** Seu progresso é salvo automaticamente a cada segundo no `localStorage` do navegador.
-- **Gerenciamento de Saves:**
-  - **Salvar Manualmente:** Um botão dedicado para salvar seu progresso a qualquer momento.
-  - **Exportar Save:** Gera um código de save (Base64) que pode ser copiado para a área de transferência ou manualmente de um modal.
-  - **Importar Save:** Cole um código de save para restaurar seu progresso.
-- **Tema Gótico & Lovecraftiano:** Estilo visual e sonora inspirados em temas sombrios, cultos e horrores cósmicos.
-- **Responsividade Total:** Design adaptável para proporcionar uma boa experiência em dispositivos desktop e móveis, sem scrolls horizontais.
-- **Formatação de Números:** Valores grandes são exibidos com formatação de números inteiros para pequenos, e notação abreviada (K, M, B, T, etc.) para números maiores para melhor legibilidade.
+| Tech | Uso |
+|------|-----|
+| Angular 18 | Framework (Signals, Standalone Components) |
+| TypeScript | Tipagem, interfaces para Upgrade/ClickUpgrade/PrestigeUpgrade/Trophy |
+| SCSS | Glassmorphism, variaveis de cor, mixins, responsivo |
+| localStorage | Persistencia com TextEncoder/TextDecoder + Base64 |
 
-## 🛠️ Tecnologias Utilizadas
+## Arquitetura
 
-- **Angular (v18):** Framework principal para o desenvolvimento da aplicação.
-- **TypeScript:** Linguagem de programação tipada para o desenvolvimento do Angular.
-- **SCSS (Sass):** Pré-processador CSS para estilos organizados e variáveis temáticas.
-- **HTML5:** Estrutura da página.
-- **Local Storage (Web API):** Para persistência de dados do jogo no navegador.
-- **btoa() / atob() / encodeURIComponent / decodeURIComponent:** Para codificação/decodificação segura de saves contendo caracteres Unicode (emojis, etc.).
+```
+src/
+  app/
+    app.component.ts       # Game logic, state management (~1060 linhas)
+    app.component.html     # UI template
+    app.component.scss     # Visual theme
+  interfaces/
+    Upgrade.ts             # Auto upgrades (DPS)
+    ClickUpgrade.ts        # Click multipliers (com unlockClicks/unlockAfter)
+    PrestigeUpgrade.ts     # Permanent multipliers
+    Trophy.ts              # Achievements
+    Toast.ts               # Notifications
+  services/
+    upgrade.service.ts     # Dados de 34 auto + 24 click + 24 prestige upgrades
+    trophy.service.ts      # 143 trofeus + mapa declarativo de condicoes
+```
 
-## 🚀 Como Jogar
+### Decisoes Tecnicas
 
-### Objetivo
+- **Game loop**: `setInterval(100ms)` com tick counter. DPS adicionado a cada tick (`essencePerSecond / 10`). Trofeus checados a cada 1s. Save a cada 5min.
+- **Trophy conditions**: Mapa declarativo `Map<string, (state) => boolean>` no `TrophyService`, eliminando switch/case de 900 linhas.
+- **Click unlock**: Data-driven via campos `unlockClicks`/`unlockAfter` na interface, eliminando cadeia if/else de 140 linhas.
+- **Save merge**: Metodo generico `mergeList<T>()` reutilizado por `loadGame()` e `importSave()`.
+- **Numeros grandes**: Notacao exponencial (`3e18`, `12e21`) para valores acima de `Number.MAX_SAFE_INTEGER` (9e15). Sufixos SI ate `De` (1e33), exponencial apos 1e36.
+- **Modais customizados**: `showAlert()`/`showConfirm()` substituem `alert()`/`confirm()` nativos para manter consistencia visual.
 
-Acumule o máximo de Essência Sombria possível para despertar a Antiga Ameaça e alcançar o domínio final.
+## Balanceamento
 
-### Canalização de Essência
+| Aspecto | Valor |
+|---------|-------|
+| Cost scaling | 1.15x por compra |
+| Prestige threshold | 10M essencia total |
+| Prestige formula | `floor(cbrt(total / 10M))` |
+| Combo timeout | 3 segundos |
+| Combo bonus | +2% por hit |
+| Click multipliers | 0.02 (tier 1) ate 0.6 (tier 5) |
+| Global prestige mult | 1.5x ate 500x (por compra, custo dobra) |
+| Prestige level bonus | +10% global por nivel |
 
-- **Canalizar Essência Manualmente:** Clique no botão principal para gerar essência instantaneamente.
-- **Sistema de Combo:** Cada clique consecutivo dentro de 2 segundos aumenta seu contador de combo e o multiplicador de essência por clique. Se você parar de clicar por mais de 2 segundos, o combo será zerado.
-- **Manifestações Automáticas (`dps`):** Compram upgrades que geram essência por segundo (`Essência / segundo`), mesmo quando você não está clicando.
-- **Manifestações de Canalização (`clickMultiplier`):** Compram upgrades que aumentam o valor base de cada clique manual, potencializando seus ganhos ativos.
+## Como Jogar
 
-### Upgrades e Progressão
+1. **Clique** no botao principal para gerar essencia
+2. **Compre** manifestacoes automaticas para renda passiva
+3. **Aprimore** cliques com manifestacoes de canalizacao
+4. Mantenha **combos** para multiplicar ganhos
+5. Ao atingir 10M de essencia total, **prestigie** para ganhar Essencia Ancestral
+6. Compre **upgrades de legado** permanentes
+7. Repita o ciclo cada vez mais rapido
 
-- **Upgrades Visíveis:** As manifestações (upgrades) aparecem na sua lista quando você alcança um certo patamar de essência total ou já comprou alguma unidade delas.
-- **Modos de Compra:** Escolha entre comprar `1x`, `10x`, `100x`, `1000x` unidades de um upgrade, ou `MAX` (o máximo possível com sua essência atual). O custo total para a compra selecionada será exibido.
-- **Crescimento Exponencial:** O custo dos upgrades aumenta exponencialmente a cada compra, incentivando a diversificação e a estratégia.
+## Instalacao
 
-### Troféus
+```bash
+# Requisitos: Node.js 18+ e Angular CLI
+npm install
+ng serve
+# Acesse http://localhost:4200
+```
 
-- **Revelações Sombrias:** Acompanhe suas conquistas na seção "Revelações Sombrias".
-- **Troféus Bloqueados:** Troféus que você ainda não ganhou são exibidos de forma esmaecida. Clique neles para ver seus nomes e descrições, revelando os objetivos para desbloqueá-los.
+### Build de producao
 
-## 💾 Gerenciamento de Saves
+```bash
+ng build --configuration=production
 
-Seu jogo é salvo automaticamente a cada segundo no `localStorage` do seu navegador. Além disso, você tem opções manuais:
+# Para GitHub Pages:
+ng build --configuration=production --base-href /fear-idle/
+```
 
-- **Salvar Jogo Manualmente:** Clique no botão para forçar um salvamento.
-- **Exportar Save:** Gera um código de save (Base64) que você pode copiar do modal exibido e guardar em um arquivo de texto ou em qualquer lugar. Este é um backup do seu progresso.
-- **Importar Save:** Abre um modal onde você pode colar um código de save exportado anteriormente para restaurar seu progresso.
-  - **ATENÇÃO:** Importar um save irá **sobrescrever** seu progresso atual no navegador.
-  - **Em caso de erro ao carregar o save (e.g., `InvalidCharacterError` ou `JSON inválido`):** Isso pode ocorrer se você tiver um save corrompido ou de um formato antigo no `localStorage`. Para resolver, você pode precisar limpar o `localStorage` do seu navegador para o domínio do jogo: 1. Abra as Ferramentas do Desenvolvedor (F12). 2. Vá para a aba "Application" (ou "Storage" / "Armazenamento"). 3. Em "Local Storage", clique no domínio do seu jogo. 4. Clique com o botão direito na entrada `fearIdleGame` e selecione "Delete" ou "Clear". 5. Recarregue a página. Isso iniciará um novo jogo limpo.
+## Contribuicao
 
-## ⚙️ Instalação e Execução (Para Desenvolvedores)
+Issues e Pull Requests sao bem-vindos.
 
-Para configurar e executar o projeto localmente:
+## Creditos
 
-### Pré-requisitos
-
-Certifique-se de ter o Node.js e o npm (Node Package Manager) instalados em sua máquina. O Angular CLI também é necessário.
-
-- **Node.js & npm:** [Download Node.js](https://nodejs.org/en/download/) (versão LTS recomendada, geralmente v18 ou v20).
-- **Angular CLI:** Instale globalmente via npm:
-
-  ```bash
-  npm install -g @angular/cli
-  ```
-
-### Passos de Instalação
-
-1. **Clone o repositório:**
-
-   ```bash
-   git clone [https://github.com/SeuUsuario/NomeDoRepositorio.git](https://github.com/SeuUsuario/NomeDoRepositorio.git)
-   cd NomeDoRepositorio
-   ```
-
-   (Substitua `SeuUsuario/NomeDoRepositorio` pelo caminho real do seu repositório GitHub).
-
-2. **Instale as dependências do projeto:**
-
-   ```bash
-   npm install
-   ```
-
-3. **Inicie o servidor de desenvolvimento:**
-
-   ```bash
-   ng serve
-   ```
-
-   Isso iniciará o servidor de desenvolvimento e o aplicativo estará disponível em `http://localhost:4200/`. Ele recarregará automaticamente se você fizer alguma alteração nos arquivos de origem.
-
-4. **Construir para Produção:**
-
-   ```bash
-   ng build --configuration=production
-   ```
-
-   Os arquivos de produção serão gerados na pasta `dist/`. Para GitHub Pages, você pode precisar de `--base-href`:
-
-   ```bash
-   ng build --configuration=production --base-href /<repo-name>/
-   ```
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! Se você tiver ideias para novos upgrades, troféus, melhorias de UI/UX, otimizações de código ou correção de bugs, sinta-se à vontade para abrir uma _issue_ ou enviar um _pull request_.
-
-## 📄 Licença
-
-Este projeto é licenciado sob a [Sua Licença, por exemplo: MIT License]. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 🙏 Créditos
-
-- **Ícones:** [Flaticon](https://www.flaticon.com/) (ou outras fontes de ícones utilizadas)
-- **Fontes:** [Google Fonts](https://fonts.google.com/) (`Creepster`, `Nanum Myeongjo`, `Roboto Mono`)
-- **Sons:** [Mixkit](https://mixkit.co/free-sound-effects/)
-- **Inspiração de Tema:** Temas góticos, Lovecraftianos e a paleta de cores Dracula.
+- **Icones**: [Flaticon](https://www.flaticon.com/)
+- **Fontes**: [Google Fonts](https://fonts.google.com/) (Creepster, Nanum Myeongjo, Roboto Mono)
+- **Sons**: [Mixkit](https://mixkit.co/free-sound-effects/)
+- **Tema**: Inspirado em horror cosmico Lovecraftiano e paleta Dracula

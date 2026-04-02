@@ -1,0 +1,38 @@
+name: Bug Report
+description: Reportar um bug no sistema
+title: "[BUG] Título da tarefa"
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do problema
+      placeholder: Descreva claramente o que está acontecendo.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      placeholder: 1. Vá para '...'\n2. Clique em '...'\n3. Veja o erro
+    validations:
+      required: true
+
+  - type: input
+    id: expected
+    attributes:
+      label: Comportamento esperado
+      placeholder: O que você esperava que acontecesse?
+
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador / Ambiente
+      placeholder: Chrome 125, Firefox 115, Edge...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Informações adicionais
+      placeholder: Logs, prints, contexto extra...

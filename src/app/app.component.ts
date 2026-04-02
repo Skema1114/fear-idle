@@ -8,47 +8,44 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
 import { ClickUpgrade } from '../interfaces/ClickUpgrade';
 import { PrestigeUpgrade } from '../interfaces/PrestigeUpgrade';
+import { Toast } from '../interfaces/Toast';
 import { Trophy } from '../interfaces/Trophy';
 import { Upgrade } from '../interfaces/Upgrade';
-import { TrophyService } from '../services/trophy.service';
+import {
+  TrophyCheckState,
+  TrophyService,
+} from '../services/trophy.service';
 import { UpgradeService } from '../services/upgrade.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, OnDestroy {
   private upgradeService = inject(UpgradeService);
-  private trophiesService = inject(TrophyService);
+  private trophyService = inject(TrophyService);
 
   essence = signal(0);
-  // Essência acumulada em todas as rodadas, para marcos de prestígio e cálculo de ganho de ancestral
   totalEssence = signal(0);
 
-  // Listas de Upgrades
   upgradesList = signal<Upgrade[]>(this.upgradeService.getIdleUpgradesList());
   clickUpgradesList = signal<ClickUpgrade[]>(
     this.upgradeService.getClickUpgradesList()
   );
-  // Lista de Upgrades de Prestígio (Essência Ancestral)
   prestigeUpgradesList = signal<PrestigeUpgrade[]>(
     this.upgradeService.getPrestigeUpgradesList()
   );
-  trophiesList = signal<Trophy[]>(this.trophiesService.getTrophiesList());
+  trophiesList = signal<Trophy[]>(this.trophyService.getTrophiesList());
 
   numericPurchaseModes: number[] = [1, 10, 100, 1000];
   purchaseModes: (number | string)[] = [...this.numericPurchaseModes, 'max'];
 
   currentPurchaseMode: number | string = 1;
-
-  trophyModal = signal(false);
-  lastUnlockedTrophy = signal<Trophy | null>(null);
 
   showImportModal: boolean = false;
   importedSaveData: string = '';
@@ -59,54 +56,68 @@ export class AppComponent implements OnInit, OnDestroy {
   showTrophyDetailsModal: boolean = false;
   selectedTrophy: Trophy | null = null;
 
+  showUpgradeDetailsModal: boolean = false;
+  selectedUpgrade: Upgrade | ClickUpgrade | PrestigeUpgrade | null = null;
+  selectedUpgradeType: 'auto' | 'click' | 'prestige' | null = null;
+
+  showStatsModal: boolean = false;
+
+  showAlertModal: boolean = false;
+  alertModalMessage: string = '';
+
+  showConfirmModal: boolean = false;
+  confirmModalMessage: string = '';
+  private confirmCallback: (() => void) | null = null;
+
   prestigeEssence = signal(0);
   prestigeLevel = signal(0);
 
-  baseClickValue = signal(1);
+  readonly baseClickValue = signal(1);
   comboCount = signal(0);
   highestCombo = signal(0);
   totalManualClicks = signal(0);
+  totalPlaytime = signal(0);
   private comboResetTimeout: any;
 
-  // COMPUTADO: Multiplicador permanente global a partir de upgrades de prestígio
+  activeToasts = signal<Toast[]>([]);
+  private nextToastId = 0;
+  private tickCounter = 0;
+  clickFloaters = signal<{ id: number; value: string; x: number; y: number }[]>(
+    []
+  );
+  private nextFloaterId = 0;
+
   globalMultiplier = computed(() => {
     let multiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
-      // Se for um upgrade global, aplica o multiplicador diretamente.
-      // Para DPS e Click específicos, eles são aplicados no final dos seus respectivos cálculos.
       if (up.type === 'global') {
         multiplier *= Math.pow(up.multiplierValue, up.amount);
       }
     });
-    // Adiciona um multiplicador base por nível de prestígio
-    // Ex: 10% por nível de prestígio
-    multiplier *= 1 + this.prestigeLevel() * 0.1; // Começa em 1x, depois 1.1x, 1.2x etc.
+    multiplier *= 1 + this.prestigeLevel() * 0.1;
 
     return multiplier;
   });
 
-  // COMPUTADO: Valor do clique base + upgrades de clique * multiplicador global de clique (se houver)
   clickValue = computed(() => {
     let base = this.baseClickValue();
     let clickUpgradeMultiplier = 1;
     this.clickUpgradesList().forEach((up) => {
-      clickUpgradeMultiplier *= Math.pow(1 + up.clickMultiplier, up.amount); // Multiplica os bônus dos upgrades de clique
+      clickUpgradeMultiplier *= Math.pow(1 + up.clickMultiplier, up.amount);
     });
-    // Multiplicador global de clique vindo de prestígio
     let globalClickPrestigeMultiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'click') {
         globalClickPrestigeMultiplier *= Math.pow(
-          up.multiplierValue,
+          1 + up.multiplierValue,
           up.amount
         );
       }
     });
 
-    return base * clickUpgradeMultiplier * globalClickPrestigeMultiplier; // O multiplicador global geral é aplicado no manualClick()
+    return base * clickUpgradeMultiplier * globalClickPrestigeMultiplier;
   });
 
-  // COMPUTADO: DPS total dos upgrades * multiplicador global de DPS (se houver)
   dpsValue = computed(() => {
     let baseDps = this.upgradesList().reduce(
       (acc, up) => acc + up.dps * up.amount,
@@ -118,8 +129,10 @@ export class AppComponent implements OnInit, OnDestroy {
         globalDpsPrestigeMultiplier *= Math.pow(up.multiplierValue, up.amount);
       }
     });
-    return baseDps * globalDpsPrestigeMultiplier; // O multiplicador global geral é aplicado na essencePerSecond()
+    return baseDps * globalDpsPrestigeMultiplier;
   });
+
+  essencePerSecond = computed(() => this.dpsValue() * this.globalMultiplier());
 
   comboMultiplier = computed(() => {
     return 1 + this.comboCount() * 0.02;
@@ -130,131 +143,27 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.prestigeUpgradesList()
       .map((up) => ({
         ...up,
-        unlocked: currentPrestigeEssence >= up.cost || up.amount > 0, // Visível se puder comprar ou já comprado
+        unlocked: currentPrestigeEssence >= up.cost || up.amount > 0,
       }))
       .filter((up) => up.unlocked);
   });
 
   unlockedClickUpgrades = computed(() => {
-    const total = this.totalEssence();
     const totalClicksMade = this.totalManualClicks();
+    const clickList = this.clickUpgradesList();
 
-    return this.clickUpgradesList()
-      .map((up) => {
-        let unlocked = up.amount > 0;
-        if (!unlocked) {
-          if (up.name === 'Toque Sutil') unlocked = true;
-          else if (up.name === 'Foco Macabro')
-            unlocked =
-              totalClicksMade >= 50 ||
-              this.clickUpgradesList().find((u) => u.name === 'Toque Sutil')
-                ?.amount! > 0;
-          else if (up.name === 'Ritmo Insano')
-            unlocked =
-              totalClicksMade >= 200 ||
-              this.clickUpgradesList().find((u) => u.name === 'Foco Macabro')
-                ?.amount! > 0;
-          else if (up.name === 'Canto Hipnótico')
-            unlocked =
-              totalClicksMade >= 1000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Ritmo Insano')
-                ?.amount! > 0;
-          else if (up.name === 'Conexão Psíquica')
-            unlocked =
-              totalClicksMade >= 5000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Canto Hipnótico')
-                ?.amount! > 0;
-          else if (up.name === 'Pulso Sombrio')
-            unlocked =
-              totalClicksMade >= 15000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Conexão Psíquica'
-              )?.amount! > 0;
-          else if (up.name === 'Memória Amaldiçoada')
-            unlocked =
-              totalClicksMade >= 50000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Pulso Sombrio')
-                ?.amount! > 0;
-          else if (up.name === 'Ecos do Vazio')
-            unlocked =
-              totalClicksMade >= 200000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Memória Amaldiçoada'
-              )?.amount! > 0;
-          else if (up.name === 'Fúria Canalizada')
-            unlocked =
-              totalClicksMade >= 1000000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Ecos do Vazio')
-                ?.amount! > 0;
-          else if (up.name === 'Devaneio Perpétuo')
-            unlocked =
-              totalClicksMade >= 5000000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Fúria Canalizada'
-              )?.amount! > 0;
-          else if (up.name === 'Convergência Dimensional')
-            unlocked =
-              totalClicksMade >= 20000000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Devaneio Perpétuo'
-              )?.amount! > 0;
-          else if (up.name === 'Vortex de Essência')
-            unlocked =
-              totalClicksMade >= 100000000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Convergência Dimensional'
-              )?.amount! > 0;
-          else if (up.name === 'Canto Cósmico')
-            unlocked =
-              totalClicksMade >= 500000000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Vortex de Essência'
-              )?.amount! > 0;
-          else if (up.name === 'Pulsar da Realidade')
-            unlocked =
-              totalClicksMade >= 2000000000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Canto Cósmico')
-                ?.amount! > 0;
-          else if (up.name === 'Fragmento do Caos')
-            unlocked =
-              totalClicksMade >= 10000000000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Pulsar da Realidade'
-              )?.amount! > 0;
-          else if (up.name === 'Mão Eterna')
-            unlocked =
-              totalClicksMade >= 30000000000 ||
-              this.clickUpgradesList().find(
-                (u) => u.name === 'Fragmento do Caos'
-              )?.amount! > 0;
-          else if (up.name === 'Eco do Além')
-            unlocked =
-              totalClicksMade >= 150000000000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Mão Eterna')
-                ?.amount! > 0;
-          else if (up.name === 'Batida Estelar')
-            unlocked =
-              totalClicksMade >= 700000000000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Eco do Além')
-                ?.amount! > 0;
-          else if (up.name === 'Ritmo Cósmico')
-            unlocked =
-              totalClicksMade >= 3000000000000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Batida Estelar')
-                ?.amount! > 0;
-          else if (up.name === 'Voz do Vazio')
-            unlocked =
-              totalClicksMade >= 12000000000000 ||
-              this.clickUpgradesList().find((u) => u.name === 'Ritmo Cósmico')
-                ?.amount! > 0;
-        }
-        return { ...up, unlocked };
-      })
-      .filter((up) => up.unlocked);
+    return clickList.filter((up) => {
+      if (up.amount > 0) return true;
+      if (!up.unlockClicks && !up.unlockAfter) return true;
+      const clicksOk = up.unlockClicks
+        ? totalClicksMade >= up.unlockClicks
+        : false;
+      const prevOk = up.unlockAfter
+        ? (clickList.find((u) => u.name === up.unlockAfter)?.amount ?? 0) > 0
+        : false;
+      return clicksOk || prevOk;
+    });
   });
-
-  // COMPUTADO: Essência por segundo dos upgrades automáticos * Multiplicador Global
-  essencePerSecond = computed(() => this.dpsValue() * this.globalMultiplier());
 
   upgrades = computed(() => {
     const total = this.totalEssence();
@@ -270,9 +179,64 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.upgrades().filter((up) => up.unlocked);
   });
 
+  totalAutoUpgradesBought = computed(() => {
+    return this.upgradesList().reduce((sum, up) => sum + up.amount, 0);
+  });
+
+  totalClickUpgradesBought = computed(() => {
+    return this.clickUpgradesList().reduce((sum, up) => sum + up.amount, 0);
+  });
+
+  totalPrestigeUpgradesBought = computed(() => {
+    return this.prestigeUpgradesList().reduce((sum, up) => sum + up.amount, 0);
+  });
+
+  unlockedTrophiesCount = computed(() => {
+    return this.trophiesList().filter((t) => t.earned).length;
+  });
+
   private gameInterval: any;
 
   constructor() {}
+
+  showAlert(message: string): void {
+    this.alertModalMessage = message;
+    this.showAlertModal = true;
+  }
+
+  closeAlert(): void {
+    this.showAlertModal = false;
+    this.alertModalMessage = '';
+  }
+
+  showConfirm(message: string, callback: () => void): void {
+    this.confirmModalMessage = message;
+    this.confirmCallback = callback;
+    this.showConfirmModal = true;
+  }
+
+  confirmAction(): void {
+    this.showConfirmModal = false;
+    if (this.confirmCallback) {
+      this.confirmCallback();
+      this.confirmCallback = null;
+    }
+  }
+
+  cancelConfirm(): void {
+    this.showConfirmModal = false;
+    this.confirmCallback = null;
+  }
+
+  resetGame(): void {
+    this.showConfirm(
+      'Tem certeza que deseja resetar TODO o jogo? Todo o progresso será perdido permanentemente!',
+      () => {
+        localStorage.removeItem('fearIdleGame');
+        window.location.reload();
+      }
+    );
+  }
 
   ngOnInit(): void {
     this.loadGame();
@@ -284,15 +248,38 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.comboResetTimeout) {
       clearTimeout(this.comboResetTimeout);
     }
+    this.activeToasts().forEach((toast) => {
+      if (toast.timeoutId) clearTimeout(toast.timeoutId);
+    });
     this.saveGame();
+  }
+
+  private encodeToBase64(str: string): string {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    let binary = '';
+    bytes.forEach((b) => (binary += String.fromCharCode(b)));
+    return btoa(binary);
+  }
+
+  private decodeFromBase64(base64: string): string {
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
   }
 
   private startGameLoop(): void {
     this.gameInterval = setInterval(() => {
-      const gain = this.essencePerSecond();
+      const gain = this.essencePerSecond() / 10;
       if (gain > 0) {
         this.essence.update((v) => v + gain);
         this.totalEssence.update((v) => v + gain);
+      }
+
+      this.tickCounter++;
+
+      if (this.tickCounter % 10 === 0) {
+        this.totalPlaytime.update((v) => v + 1);
         this.checkTrophyProgress(
           this.totalEssence(),
           this.totalManualClicks(),
@@ -302,8 +289,11 @@ export class AppComponent implements OnInit, OnDestroy {
           this.globalMultiplier()
         );
       }
-      this.saveGame();
-    }, 1000);
+
+      if (this.tickCounter % 3000 === 0) {
+        this.saveGame();
+      }
+    }, 100);
   }
 
   public darkEssence(): number {
@@ -324,12 +314,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.comboResetTimeout = setTimeout(() => {
       this.comboCount.set(0);
-      console.log('Combo resetado!');
-    }, 2000);
+    }, 3000);
 
-    const gain = this.clickValue() * this.comboMultiplier(); // O multiplicador global já está em clickValue
+    const gain =
+      this.clickValue() * this.comboMultiplier() * this.globalMultiplier();
     this.essence.update((v) => v + gain);
     this.totalEssence.update((v) => v + gain);
+
+    this.spawnClickFloater(gain);
 
     this.checkTrophyProgress(
       this.totalEssence(),
@@ -341,8 +333,24 @@ export class AppComponent implements OnInit, OnDestroy {
     );
   }
 
-  // --- Funções de Save/Load ---
-  private saveGame(): void {
+  private spawnClickFloater(value: number): void {
+    if (this.clickFloaters().length >= 15) return;
+    const id = this.nextFloaterId++;
+    const x = 40 + Math.random() * 20;
+    const y = 10 + Math.random() * 15;
+    const floater = {
+      id,
+      value: '+' + this.formatNumber(value, true),
+      x,
+      y,
+    };
+    this.clickFloaters.update((f) => [...f, floater]);
+    setTimeout(() => {
+      this.clickFloaters.update((f) => f.filter((fl) => fl.id !== id));
+    }, 1200);
+  }
+
+  private serializeGameState(): string {
     const gameState = {
       essence: this.essence(),
       totalEssence: this.totalEssence(),
@@ -354,14 +362,55 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeEssence: this.prestigeEssence(),
       prestigeLevel: this.prestigeLevel(),
       prestigeUpgradesList: this.prestigeUpgradesList(),
+      totalPlaytime: this.totalPlaytime(),
     };
-    try {
-      const jsonString = JSON.stringify(gameState);
-      const utf8Encoded = unescape(encodeURIComponent(jsonString));
-      const saveDataString = btoa(utf8Encoded);
+    return this.encodeToBase64(JSON.stringify(gameState));
+  }
 
-      localStorage.setItem('fearIdleGame', saveDataString);
-      console.log('Jogo salvo no localStorage.');
+  private applyGameState(gameState: any): void {
+    this.essence.set(gameState.essence || 0);
+    this.totalEssence.set(gameState.totalEssence || 0);
+    this.comboCount.set(0);
+    this.highestCombo.set(gameState.highestCombo ?? 0);
+    this.totalManualClicks.set(gameState.totalManualClicks ?? 0);
+    this.prestigeEssence.set(gameState.prestigeEssence ?? 0);
+    this.prestigeLevel.set(gameState.prestigeLevel ?? 0);
+    this.totalPlaytime.set(gameState.totalPlaytime ?? 0);
+
+    this.upgradesList.set(
+      this.mergeList(this.upgradesList(), gameState.upgradesList || [], 'name', true)
+    );
+    this.clickUpgradesList.set(
+      this.mergeList(this.clickUpgradesList(), gameState.clickUpgradesList || [], 'name', true)
+    );
+    this.prestigeUpgradesList.set(
+      this.mergeList(this.prestigeUpgradesList(), gameState.prestigeUpgradesList || [], 'name', true)
+    );
+    this.trophiesList.set(
+      this.mergeList(this.trophiesList(), gameState.trophiesList || [], 'title', false)
+    );
+  }
+
+  private mergeList<T extends Record<string, any>>(
+    defaults: T[],
+    saved: T[],
+    key: string,
+    includeCost: boolean
+  ): T[] {
+    return defaults.map((def) => {
+      const s = saved.find((item) => item[key] === def[key]);
+      if (!s) return def;
+      const merged: any = { ...def, amount: s['amount'] ?? def['amount'] };
+      if (includeCost && s['cost'] !== undefined) merged['cost'] = s['cost'];
+      if (s['earned'] !== undefined) merged['earned'] = s['earned'];
+      if (s['description']) merged['description'] = s['description'];
+      return merged as T;
+    });
+  }
+
+  private saveGame(): void {
+    try {
+      localStorage.setItem('fearIdleGame', this.serializeGameState());
     } catch (e) {
       console.error('Erro ao salvar o jogo no localStorage:', e);
     }
@@ -369,26 +418,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   saveGameManually(): void {
     this.saveGame();
-    alert('Jogo salvo manualmente!');
+    this.showAlert('Jogo salvo manualmente!');
   }
 
   exportSave(): void {
-    const gameState = {
-      essence: this.essence(),
-      totalEssence: this.totalEssence(),
-      upgradesList: this.upgradesList(),
-      trophiesList: this.trophiesList(),
-      clickUpgradesList: this.clickUpgradesList(),
-      highestCombo: this.highestCombo(),
-      totalManualClicks: this.totalManualClicks(),
-      prestigeEssence: this.prestigeEssence(),
-      prestigeLevel: this.prestigeLevel(),
-      prestigeUpgradesList: this.prestigeUpgradesList(),
-    };
     try {
-      const jsonString = JSON.stringify(gameState);
-      const utf8Encoded = unescape(encodeURIComponent(jsonString));
-      const saveDataString = btoa(utf8Encoded);
+      const saveDataString = this.serializeGameState();
 
       this.exportedSaveText = saveDataString;
       this.showExportTextModal = true;
@@ -404,9 +439,8 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     } catch (e: any) {
       console.error('Erro ao gerar save:', e);
-      alert(
-        'Erro ao gerar save. Verifique o console para detalhes. Detalhes: ' +
-          (e.message || 'Erro desconhecido.')
+      this.showAlert(
+        'Erro ao gerar save. Detalhes: ' + (e.message || 'Erro desconhecido.')
       );
     }
   }
@@ -415,12 +449,12 @@ export class AppComponent implements OnInit, OnDestroy {
     navigator.clipboard
       .writeText(this.exportedSaveText)
       .then(() => {
-        alert('Código do save copiado para a área de transferência!');
+        this.showAlert('Código do save copiado!');
       })
       .catch((err) => {
         console.error('Erro ao copiar o texto do save:', err);
-        alert(
-          'Não foi possível copiar automaticamente. Por favor, selecione o texto no campo e copie-o manualmente.'
+        this.showAlert(
+          'Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.'
         );
       });
   }
@@ -431,8 +465,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (savedState) {
         let decodedData: string;
         try {
-          const decodedBase64 = atob(savedState);
-          decodedData = decodeURIComponent(escape(decodedBase64));
+          decodedData = this.decodeFromBase64(savedState);
         } catch (e: any) {
           console.error('Erro de decodificação no loadGame (Base64/UTF-8):', e);
           throw new Error('Save corrompido ou de formato antigo/inválido.');
@@ -451,118 +484,29 @@ export class AppComponent implements OnInit, OnDestroy {
           );
         }
 
-        if (
-          typeof gameState.highestCombo !== 'number' ||
-          typeof gameState.totalManualClicks !== 'number' ||
-          !Array.isArray(gameState.clickUpgradesList) ||
-          typeof gameState.prestigeEssence !== 'number' ||
-          typeof gameState.prestigeLevel !== 'number' ||
-          !Array.isArray(gameState.prestigeUpgradesList)
-        ) {
-          console.warn(
-            'Dados de clique/combo/prestígio do save não encontrados ou corrompidos. Usando valores padrão.'
-          );
-          this.highestCombo.set(0);
-          this.totalManualClicks.set(0);
-          this.prestigeEssence.set(0);
-          this.prestigeLevel.set(0);
-        } else {
-          this.highestCombo.set(gameState.highestCombo);
-          this.totalManualClicks.set(gameState.totalManualClicks);
-          this.prestigeEssence.set(gameState.prestigeEssence);
-          this.prestigeLevel.set(gameState.prestigeLevel);
-        }
-        this.comboCount.set(0); // Sempre zera o combo ao carregar um jogo
-
-        this.essence.set(gameState.essence || 0);
-        this.totalEssence.set(gameState.totalEssence || 0);
-
-        const loadedUpgrades: Upgrade[] = gameState.upgradesList || [];
-        const currentUpgrades: Upgrade[] = this.upgradesList();
-
-        const mergedUpgrades = currentUpgrades.map((defaultUpgrade) => {
-          const savedUpgrade = loadedUpgrades.find(
-            (lu) => lu.name === defaultUpgrade.name
-          );
-          return savedUpgrade
-            ? {
-                ...defaultUpgrade,
-                amount: savedUpgrade.amount,
-                cost: savedUpgrade.cost,
-              }
-            : defaultUpgrade;
-        });
-        this.upgradesList.set(mergedUpgrades);
-
-        const loadedClickUpgrades: ClickUpgrade[] =
-          gameState.clickUpgradesList || [];
-        const currentClickUpgrades: ClickUpgrade[] = this.clickUpgradesList();
-
-        const mergedClickUpgrades = currentClickUpgrades.map(
-          (defaultUpgrade) => {
-            const savedUpgrade = loadedClickUpgrades.find(
-              (lu) => lu.name === defaultUpgrade.name
-            );
-            return savedUpgrade
-              ? {
-                  ...defaultUpgrade,
-                  amount: savedUpgrade.amount,
-                  cost: savedUpgrade.cost,
-                }
-              : defaultUpgrade;
-          }
-        );
-        this.clickUpgradesList.set(mergedClickUpgrades);
-
-        const loadedPrestigeUpgrades: PrestigeUpgrade[] =
-          gameState.prestigeUpgradesList || [];
-        const currentPrestigeUpgrades: PrestigeUpgrade[] =
-          this.prestigeUpgradesList();
-
-        const mergedPrestigeUpgrades = currentPrestigeUpgrades.map(
-          (defaultUpgrade) => {
-            const savedUpgrade = loadedPrestigeUpgrades.find(
-              (lu) => lu.name === defaultUpgrade.name
-            );
-            return savedUpgrade
-              ? { ...defaultUpgrade, amount: savedUpgrade.amount }
-              : defaultUpgrade;
-          }
-        );
-        this.prestigeUpgradesList.set(mergedPrestigeUpgrades);
-
-        const loadedTrophies: Trophy[] = gameState.trophiesList || [];
-        const currentTrophies: Trophy[] = this.trophiesList();
-
-        const mergedTrophies = currentTrophies.map((defaultTrophy) => {
-          const savedTrophy = loadedTrophies.find(
-            (lt) => lt.title === defaultTrophy.title
-          );
-          return savedTrophy
-            ? { ...defaultTrophy, earned: savedTrophy.earned }
-            : defaultTrophy;
-        });
-        this.trophiesList.set(mergedTrophies);
+        this.applyGameState(gameState);
       }
     } catch (e: any) {
       console.error('Erro ao carregar o jogo do localStorage:', e);
-      alert(
-        'Erro ao carregar o jogo salvo. O save pode estar corrompido ou ser de um formato antigo. Por favor, tente limpar o localStorage do navegador (F12 > Application > Local Storage > Botão direito no domínio > Clear) e recarregar a página. Detalhes: ' +
-          (e.message || 'Erro desconhecido.')
-      );
+      const corruptedSave = localStorage.getItem('fearIdleGame');
+      if (corruptedSave) {
+        localStorage.setItem('fearIdleGame_backup', corruptedSave);
+      }
       localStorage.removeItem('fearIdleGame');
+      this.showAlert(
+        'Erro ao carregar o save. Um backup foi salvo como "fearIdleGame_backup". Use "Novo Jogo" para recomeçar.'
+      );
     }
   }
 
   importSave(): void {
     if (!this.importedSaveData) {
-      alert('Por favor, cole os dados do save no campo de texto.');
+      this.showAlert('Por favor, cole os dados do save no campo de texto.');
       return;
     }
 
     try {
-      const decodedBase64 = atob(this.importedSaveData);
-      const decodedData = decodeURIComponent(escape(decodedBase64));
+      const decodedData = this.decodeFromBase64(this.importedSaveData);
       const gameState = JSON.parse(decodedData);
 
       if (
@@ -582,10 +526,11 @@ export class AppComponent implements OnInit, OnDestroy {
         typeof gameState.prestigeEssence !== 'number' ||
         typeof gameState.prestigeLevel !== 'number' ||
         !Array.isArray(gameState.clickUpgradesList) ||
-        !Array.isArray(gameState.prestigeUpgradesList)
+        !Array.isArray(gameState.prestigeUpgradesList) ||
+        typeof gameState.totalPlaytime !== 'number'
       ) {
         throw new Error(
-          'Dados de save inválidos: propriedades de clique/combo/prestígio ausentes ou corrompidas.'
+          'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes ou corrompidas.'
         );
       }
 
@@ -594,10 +539,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.name !== 'string' ||
           typeof up.cost !== 'number' ||
           typeof up.dps !== 'number' ||
-          typeof up.amount !== 'number'
+          typeof up.amount !== 'number' ||
+          typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade automático com formato incorreto.'
+            'Dados de save inválidos: upgrade automático com formato incorreto ou descrição ausente.'
           );
         }
       }
@@ -607,10 +553,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.name !== 'string' ||
           typeof up.cost !== 'number' ||
           typeof up.clickMultiplier !== 'number' ||
-          typeof up.amount !== 'number'
+          typeof up.amount !== 'number' ||
+          typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de clique com formato incorreto.'
+            'Dados de save inválidos: upgrade de clique com formato incorreto ou descrição ausente.'
           );
         }
       }
@@ -620,10 +567,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.cost !== 'number' ||
           typeof up.multiplierValue !== 'number' ||
           typeof up.type !== 'string' ||
-          typeof up.amount !== 'number'
+          typeof up.amount !== 'number' ||
+          typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de prestígio com formato incorreto.'
+            'Dados de save inválidos: upgrade de prestígio com formato incorreto ou descrição ausente.'
           );
         }
       }
@@ -641,191 +589,130 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.essence.set(gameState.essence);
-      this.totalEssence.set(gameState.totalEssence);
-      this.comboCount.set(0);
-      this.highestCombo.set(gameState.highestCombo);
-      this.totalManualClicks.set(gameState.totalManualClicks);
-      this.prestigeEssence.set(gameState.prestigeEssence);
-      this.prestigeLevel.set(gameState.prestigeLevel);
-
-      const loadedUpgrades: Upgrade[] = gameState.upgradesList;
-      const currentUpgrades: Upgrade[] = this.upgradesList();
-
-      const mergedUpgrades = currentUpgrades.map((defaultUpgrade) => {
-        const savedUpgrade = loadedUpgrades.find(
-          (lu) => lu.name === defaultUpgrade.name
-        );
-        return savedUpgrade
-          ? {
-              ...defaultUpgrade,
-              amount: savedUpgrade.amount,
-              cost: savedUpgrade.cost,
-            }
-          : defaultUpgrade;
-      });
-      this.upgradesList.set(mergedUpgrades);
-
-      const loadedClickUpgrades: ClickUpgrade[] = gameState.clickUpgradesList;
-      const currentClickUpgrades: ClickUpgrade[] = this.clickUpgradesList();
-
-      const mergedClickUpgrades = currentClickUpgrades.map((defaultUpgrade) => {
-        const savedUpgrade = loadedClickUpgrades.find(
-          (lu) => lu.name === defaultUpgrade.name
-        );
-        return savedUpgrade
-          ? {
-              ...defaultUpgrade,
-              amount: savedUpgrade.amount,
-              cost: savedUpgrade.cost,
-            }
-          : defaultUpgrade;
-      });
-      this.clickUpgradesList.set(mergedClickUpgrades);
-
-      const loadedPrestigeUpgrades: PrestigeUpgrade[] =
-        gameState.prestigeUpgradesList;
-      const currentPrestigeUpgrades: PrestigeUpgrade[] =
-        this.prestigeUpgradesList();
-
-      const mergedPrestigeUpgrades = currentPrestigeUpgrades.map(
-        (defaultUpgrade) => {
-          const savedUpgrade = loadedPrestigeUpgrades.find(
-            (lu) => lu.name === defaultUpgrade.name
-          );
-          return savedUpgrade
-            ? { ...defaultUpgrade, amount: savedUpgrade.amount }
-            : defaultUpgrade;
-        }
-      );
-      this.prestigeUpgradesList.set(mergedPrestigeUpgrades);
-
-      const loadedTrophies: Trophy[] = gameState.trophiesList;
-      const currentTrophies: Trophy[] = this.trophiesList();
-
-      const mergedTrophies = currentTrophies.map((defaultTrophy) => {
-        const savedTrophy = loadedTrophies.find(
-          (lt) => lt.title === defaultTrophy.title
-        );
-        return savedTrophy
-          ? { ...defaultTrophy, earned: savedTrophy.earned }
-          : defaultTrophy;
-      });
-      this.trophiesList.set(mergedTrophies);
+      this.applyGameState(gameState);
 
       this.showImportModal = false;
       this.importedSaveData = '';
-      alert('Save importado com sucesso! O jogo foi atualizado.');
+      this.showAlert('Save importado com sucesso!');
     } catch (e: any) {
       console.error('Erro ao importar save:', e);
-      alert(
-        'Erro ao importar save. Verifique se os dados são válidos ou estão corrompidos. Detalhes: ' +
-          (e.message || 'Erro desconhecido.')
+      this.showAlert(
+        'Erro ao importar save. Verifique se os dados são válidos.'
       );
     }
   }
 
-  // NOVO: Calcula o ganho de Essência Ancestral ao prestigiar
+  public formatPlaytime(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  }
+
+  viewStats(): void {
+    this.showStatsModal = true;
+  }
+
+  closeStatsModal(): void {
+    this.showStatsModal = false;
+  }
+
   calculatePrestigeGain(): number {
-    const prestigeThreshold = 1_000_000_000_000; // 1 trilhão de essência total para começar a ganhar
+    const prestigeThreshold = 10_000_000;
     if (this.totalEssence() < prestigeThreshold) return 0;
 
-    // Fórmula: Math.floor(raiz cúbica de (totalEssence / 1 trilhão))
-    const gain = Math.floor(Math.cbrt(this.totalEssence() / prestigeThreshold));
+    const gain = Math.floor(
+      Math.cbrt(this.totalEssence() / prestigeThreshold)
+    );
     return gain;
   }
 
-  // NOVO: Função para Prestígio
   prestigeGame(): void {
     const gain = this.calculatePrestigeGain();
     if (gain < 1) {
-      alert(
-        'Você ainda não acumulou Essência Total suficiente para prestigiar. Continue invocando o medo!'
+      this.showAlert(
+        'Você ainda não acumulou Essência suficiente para prestigiar.'
       );
       return;
     }
 
-    if (
-      !confirm(
-        `Você realmente deseja prestigiar? Seus upgrades e essência serão resetados, mas seus troféus e upgrades de Legado permanecerão. Você ganhará ${this.formatNumber(
-          gain,
-          false
-        )} Essência Ancestral!`
-      )
-    ) {
-      return;
-    }
-
-    this.prestigeEssence.update((v) => v + gain);
-    this.prestigeLevel.update((v) => v + 1);
-
-    this.essence.set(0);
-    this.totalEssence.set(0);
-
-    // Resetar upgrades automáticos para seus valores iniciais
-    this.upgradesList.update((list) => {
-      const newList = list.map((up) => ({ ...up, amount: 0 }));
-      // Opcional: Resetar custos para o padrão inicial se você quiser cada prestígio começando com os mesmos custos base
-      // Mas geralmente eles continuam a progredir de onde pararam, ou são resetados para um "novo jogo+"
-      // Para manter a progressão de custo por item, não alteramos o `cost` aqui.
-      // Se quiser resetar os custos para os valores iniciais da lista de definição:
-      // const initialUpgrades = this.getInitialUpgradesList(); // Precisaria de um método para isso
-      // return list.map(up => ({ ...up, amount: 0, cost: initialUpgrades.find(i => i.name === up.name)?.cost || up.cost }));
-
-      // Para simplificar, apenas a quantidade é resetada. O custo fica como estava no último save.
-      // Isso significa que cada prestígio vai ficando mais fácil de "recomprar" até o nível de prestígio anterior.
-      return newList;
-    });
-
-    // Resetar upgrades de clique para seus valores iniciais
-    this.clickUpgradesList.update((list) => {
-      const newList = list.map((up) => ({ ...up, amount: 0 }));
-      return newList;
-    });
-
-    this.comboCount.set(0);
-    this.totalManualClicks.set(0);
-
-    alert(
-      `Legado Despertado! Você ganhou ${this.formatNumber(
+    this.showConfirm(
+      `Prestigiar? Upgrades e essência serão resetados. Você ganhará ${this.formatNumber(
         gain,
         false
-      )} Essência Ancestral. Seu poder permanente aumentou!`
-    );
-    this.saveGame();
+      )} Essência Ancestral.`,
+      () => {
+        this.prestigeEssence.update((v) => v + gain);
+        this.prestigeLevel.update((v) => v + 1);
 
-    this.checkTrophyProgress(
-      this.totalEssence(),
-      this.totalManualClicks(),
-      this.highestCombo(),
-      this.prestigeLevel(),
-      this.prestigeEssence(),
-      this.globalMultiplier()
+        this.essence.set(0);
+        this.totalEssence.set(0);
+
+        this.upgradesList.update((list) =>
+          list.map((up) => ({ ...up, amount: 0 }))
+        );
+        this.clickUpgradesList.update((list) =>
+          list.map((up) => ({ ...up, amount: 0 }))
+        );
+
+        this.comboCount.set(0);
+        this.totalManualClicks.set(0);
+
+        this.showAlert(
+          `Legado Despertado! +${this.formatNumber(
+            gain,
+            false
+          )} Essência Ancestral.`
+        );
+        this.saveGame();
+
+        this.checkTrophyProgress(
+          this.totalEssence(),
+          this.totalManualClicks(),
+          this.highestCombo(),
+          this.prestigeLevel(),
+          this.prestigeEssence(),
+          this.globalMultiplier()
+        );
+      }
     );
   }
 
-  // NOVO: Compra Upgrades de Prestígio
-  buyPrestigeUpgrade(index: number): void {
-    this.prestigeUpgradesList.update((currentPrestigeUpgrades) => {
-      const upgradesCopy = [...currentPrestigeUpgrades];
-      const up = upgradesCopy[index];
+  canAffordPrestigeUpgrade(upgradeName: string): boolean {
+    const up = this.prestigeUpgradesList().find((u) => u.name === upgradeName);
+    if (!up) return false;
+    return this.prestigeEssence() >= up.cost;
+  }
 
-      if (!up || this.prestigeEssence() < up.cost) {
-        alert('Essência Ancestral insuficiente!');
+  buyPrestigeUpgrade(upgradeName: string): void {
+    this.prestigeUpgradesList.update((currentPrestigeUpgrades) => {
+      const idx = currentPrestigeUpgrades.findIndex(
+        (u) => u.name === upgradeName
+      );
+      if (idx === -1) return currentPrestigeUpgrades;
+
+      const up = currentPrestigeUpgrades[idx];
+
+      if (this.prestigeEssence() < up.cost) {
         return currentPrestigeUpgrades;
       }
 
-      // Consome Essência Ancestral
       this.prestigeEssence.update((v) => v - up.cost);
-      up.amount += 1; // Incrementa a quantidade do upgrade de prestígio
-      up.cost = Math.round(up.cost * 2); // Custo do upgrade de prestígio também escala
 
-      alert(
-        `Upgrade de Legado '${up.name}' comprado! Seu poder permanente aumentou.`
-      );
-      this.saveGame(); // Salva após comprar upgrade de prestígio
+      const upgradesCopy = [...currentPrestigeUpgrades];
+      upgradesCopy[idx] = {
+        ...up,
+        amount: up.amount + 1,
+        cost: Math.round(up.cost * 2),
+      };
 
-      // Verifica troféus de prestígio
+      this.saveGame();
+
       this.checkTrophyProgress(
         this.totalEssence(),
         this.totalManualClicks(),
@@ -837,11 +724,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
       return upgradesCopy;
     });
-  }
-
-  canAffordPrestigeUpgrade(index: number): boolean {
-    const up = this.prestigeUpgradesList()[index];
-    return this.prestigeEssence() >= up.cost;
   }
 
   getUpgradeCostForCurrentMode(upgrade: Upgrade): number {
@@ -860,7 +742,13 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       return totalCost;
     } else {
-      return upgrade.cost * (currentMode as number);
+      let totalCost = 0;
+      let tempCost = upgrade.cost;
+      for (let i = 0; i < (currentMode as number); i++) {
+        totalCost += tempCost;
+        tempCost = Math.round(tempCost * 1.15);
+      }
+      return totalCost;
     }
   }
 
@@ -880,7 +768,13 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       return totalCost;
     } else {
-      return upgrade.cost * (currentMode as number);
+      let totalCost = 0;
+      let tempCost = upgrade.cost;
+      for (let i = 0; i < (currentMode as number); i++) {
+        totalCost += tempCost;
+        tempCost = Math.round(tempCost * 1.15);
+      }
+      return totalCost;
     }
   }
 
@@ -907,8 +801,6 @@ export class AppComponent implements OnInit, OnDestroy {
     if (Math.abs(num) < 1 && isDps) return num.toFixed(2);
     if (Math.abs(num) < 1000 && !isDps) return num.toFixed(0);
 
-    if (Math.abs(num) >= 1e13) return num.toExponential(2);
-
     const si = [
       { value: 1, symbol: '' },
       { value: 1e3, symbol: 'K' },
@@ -923,6 +815,8 @@ export class AppComponent implements OnInit, OnDestroy {
       { value: 1e30, symbol: 'No' },
       { value: 1e33, symbol: 'De' },
     ];
+
+    if (Math.abs(num) >= 1e36) return num.toExponential(2);
     let i;
     for (i = si.length - 1; i > 0; i--) {
       if (Math.abs(num) >= si[i].value) {
@@ -930,17 +824,11 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
 
-    let precision = 2;
     const scaledNum = num / si[i].value;
-    if (isDps) {
-      if (scaledNum < 10) precision = 2;
-      else if (scaledNum < 100) precision = 1;
-      else precision = 0;
-    } else {
-      if (scaledNum < 10) precision = 2;
-      else if (scaledNum < 100) precision = 1;
-      else precision = 0;
-    }
+    let precision: number;
+    if (scaledNum < 10) precision = 2;
+    else if (scaledNum < 100) precision = 1;
+    else precision = 0;
 
     return scaledNum.toFixed(precision).replace(/\.0+$/, '') + si[i].symbol;
   }
@@ -956,7 +844,6 @@ export class AppComponent implements OnInit, OnDestroy {
     if (type === 'auto') {
       currentUpgrade = this.unlockedUpgrades()[index];
     } else {
-      // type === 'click'
       currentUpgrade = this.unlockedClickUpgrades()[index];
     }
 
@@ -968,7 +855,12 @@ export class AppComponent implements OnInit, OnDestroy {
       return this.calculateMaxPurchase(upgradeCost, this.essence()) > 0;
     }
 
-    const totalCost = upgradeCost * (multiplier as number);
+    let totalCost = 0;
+    let tempCost = upgradeCost;
+    for (let i = 0; i < (multiplier as number); i++) {
+      totalCost += tempCost;
+      tempCost = Math.round(tempCost * 1.15);
+    }
     return this.essence() >= totalCost;
   }
 
@@ -1010,7 +902,6 @@ export class AppComponent implements OnInit, OnDestroy {
         return upgradesCopy;
       });
     } else {
-      // type === 'click'
       this.clickUpgradesList.update((currentClickUpgrades) => {
         const clickUpgradesCopy = [...currentClickUpgrades];
         const clickedUpgradeFromUnlockedList =
@@ -1062,9 +953,7 @@ export class AppComponent implements OnInit, OnDestroy {
     return upgrade.name;
   }
 
-  trophies() {
-    return this.trophiesList();
-  }
+
 
   viewTrophyDetails(trophy: Trophy): void {
     this.selectedTrophy = trophy;
@@ -1076,6 +965,21 @@ export class AppComponent implements OnInit, OnDestroy {
     this.selectedTrophy = null;
   }
 
+  viewUpgradeDetails(
+    upgrade: Upgrade | ClickUpgrade | PrestigeUpgrade,
+    type: 'auto' | 'click' | 'prestige'
+  ): void {
+    this.selectedUpgrade = upgrade;
+    this.selectedUpgradeType = type;
+    this.showUpgradeDetailsModal = true;
+  }
+
+  closeUpgradeDetailsModal(): void {
+    this.showUpgradeDetailsModal = false;
+    this.selectedUpgrade = null;
+    this.selectedUpgradeType = null;
+  }
+
   private checkTrophyProgress(
     currentTotalEssence: number,
     currentTotalManualClicks: number,
@@ -1084,653 +988,37 @@ export class AppComponent implements OnInit, OnDestroy {
     currentPrestigeEssence: number,
     currentGlobalMultiplier: number
   ) {
+    const conditions = this.trophyService.getTrophyConditions();
+    const state: TrophyCheckState = {
+      totalEssence: currentTotalEssence,
+      totalManualClicks: currentTotalManualClicks,
+      highestCombo: currentHighestCombo,
+      prestigeLevel: currentPrestigeLevel,
+      globalMultiplier: currentGlobalMultiplier,
+      upgrades: this.upgradesList().map((u) => ({
+        name: u.name,
+        amount: u.amount,
+      })),
+      clickUpgrades: this.clickUpgradesList().map((u) => ({
+        name: u.name,
+        amount: u.amount,
+      })),
+      prestigeUpgrades: this.prestigeUpgradesList().map((u) => ({
+        name: u.name,
+        amount: u.amount,
+        type: u.type,
+      })),
+      allTrophies: this.trophiesList().map((t) => ({
+        title: t.title,
+        earned: t.earned,
+      })),
+    };
+
     this.trophiesList().forEach((trophy) => {
       if (!trophy.earned) {
-        switch (trophy.title) {
-          case 'Primeira Brasa':
-            if (currentTotalEssence >= 1) this.unlockTrophy(trophy.title);
-            break;
-          case 'Eco Inicial':
-            if (currentTotalEssence >= 100) this.unlockTrophy(trophy.title);
-            break;
-          case 'Voto de Sangue':
-            if (currentTotalEssence >= 1000) this.unlockTrophy(trophy.title);
-            break;
-          case 'Sussurros na Escuridão':
-            if (currentTotalEssence >= 10000) this.unlockTrophy(trophy.title);
-            break;
-          case 'Ídolo Restaurado':
-            if (currentTotalEssence >= 50000) this.unlockTrophy(trophy.title);
-            break;
-          case 'Conhecimento Proibido':
-            if (currentTotalEssence >= 100000) this.unlockTrophy(trophy.title);
-            break;
-          case 'Marca do Selo':
-            if (currentTotalEssence >= 500000) this.unlockTrophy(trophy.title);
-            break;
-          case 'Fonte da Agonia':
-            if (currentTotalEssence >= 2500000) this.unlockTrophy(trophy.title);
-            break;
-          case 'Rito Completo':
-            if (currentTotalEssence >= 10000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Harmonia Dissonante':
-            if (currentTotalEssence >= 50000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Profundezas Insanas':
-            if (currentTotalEssence >= 250000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Guardião do Limiar':
-            if (currentTotalEssence >= 1000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Véu Rasgado':
-            if (currentTotalEssence >= 5000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Cólera Cósmica':
-            if (currentTotalEssence >= 25000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Limiar Dimensional':
-            if (currentTotalEssence >= 100000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'O Sonho Interrompido':
-            if (currentTotalEssence >= 500000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Visão do Caos':
-            if (currentTotalEssence >= 2000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'A Voz do Horror':
-            if (currentTotalEssence >= 8000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'O Despertar Final':
-            if (currentTotalEssence >= 30000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Mestre do Vazio':
-            if (currentTotalEssence >= 100000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Conquistador da Realidade':
-            if (currentTotalEssence >= 500000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'A Ascensão':
-            if (currentTotalEssence >= 1000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'União Cósmica':
-            if (currentTotalEssence >= 5000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Além dos Sonhos':
-            if (currentTotalEssence >= 25000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Deus Exterior':
-            if (currentTotalEssence >= 100000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'O Vácuo Insondável':
-            if (currentTotalEssence >= 500000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Criador de Universos':
-            if (currentTotalEssence >= 1000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'A Essência Primordial':
-            if (currentTotalEssence >= 10000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Além de Toda Compreensão':
-            if (currentTotalEssence >= 100000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'O Absoluto':
-            if (currentTotalEssence >= 1000000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Infinito e Além':
-            if (currentTotalEssence >= 10000000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'A Última Transcedência':
-            if (currentTotalEssence >= 100000000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Rei do Multiverso':
-            if (currentTotalEssence >= 1000000000000000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-
-          case 'Primeiro Sussurro':
-            if (currentTotalManualClicks >= 1) this.unlockTrophy(trophy.title);
-            break;
-          case 'Toque Persistente':
-            if (currentTotalManualClicks >= 100)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Dedo Veloz':
-            if (currentTotalManualClicks >= 1000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Ritmo Implacável':
-            if (currentTotalManualClicks >= 10000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Pulsar da Essência':
-            if (currentTotalManualClicks >= 100000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Canalizador Incansável':
-            if (currentTotalManualClicks >= 1000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Batedor Cósmico':
-            if (currentTotalManualClicks >= 10000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Mão da Loucura':
-            if (currentTotalManualClicks >= 100000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Pulsar do Vazio':
-            if (currentTotalManualClicks >= 1000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Dedo Dimensional':
-            if (currentTotalManualClicks >= 10000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Mestre do Ritmo Cósmico':
-            if (currentTotalManualClicks >= 100000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Voz da Criação':
-            if (currentTotalManualClicks >= 1000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'O Último Toque':
-            if (currentTotalManualClicks >= 10000000000000)
-              this.unlockTrophy(trophy.title);
-            break;
-
-          case 'Combo Iniciante (2x)':
-            if (currentHighestCombo >= 2) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Místico (5x)':
-            if (currentHighestCombo >= 5) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Febril (10x)':
-            if (currentHighestCombo >= 10) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Intenso (15x)':
-            if (currentHighestCombo >= 15) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Transcendental (20x)':
-            if (currentHighestCombo >= 20) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Perfeito (30x)':
-            if (currentHighestCombo >= 30) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Infinito (50x)':
-            if (currentHighestCombo >= 50) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Além (75x)':
-            if (currentHighestCombo >= 75) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Cósmico (100x)':
-            if (currentHighestCombo >= 100) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Celestial (150x)':
-            if (currentHighestCombo >= 150) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Divino (200x)':
-            if (currentHighestCombo >= 200) this.unlockTrophy(trophy.title);
-            break;
-          case 'O Último Combo (300x)':
-            if (currentHighestCombo >= 300) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Lenda (500x)':
-            if (currentHighestCombo >= 500) this.unlockTrophy(trophy.title);
-            break;
-          case 'Combo Mítico (1000x)':
-            if (currentHighestCombo >= 1000) this.unlockTrophy(trophy.title);
-            break;
-
-          case 'Primeira Manifestação':
-            if (this.upgradesList().some((up) => up.amount > 0))
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Despertar de Símbolos':
-            if (this.upgradesList().filter((up) => up.amount > 0).length >= 5)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Mestre dos Rituais':
-            const tier2Auto = [
-              'Ritual Profano',
-              'Tomos Proibidos',
-              'Selo Espectral',
-              'Lágrimas da Medusa',
-              'Fragmento Estelar',
-            ];
-            if (
-              tier2Auto.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >
-                  0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Invocador de Horrores':
-            const tier3Auto = [
-              'Coro Macabro',
-              'Abismo da Loucura',
-              'Sentinela Dimensional',
-              'Véu Interplanar',
-              'Tempestade Cósmica',
-            ];
-            if (
-              tier3Auto.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >
-                  0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Forjador de Portais':
-            const tier4Auto = [
-              'Portal para o Além',
-              'O Sonhador em R´lyeh',
-              'Olho de Azathoth',
-              'Toque de Nyarlathotep',
-              'Despertar da Antiga Ameaça',
-            ];
-            if (
-              tier4Auto.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >
-                  0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Conjurador Primordial':
-            const tier5Auto = [
-              'Mente Colossal',
-              'Espiral de Desespero',
-              'Chama Eterna',
-              'O Vazio Pulsante',
-              'Realidade Fragmentada',
-            ];
-            if (
-              tier5Auto.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >
-                  0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Arsenal do Terror':
-            if (this.upgradesList().filter((up) => up.amount > 0).length >= 10)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Força Oculta':
-            if (this.upgradesList().filter((up) => up.amount > 0).length >= 15)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Legado do Medo':
-            const allAutoUpgradesT1 = [
-              'Vela Sussurrante',
-              'Lamento dos Condenados',
-              'Pacto Sanguíneo',
-              'Eco dos Pesadelos',
-              'Ídolo Quebrado',
-            ];
-            if (
-              allAutoUpgradesT1.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >
-                  0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Domínio das Sombras':
-            const tier1Auto100 = [
-              'Vela Sussurrante',
-              'Lamento dos Condenados',
-              'Pacto Sanguíneo',
-              'Eco dos Pesadelos',
-              'Ídolo Quebrado',
-            ];
-            if (
-              tier1Auto100.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >=
-                  100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Poder de Azathoth':
-            const tier2Auto100 = [
-              'Ritual Profano',
-              'Tomos Proibidos',
-              'Selo Espectral',
-              'Lágrimas da Medusa',
-              'Fragmento Estelar',
-            ];
-            if (
-              tier2Auto100.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >=
-                  100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Essência da Existência':
-            const tier3Auto100 = [
-              'Coro Macabro',
-              'Abismo da Loucura',
-              'Sentinela Dimensional',
-              'Véu Interplanar',
-              'Tempestade Cósmica',
-            ];
-            if (
-              tier3Auto100.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >=
-                  100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Senhor dos Portais':
-            const tier4Auto100 = [
-              'Portal para o Além',
-              'O Sonhador em R´lyeh',
-              'Olho de Azathoth',
-              'Toque de Nyarlathotep',
-              'Despertar da Antiga Ameaça',
-            ];
-            if (
-              tier4Auto100.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >=
-                  100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Titã da Realidade':
-            const tier5Auto100 = [
-              'Mente Colossal',
-              'Espiral de Desespero',
-              'Chama Eterna',
-              'O Vazio Pulsante',
-              'Realidade Fragmentada',
-            ];
-            if (
-              tier5Auto100.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >=
-                  100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Arquimago do Vazio':
-            const tier6Auto100 = [
-              'Eco do Caos Primordial',
-              'Tecelão de Universos',
-              'Vontade Cósmica Indomável',
-              'O Ponto de Singularidade',
-              'A Não-Existência',
-            ];
-            if (
-              tier6Auto100.every(
-                (name) =>
-                  this.upgradesList().find((up) => up.name === name)?.amount! >=
-                  100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Monarca das Trevas':
-            if (this.upgradesList().every((up) => up.amount >= 100))
-              this.unlockTrophy(trophy.title);
-            break;
-
-          case 'Primeira Canalização':
-            if (this.clickUpgradesList().some((up) => up.amount > 0))
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Maestria da Canalização':
-            if (
-              this.clickUpgradesList().filter((up) => up.amount > 0).length >= 3
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Ritmo Absoluto':
-            const clickTier2 = [
-              'Pulso Sombrio',
-              'Memória Amaldiçoada',
-              'Ecos do Vazio',
-              'Fúria Canalizada',
-              'Devaneio Perpétuo',
-            ];
-            if (
-              clickTier2.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! > 0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Canto das Trevas':
-            const clickTier3 = [
-              'Convergência Dimensional',
-              'Vortex de Essência',
-              'Canto Cósmico',
-              'Pulsar da Realidade',
-              'Fragmento do Caos',
-            ];
-            if (
-              clickTier3.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! > 0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Canalizador Supremo':
-            const clickTier4 = [
-              'Mão Eterna',
-              'Eco do Além',
-              'Batida Estelar',
-              'Ritmo Cósmico',
-              'Voz do Vazio',
-            ];
-            if (
-              clickTier4.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! > 0
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Conexão Eterna':
-            if (
-              this.clickUpgradesList().filter((up) => up.amount > 0).length >= 5
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Mente Sombria':
-            if (
-              this.clickUpgradesList().filter((up) => up.amount > 0).length >=
-              10
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Devorador de Pensamentos':
-            const clickTier1_100 = [
-              'Toque Sutil',
-              'Foco Macabro',
-              'Ritmo Insano',
-              'Canto Hipnótico',
-              'Conexão Psíquica',
-            ];
-            if (
-              clickTier1_100.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! >= 100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Voz do Vácuo':
-            const clickTier2_100 = [
-              'Pulso Sombrio',
-              'Memória Amaldiçoada',
-              'Ecos do Vazio',
-              'Fúria Canalizada',
-              'Devaneio Perpétuo',
-            ];
-            if (
-              clickTier2_100.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! >= 100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Pulsação Primordial':
-            const clickTier3_100 = [
-              'Convergência Dimensional',
-              'Vortex de Essência',
-              'Canto Cósmico',
-              'Pulsar da Realidade',
-              'Fragmento do Caos',
-            ];
-            if (
-              clickTier3_100.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! >= 100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Mãos da Criação':
-            const clickTier4_100 = [
-              'Mão Eterna',
-              'Eco do Além',
-              'Batida Estelar',
-              'Ritmo Cósmico',
-              'Voz do Vazio',
-            ];
-            if (
-              clickTier4_100.every(
-                (name) =>
-                  this.clickUpgradesList().find((up) => up.name === name)
-                    ?.amount! >= 100
-              )
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-
-          case 'Equilíbrio Sombrio':
-            const allAutoPresent = this.upgradesList().every(
-              (up) => up.amount > 0
-            );
-            const allClickPresent = this.clickUpgradesList().every(
-              (up) => up.amount > 0
-            );
-            if (allAutoPresent && allClickPresent)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Poder Onisciente':
-            const allAuto100Units = this.upgradesList().every(
-              (up) => up.amount >= 100
-            );
-            const allClick100Units = this.clickUpgradesList().every(
-              (up) => up.amount >= 100
-            );
-            if (allAuto100Units && allClick100Units)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Verdade Final':
-            const allOtherTrophiesEarned = this.trophiesList()
-              .filter((t) => t.title !== 'Verdade Final')
-              .every((t) => t.earned);
-            if (allOtherTrophiesEarned) this.unlockTrophy(trophy.title);
-            break;
-
-          // NOVAS CONDIÇÕES DE TROFÉUS DE PRESTÍGIO
-          case 'Primeiro Legado':
-            if (currentPrestigeLevel >= 1) this.unlockTrophy(trophy.title);
-            break;
-          case 'Legado Consolidado':
-            if (currentPrestigeLevel >= 5) this.unlockTrophy(trophy.title);
-            break;
-          case 'Mestre do Legado':
-            if (currentPrestigeLevel >= 10) this.unlockTrophy(trophy.title);
-            break;
-          case 'Herdeiro do Vazio':
-            if (currentPrestigeLevel >= 25) this.unlockTrophy(trophy.title);
-            break;
-          case 'Lorde da Transcedência':
-            if (currentPrestigeLevel >= 50) this.unlockTrophy(trophy.title);
-            break;
-          case 'Poder Ancestral':
-            if (this.prestigeUpgradesList().some((up) => up.amount > 0))
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Força Eterna':
-            if (
-              this.prestigeUpgradesList().filter((up) => up.amount > 0)
-                .length >= 5
-            )
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Multiplicador Divino':
-            if (currentGlobalMultiplier >= 100) this.unlockTrophy(trophy.title);
-            break;
-          case 'Ascensão do Vazio':
-            if (currentGlobalMultiplier >= 1000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'A Essência Absoluta':
-            if (currentGlobalMultiplier >= 1000000)
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'Legado Completo':
-            if (this.prestigeUpgradesList().every((up) => up.amount > 0))
-              this.unlockTrophy(trophy.title);
-            break;
-          case 'O Verdadeiro Absoluto':
-            if (currentGlobalMultiplier >= 1000000000)
-              this.unlockTrophy(trophy.title);
-            break;
+        const check = conditions.get(trophy.title);
+        if (check && check(state)) {
+          this.unlockTrophy(trophy.title);
         }
       }
     });
@@ -1743,29 +1031,31 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (trophy && !trophy.earned) {
         trophy.earned = true;
-        this.lastUnlockedTrophy.set(trophy);
-        this.trophyModal.set(true);
+
+        const newToast: Toast = {
+          id: this.nextToastId++,
+          message: `🏆 ${trophy.title}`,
+          icon: trophy.icon,
+        };
+        this.activeToasts.update((toasts) => [...toasts, newToast]);
+
+        newToast.timeoutId = setTimeout(() => {
+          this.activeToasts.update((toasts) =>
+            toasts.filter((t) => t.id !== newToast.id)
+          );
+        }, 10000);
 
         const audio = new Audio(
           'https://assets.mixkit.co/sfx/preview/mixkit-fairy-win-sound-2011.mp3'
         );
-        audio.play();
+        audio.play().catch(() => {});
         return updatedTrophies;
       }
       return currentTrophies;
     });
   }
 
-  showTrophyModal() {
-    return this.trophyModal();
-  }
-
-  unlockedTrophy() {
-    return this.lastUnlockedTrophy();
-  }
-
-  closeModal() {
-    this.trophyModal.set(false);
-    this.lastUnlockedTrophy.set(null);
+  trackByToastId(index: number, toast: Toast): number {
+    return toast.id;
   }
 }

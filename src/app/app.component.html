@@ -4,10 +4,10 @@
     <span class="value">{{ formatNumber(darkEssence()) }}</span></span
   >
   <span class="essence-display"
-    >💰 Total:
+    >💰 Nesta Vida:
     <span class="value">{{ formatNumber(totalEssence()) }}</span></span
   >
-  <span class="essence-display"
+  <span class="essence-display dps-display"
     >⚡ Por segundo:
     <span class="value">{{
       formatNumber(essencePerSecond(), true)
@@ -31,30 +31,40 @@
       <span class="value">{{ formatNumber(darkEssence()) }}</span>
     </p>
     <p>
-      <strong>Essência Total:</strong>
+      <strong>Nesta Vida:</strong>
       <span class="value">{{ formatNumber(totalEssence()) }}</span>
     </p>
     <p>
       <strong>Ganho por segundo:</strong>
-      <span class="value">{{ formatNumber(essencePerSecond(), true) }}</span>
+      <span class="value">{{ formatNumber(essencePerSecond(), true) }}/s</span>
     </p>
   </div>
 
   <div class="actions-section">
-    <button class="primary-button click-button" (click)="manualClick()">
-      Canalizar Essência Manualmente <br />
-      (+{{
-        formatNumber(
-          baseClickValue() * comboMultiplier() * globalMultiplier(),
-          true
-        )
-      }}
-      Essência / Clique)
-    </button>
+    <div class="click-area">
+      <button class="primary-button click-button" (click)="manualClick()">
+        Canalizar Essência<br />
+        (+{{
+          formatNumber(
+            baseClickValue() * comboMultiplier() * globalMultiplier(),
+            true
+          )
+        }}
+        / Clique)
+      </button>
+      <div
+        class="click-floater"
+        *ngFor="let f of clickFloaters()"
+        [style.left.%]="f.x"
+        [style.top.%]="f.y"
+      >
+        {{ f.value }}
+      </div>
+    </div>
 
     <div class="combo-display" *ngIf="comboCount() > 0">
-      <span>COMBO: {{ formatNumber(comboCount()) }}x</span>
-      <span>Multiplicador: x{{ formatNumber(comboMultiplier(), true) }}</span>
+      <span>COMBO {{ formatNumber(comboCount()) }}x</span>
+      <span>| x{{ formatNumber(comboMultiplier(), true) }}</span>
     </div>
 
     <div class="purchase-modes-group">
@@ -81,13 +91,17 @@
 
   <div class="save-export-section">
     <button class="secondary-button" (click)="saveGameManually()">
-      Salvar Jogo Manualmente
+      Salvar Jogo
     </button>
     <button class="secondary-button" (click)="exportSave()">
       Exportar Save
     </button>
     <button class="secondary-button" (click)="showImportModal = true">
       Importar Save
+    </button>
+    <button class="secondary-button" (click)="viewStats()">Estatísticas</button>
+    <button class="secondary-button danger-button" (click)="resetGame()">
+      Novo Jogo
     </button>
   </div>
 
@@ -103,38 +117,27 @@
         "
       >
         <img
-          [src]="up.image || 'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'"
+          [src]="up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'"
           [alt]="up.name"
-          width="64"
-          height="64"
+          width="56"
+          height="56"
         />
         <div class="card-details">
           <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
-          <p
-            class="upgrade-info"
-            [title]="
-              'Qtd: ' +
-              formatNumber(up.amount) +
-              ' | +' +
-              formatNumber(up.dps, true) +
-              '/s'
-            "
-          >
+          <p class="upgrade-info">
             Qtd: {{ formatNumber(up.amount) }} | +{{
               formatNumber(up.dps, true)
             }}/s
           </p>
-          <p
-            class="upgrade-cost"
-            [title]="
-              'Custo: ' +
-              formatNumber(getUpgradeCostForCurrentMode(up), false) +
-              ' Essência'
-            "
-          >
-            Custo:
+          <p class="upgrade-cost">
             {{ formatNumber(getUpgradeCostForCurrentMode(up), false) }} Essência
           </p>
+          <button
+            class="action-button details-button"
+            (click)="viewUpgradeDetails(up, 'auto')"
+          >
+            Detalhes
+          </button>
           <button
             class="action-button"
             (click)="buyUpgrade(i, currentPurchaseMode, 'auto')"
@@ -172,38 +175,28 @@
         "
       >
         <img
-          [src]="up.image || 'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'"
+          [src]="up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'"
           [alt]="up.name"
-          width="64"
-          height="64"
+          width="56"
+          height="56"
         />
         <div class="card-details">
           <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
-          <p
-            class="upgrade-info"
-            [title]="
-              'Qtd: ' +
-              formatNumber(up.amount) +
-              ' | Multiplicador de Clique: x' +
-              formatNumber(up.clickMultiplier, true)
-            "
-          >
-            Qtd: {{ formatNumber(up.amount) }} | Multiplicador de Clique: x{{
+          <p class="upgrade-info">
+            Qtd: {{ formatNumber(up.amount) }} | x{{
               formatNumber(up.clickMultiplier, true)
             }}
           </p>
-          <p
-            class="upgrade-cost"
-            [title]="
-              'Custo: ' +
-              formatNumber(getClickUpgradeCostForCurrentMode(up), false) +
-              ' Essência'
-            "
-          >
-            Custo:
+          <p class="upgrade-cost">
             {{ formatNumber(getClickUpgradeCostForCurrentMode(up), false) }}
             Essência
           </p>
+          <button
+            class="action-button details-button"
+            (click)="viewUpgradeDetails(up, 'click')"
+          >
+            Detalhes
+          </button>
           <button
             class="action-button"
             (click)="buyUpgrade(i, currentPurchaseMode, 'click')"
@@ -230,7 +223,7 @@
   <h2 class="section-title">🏆 Revelações Sombrias</h2>
   <ul class="trophies-list">
     <li
-      *ngFor="let t of trophies(); trackBy: trackByTrophyTitle"
+      *ngFor="let t of trophiesList(); trackBy: trackByTrophyTitle"
       [class.earned]="t.earned"
       [class.locked]="!t.earned"
       class="trophy-item"
@@ -240,91 +233,97 @@
       <span class="trophy-title">{{ t.title }}</span>
     </li>
   </ul>
-</div>
 
-<h2 class="section-title">💎 Despertar do Legado</h2>
-<div class="prestige-section">
-  <p class="prestige-info">
-    Você alcançou um poder inimaginável. Ao despertar seu legado, você retornará
-    ao início com suas memórias intactas (troféus) e com Essência Ancestral, que
-    concederá um multiplicador permanente em todo o seu ganho de essência.
-  </p>
-  <p class="prestige-level">Nível de Legado: {{ prestigeLevel() }}</p>
-  <p class="prestige-multiplier">
-    Multiplicador Permanente Total: x{{
-      formatNumber(globalMultiplier(), true)
-    }}
-  </p>
+  <h2 class="section-title">💎 Despertar do Legado</h2>
+  <div class="prestige-section">
+    <p class="prestige-info">
+      Ao despertar seu legado, você retornará ao início com suas memórias
+      intactas (troféus) e com Essência Ancestral, que concederá um
+      multiplicador permanente em todo o seu ganho de essência.
+    </p>
+    <p class="prestige-level">Nível de Legado: {{ prestigeLevel() }}</p>
+    <p class="prestige-multiplier">
+      Multiplicador Permanente: x{{
+        formatNumber(globalMultiplier(), true)
+      }}
+    </p>
 
-  <button
-    class="primary-button prestige-button"
-    (click)="prestigeGame()"
-    [disabled]="calculatePrestigeGain() < 1"
-  >
-    Despertar Legado <br />
-    (+{{ formatNumber(calculatePrestigeGain(), false) }} Essência Ancestral)
-  </button>
+    <button
+      class="primary-button prestige-button"
+      (click)="prestigeGame()"
+      [disabled]="calculatePrestigeGain() < 1"
+    >
+      Despertar Legado<br />
+      (+{{ formatNumber(calculatePrestigeGain(), false) }} Essência Ancestral)
+    </button>
 
-  <h3 class="section-subtitle">Upgrades de Legado (Permenantes)</h3>
-  <ng-container
-    *ngIf="
-      unlockedPrestigeUpgrades().length > 0;
-      else noPrestigeUpgradesAvailable
-    "
-  >
-    <div class="upgrades-grid prestige-upgrades-grid">
-      <div
-        class="upgrade-card prestige-upgrade-card"
-        *ngFor="
-          let up of unlockedPrestigeUpgrades();
-          trackBy: trackByPrestigeUpgradeName;
-          let i = index
-        "
-      >
-        <img
-          [src]="up.image || 'https://placehold.co/64x64/2a2a2a/f8f8f2?text=?'"
-          [alt]="up.name"
-          width="64"
-          height="64"
-        />
-        <div class="card-details">
-          <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
-          <p class="upgrade-info">Qtd: {{ formatNumber(up.amount) }}</p>
-          <p class="upgrade-info">
-            Multiplicador: x{{ formatNumber(up.multiplierValue, true) }} ({{
-              up.type === "dps" ? "DPS" : "Clique"
-            }})
-          </p>
-          <p class="upgrade-cost">
-            Custo: {{ formatNumber(up.cost, false) }} Ancestral
-          </p>
-          <button
-            class="action-button prestige-action-button"
-            (click)="buyPrestigeUpgrade(i)"
-            [disabled]="!canAffordPrestigeUpgrade(i)"
-          >
-            Comprar
-          </button>
+    <h3 class="section-subtitle">Upgrades de Legado (Permanentes)</h3>
+    <ng-container
+      *ngIf="
+        unlockedPrestigeUpgrades().length > 0;
+        else noPrestigeUpgradesAvailable
+      "
+    >
+      <div class="upgrades-grid prestige-upgrades-grid">
+        <div
+          class="upgrade-card prestige-upgrade-card"
+          *ngFor="
+            let up of unlockedPrestigeUpgrades();
+            trackBy: trackByPrestigeUpgradeName;
+            let i = index
+          "
+        >
+          <img
+            [src]="
+              up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'
+            "
+            [alt]="up.name"
+            width="56"
+            height="56"
+          />
+          <div class="card-details">
+            <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
+            <p class="upgrade-info">Qtd: {{ formatNumber(up.amount) }}</p>
+            <p class="upgrade-info">
+              x{{ formatNumber(up.multiplierValue, true) }} ({{
+                up.type === "dps"
+                  ? "DPS"
+                  : up.type === "click"
+                  ? "Clique"
+                  : "Global"
+              }})
+            </p>
+            <p class="upgrade-cost">
+              {{ formatNumber(up.cost, false) }} Ancestral
+            </p>
+            <button
+              class="action-button details-button"
+              (click)="viewUpgradeDetails(up, 'prestige')"
+            >
+              Detalhes
+            </button>
+            <button
+              class="action-button prestige-action-button"
+              (click)="buyPrestigeUpgrade(up.name)"
+              [disabled]="!canAffordPrestigeUpgrade(up.name)"
+            >
+              Comprar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </ng-container>
-  <ng-template #noPrestigeUpgradesAvailable>
-    <div class="message-box">
-      <p>
-        Nenhum upgrade de legado disponível. Acumule mais Essência Ancestral!
-      </p>
-    </div>
-  </ng-template>
-</div>
+    </ng-container>
+    <ng-template #noPrestigeUpgradesAvailable>
+      <div class="message-box">
+        <p>
+          Nenhum upgrade de legado disponível. Acumule mais Essência Ancestral!
+        </p>
+      </div>
+    </ng-template>
+  </div>
 
-<div class="modal-overlay" *ngIf="showTrophyModal()">
-  <div class="modal-content">
-    <h3 class="modal-title">
-      {{ unlockedTrophy()?.icon }} {{ unlockedTrophy()?.title }}
-    </h3>
-    <p class="modal-description">{{ unlockedTrophy()?.description }}</p>
-    <button class="modal-close-button" (click)="closeModal()">Fechar</button>
+  <div class="game-footer">
+    <p>Culto das Sombras - Fear Idle</p>
   </div>
 </div>
 
@@ -344,7 +343,7 @@
 
 <div class="modal-overlay" *ngIf="showExportTextModal">
   <div class="modal-content">
-    <h3 class="modal-title">Seu Código de Save</h3>
+    <h3 class="modal-title">Código de Save</h3>
     <p class="modal-description">
       Copie o texto abaixo e salve-o em um local seguro:
     </p>
@@ -355,7 +354,7 @@
     ></textarea>
     <div class="modal-actions">
       <button class="secondary-button" (click)="copyExportedSaveText()">
-        Copiar para Área de Transferência
+        Copiar
       </button>
       <button class="secondary-button" (click)="showExportTextModal = false">
         Fechar
@@ -373,5 +372,170 @@
     <button class="modal-close-button" (click)="closeTrophyDetailsModal()">
       Fechar
     </button>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showUpgradeDetailsModal">
+  <div class="modal-content">
+    <h3 class="modal-title">{{ selectedUpgrade?.name }}</h3>
+    <img
+      [src]="
+        selectedUpgrade?.image ||
+        'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'
+      "
+      [alt]="selectedUpgrade?.name"
+      width="64"
+      height="64"
+      class="modal-upgrade-image"
+    />
+    <p class="modal-description upgrade-details-text">
+      <ng-container *ngIf="selectedUpgradeType === 'auto'">
+        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+        Geração por Segundo: +{{
+          formatNumber($any(selectedUpgrade)?.dps || 0, true)
+        }}/s
+      </ng-container>
+      <ng-container *ngIf="selectedUpgradeType === 'click'">
+        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+        Multiplicador por Clique: x{{
+          formatNumber($any(selectedUpgrade)?.clickMultiplier || 0, true)
+        }}
+      </ng-container>
+      <ng-container *ngIf="selectedUpgradeType === 'prestige'">
+        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+        Multiplicador Permanente: x{{
+          formatNumber($any(selectedUpgrade)?.multiplierValue || 0, true)
+        }}
+        (Afeta:
+        {{
+          $any(selectedUpgrade)?.type === "dps"
+            ? "DPS"
+            : $any(selectedUpgrade)?.type === "click"
+            ? "Clique"
+            : "Global"
+        }})
+      </ng-container>
+      <br />
+      Custo Atual:
+      {{ formatNumber(selectedUpgrade?.cost || 0, false) }} Essência <br />
+      <br />
+      <span class="upgrade-description-long">{{
+        selectedUpgrade?.description
+      }}</span>
+    </p>
+    <button class="modal-close-button" (click)="closeUpgradeDetailsModal()">
+      Fechar
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showStatsModal">
+  <div class="modal-content stats-modal-content">
+    <h3 class="modal-title">Estatísticas do Culto</h3>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-label">Tempo Total de Jogo</span>
+        <span class="stat-value">{{ formatPlaytime(totalPlaytime()) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Essência Nesta Vida</span>
+        <span class="stat-value">{{ formatNumber(totalEssence()) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Cliques Manuais</span>
+        <span class="stat-value">{{ formatNumber(totalManualClicks()) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Maior Combo</span>
+        <span class="stat-value">{{ formatNumber(highestCombo()) }}x</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Essência / Segundo</span>
+        <span class="stat-value">{{
+          formatNumber(essencePerSecond(), true)
+        }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Valor por Clique</span>
+        <span class="stat-value">{{
+          formatNumber(clickValue() * globalMultiplier(), true)
+        }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Nível de Legado</span>
+        <span class="stat-value">{{ prestigeLevel() }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Essência Ancestral</span>
+        <span class="stat-value">{{ formatNumber(prestigeEssence()) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Multiplicador Permanente</span>
+        <span class="stat-value"
+          >x{{ formatNumber(globalMultiplier(), true) }}</span
+        >
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Upgrades Automáticos</span>
+        <span class="stat-value">{{
+          formatNumber(totalAutoUpgradesBought())
+        }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Upgrades de Clique</span>
+        <span class="stat-value">{{
+          formatNumber(totalClickUpgradesBought())
+        }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Upgrades de Legado</span>
+        <span class="stat-value">{{
+          formatNumber(totalPrestigeUpgradesBought())
+        }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Troféus</span>
+        <span class="stat-value"
+          >{{ unlockedTrophiesCount() }} / {{ trophiesList().length }}</span
+        >
+      </div>
+    </div>
+    <button class="modal-close-button" (click)="closeStatsModal()">
+      Fechar
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showAlertModal">
+  <div class="modal-content">
+    <h3 class="modal-title">Aviso</h3>
+    <p class="modal-description">{{ alertModalMessage }}</p>
+    <button class="modal-close-button" (click)="closeAlert()">OK</button>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showConfirmModal">
+  <div class="modal-content">
+    <h3 class="modal-title">Confirmação</h3>
+    <p class="modal-description">{{ confirmModalMessage }}</p>
+    <div class="modal-actions">
+      <button class="secondary-button" (click)="confirmAction()">
+        Confirmar
+      </button>
+      <button class="secondary-button" (click)="cancelConfirm()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container">
+  <div
+    class="toast-notification"
+    *ngFor="let toast of activeToasts(); trackBy: trackByToastId"
+    [class.show]="true"
+  >
+    <span class="toast-icon">{{ toast.icon }}</span>
+    <span class="toast-message">{{ toast.message }}</span>
   </div>
 </div>

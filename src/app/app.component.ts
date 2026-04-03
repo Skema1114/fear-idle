@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  isDevMode,
   OnDestroy,
   OnInit,
   signal,
@@ -199,6 +200,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor() {}
 
+  private logError(...args: any[]): void {
+    if (isDevMode()) {
+      console.error(...args);
+    }
+  }
+
+  private logWarn(...args: any[]): void {
+    if (isDevMode()) {
+      console.warn(...args);
+    }
+  }
+
   showAlert(message: string): void {
     this.alertModalMessage = message;
     this.showAlertModal = true;
@@ -266,6 +279,40 @@ export class AppComponent implements OnInit, OnDestroy {
     const binary = atob(base64);
     const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
     return new TextDecoder().decode(bytes);
+  }
+
+  private computeChecksum(data: string): string {
+    let hash = 0;
+    for (let i = 0; i < data.length; i++) {
+      const char = data.charCodeAt(i);
+      hash = ((hash << 5) - hash + char) | 0;
+    }
+    return (hash >>> 0).toString(36);
+  }
+
+  private serializeWithChecksum(jsonStr: string): string {
+    const checksum = this.computeChecksum(jsonStr);
+    const payload = JSON.stringify({ d: jsonStr, c: checksum });
+    return this.encodeToBase64(payload);
+  }
+
+  private deserializeWithChecksum(encoded: string): string {
+    const decoded = this.decodeFromBase64(encoded);
+
+    try {
+      const wrapper = JSON.parse(decoded);
+      if (wrapper.d && wrapper.c) {
+        const expectedChecksum = this.computeChecksum(wrapper.d);
+        if (wrapper.c !== expectedChecksum) {
+          throw new Error('Save corrompido: checksum inválido.');
+        }
+        return wrapper.d;
+      }
+    } catch (e: any) {
+      if (e.message?.includes('checksum')) throw e;
+    }
+
+    return decoded;
   }
 
   private startGameLoop(): void {
@@ -364,7 +411,7 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeUpgradesList: this.prestigeUpgradesList(),
       totalPlaytime: this.totalPlaytime(),
     };
-    return this.encodeToBase64(JSON.stringify(gameState));
+    return this.serializeWithChecksum(JSON.stringify(gameState));
   }
 
   private applyGameState(gameState: any): void {
@@ -412,7 +459,7 @@ export class AppComponent implements OnInit, OnDestroy {
     try {
       localStorage.setItem('fearIdleGame', this.serializeGameState());
     } catch (e) {
-      console.error('Erro ao salvar o jogo no localStorage:', e);
+      this.logError('Erro ao salvar o jogo no localStorage:', e);
     }
   }
 
@@ -432,15 +479,15 @@ export class AppComponent implements OnInit, OnDestroy {
         .writeText(saveDataString)
         .then(() => {})
         .catch((err) => {
-          console.warn(
+          this.logWarn(
             'Falha ao copiar automaticamente para a área de transferência:',
             err
           );
         });
     } catch (e: any) {
-      console.error('Erro ao gerar save:', e);
+      this.logError('Erro ao gerar save:', e);
       this.showAlert(
-        'Erro ao gerar save. Detalhes: ' + (e.message || 'Erro desconhecido.')
+        'Erro ao gerar save. Tente novamente ou recarregue a página.'
       );
     }
   }
@@ -452,7 +499,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.showAlert('Código do save copiado!');
       })
       .catch((err) => {
-        console.error('Erro ao copiar o texto do save:', err);
+        this.logError('Erro ao copiar o texto do save:', err);
         this.showAlert(
           'Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.'
         );
@@ -465,9 +512,9 @@ export class AppComponent implements OnInit, OnDestroy {
       if (savedState) {
         let decodedData: string;
         try {
-          decodedData = this.decodeFromBase64(savedState);
+          decodedData = this.deserializeWithChecksum(savedState);
         } catch (e: any) {
-          console.error('Erro de decodificação no loadGame (Base64/UTF-8):', e);
+          this.logError('Erro de decodificação no loadGame (Base64/UTF-8):', e);
           throw new Error('Save corrompido ou de formato antigo/inválido.');
         }
 
@@ -487,7 +534,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.applyGameState(gameState);
       }
     } catch (e: any) {
-      console.error('Erro ao carregar o jogo do localStorage:', e);
+      this.logError('Erro ao carregar o jogo do localStorage:', e);
       const corruptedSave = localStorage.getItem('fearIdleGame');
       if (corruptedSave) {
         localStorage.setItem('fearIdleGame_backup', corruptedSave);
@@ -499,6 +546,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isSafeNumber(value: unknown): value is number {
+    return typeof value === 'number' && isFinite(value) && value >= 0;
+  }
+
   importSave(): void {
     if (!this.importedSaveData) {
       this.showAlert('Por favor, cole os dados do save no campo de texto.');
@@ -506,12 +557,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const decodedData = this.decodeFromBase64(this.importedSaveData);
+      const decodedData = this.deserializeWithChecksum(this.importedSaveData);
       const gameState = JSON.parse(decodedData);
 
       if (
-        typeof gameState.essence !== 'number' ||
-        typeof gameState.totalEssence !== 'number' ||
+        !this.isSafeNumber(gameState.essence) ||
+        !this.isSafeNumber(gameState.totalEssence) ||
         !Array.isArray(gameState.upgradesList) ||
         !Array.isArray(gameState.trophiesList)
       ) {
@@ -521,13 +572,13 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
       if (
-        typeof gameState.highestCombo !== 'number' ||
-        typeof gameState.totalManualClicks !== 'number' ||
-        typeof gameState.prestigeEssence !== 'number' ||
-        typeof gameState.prestigeLevel !== 'number' ||
+        !this.isSafeNumber(gameState.highestCombo) ||
+        !this.isSafeNumber(gameState.totalManualClicks) ||
+        !this.isSafeNumber(gameState.prestigeEssence) ||
+        !this.isSafeNumber(gameState.prestigeLevel) ||
         !Array.isArray(gameState.clickUpgradesList) ||
         !Array.isArray(gameState.prestigeUpgradesList) ||
-        typeof gameState.totalPlaytime !== 'number'
+        !this.isSafeNumber(gameState.totalPlaytime)
       ) {
         throw new Error(
           'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes ou corrompidas.'
@@ -537,9 +588,9 @@ export class AppComponent implements OnInit, OnDestroy {
       for (const up of gameState.upgradesList) {
         if (
           typeof up.name !== 'string' ||
-          typeof up.cost !== 'number' ||
-          typeof up.dps !== 'number' ||
-          typeof up.amount !== 'number' ||
+          !this.isSafeNumber(up.cost) ||
+          !this.isSafeNumber(up.dps) ||
+          !this.isSafeNumber(up.amount) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
@@ -551,9 +602,9 @@ export class AppComponent implements OnInit, OnDestroy {
       for (const up of gameState.clickUpgradesList) {
         if (
           typeof up.name !== 'string' ||
-          typeof up.cost !== 'number' ||
-          typeof up.clickMultiplier !== 'number' ||
-          typeof up.amount !== 'number' ||
+          !this.isSafeNumber(up.cost) ||
+          !this.isSafeNumber(up.clickMultiplier) ||
+          !this.isSafeNumber(up.amount) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
@@ -564,10 +615,10 @@ export class AppComponent implements OnInit, OnDestroy {
       for (const up of gameState.prestigeUpgradesList) {
         if (
           typeof up.name !== 'string' ||
-          typeof up.cost !== 'number' ||
-          typeof up.multiplierValue !== 'number' ||
+          !this.isSafeNumber(up.cost) ||
+          !this.isSafeNumber(up.multiplierValue) ||
           typeof up.type !== 'string' ||
-          typeof up.amount !== 'number' ||
+          !this.isSafeNumber(up.amount) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
@@ -595,7 +646,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.importedSaveData = '';
       this.showAlert('Save importado com sucesso!');
     } catch (e: any) {
-      console.error('Erro ao importar save:', e);
+      this.logError('Erro ao importar save:', e);
       this.showAlert(
         'Erro ao importar save. Verifique se os dados são válidos.'
       );

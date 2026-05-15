@@ -105,6 +105,54 @@
     </button>
   </div>
 
+  <nav class="tab-nav" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'auto'"
+      [attr.aria-selected]="activeTab() === 'auto'"
+      (click)="setTab('auto')"
+    >
+      🔮 Automáticas
+      <span class="tab-badge">{{ totalAutoUpgradesBought() }}</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'click'"
+      [attr.aria-selected]="activeTab() === 'click'"
+      (click)="setTab('click')"
+    >
+      ⚡ Canalização
+      <span class="tab-badge">{{ totalClickUpgradesBought() }}</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'trophies'"
+      [attr.aria-selected]="activeTab() === 'trophies'"
+      (click)="setTab('trophies')"
+    >
+      🏆 Revelações
+      <span class="tab-badge">{{ unlockedTrophiesCount() }}/{{ trophiesList().length }}</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'prestige'"
+      [attr.aria-selected]="activeTab() === 'prestige'"
+      (click)="setTab('prestige')"
+    >
+      💎 Legado
+      <span class="tab-badge" *ngIf="prestigeLevel() > 0">{{ prestigeLevel() }}</span>
+    </button>
+  </nav>
+
+  <section *ngIf="activeTab() === 'auto'" class="tab-panel">
   <h2 class="section-title">🔮 Manifestações Automáticas</h2>
   <ng-container *ngIf="unlockedUpgrades().length > 0; else noUpgradesAvailable">
     <div class="upgrades-grid">
@@ -160,7 +208,9 @@
       </p>
     </div>
   </ng-template>
+  </section>
 
+  <section *ngIf="activeTab() === 'click'" class="tab-panel">
   <h2 class="section-title">⚡ Manifestações de Canalização</h2>
   <ng-container
     *ngIf="unlockedClickUpgrades().length > 0; else noClickUpgradesAvailable"
@@ -219,7 +269,9 @@
       </p>
     </div>
   </ng-template>
+  </section>
 
+  <section *ngIf="activeTab() === 'trophies'" class="tab-panel">
   <h2 class="section-title">🏆 Revelações Sombrias</h2>
   <ul class="trophies-list">
     <li
@@ -233,7 +285,9 @@
       <span class="trophy-title">{{ t.title }}</span>
     </li>
   </ul>
+  </section>
 
+  <section *ngIf="activeTab() === 'prestige'" class="tab-panel">
   <h2 class="section-title">💎 Despertar do Legado</h2>
   <div class="prestige-section">
     <p class="prestige-info">
@@ -321,6 +375,7 @@
       </div>
     </ng-template>
   </div>
+  </section>
 
   <div class="game-footer">
     <p>Culto das Sombras - Fear Idle</p>

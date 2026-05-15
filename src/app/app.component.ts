@@ -48,6 +48,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   currentPurchaseMode: number | string = 1;
 
+  activeTab = signal<'auto' | 'click' | 'trophies' | 'prestige'>('auto');
+  setTab(tab: 'auto' | 'click' | 'trophies' | 'prestige'): void {
+    this.activeTab.set(tab);
+  }
+
   showImportModal: boolean = false;
   importedSaveData: string = '';
 
@@ -82,7 +87,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   activeToasts = signal<Toast[]>([]);
   private nextToastId = 0;
-  private tickCounter = 0;
+  private lastTickTime = 0;
+  private lastSaveTime = 0;
+  private lastTrophyCheckTime = 0;
+  private playtimeAccumulator = 0;
+  private readonly OFFLINE_CAP_SECONDS = 8 * 60 * 60;
+  private readonly AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000;
+  private readonly TROPHY_CHECK_INTERVAL_MS = 1000;
   clickFloaters = signal<{ id: number; value: string; x: number; y: number }[]>(
     []
   );
@@ -316,17 +327,31 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private startGameLoop(): void {
+    const now = Date.now();
+    this.lastTickTime = now;
+    this.lastSaveTime = now;
+    this.lastTrophyCheckTime = now;
+
     this.gameInterval = setInterval(() => {
-      const gain = this.essencePerSecond() / 10;
-      if (gain > 0) {
+      const tickNow = Date.now();
+      const deltaSec = (tickNow - this.lastTickTime) / 1000;
+      this.lastTickTime = tickNow;
+
+      const gain = this.essencePerSecond() * deltaSec;
+      if (gain > 0 && Number.isFinite(gain)) {
         this.essence.update((v) => v + gain);
         this.totalEssence.update((v) => v + gain);
       }
 
-      this.tickCounter++;
+      this.playtimeAccumulator += deltaSec;
+      if (this.playtimeAccumulator >= 1) {
+        const whole = Math.floor(this.playtimeAccumulator);
+        this.totalPlaytime.update((v) => v + whole);
+        this.playtimeAccumulator -= whole;
+      }
 
-      if (this.tickCounter % 10 === 0) {
-        this.totalPlaytime.update((v) => v + 1);
+      if (tickNow - this.lastTrophyCheckTime >= this.TROPHY_CHECK_INTERVAL_MS) {
+        this.lastTrophyCheckTime = tickNow;
         this.checkTrophyProgress(
           this.totalEssence(),
           this.totalManualClicks(),
@@ -337,10 +362,44 @@ export class AppComponent implements OnInit, OnDestroy {
         );
       }
 
-      if (this.tickCounter % 3000 === 0) {
+      if (tickNow - this.lastSaveTime >= this.AUTOSAVE_INTERVAL_MS) {
+        this.lastSaveTime = tickNow;
         this.saveGame();
       }
     }, 100);
+  }
+
+  private applyOfflineProgress(savedAt: number): void {
+    if (!Number.isFinite(savedAt) || savedAt <= 0) return;
+    const now = Date.now();
+    const elapsedSec = Math.min(
+      Math.max(0, (now - savedAt) / 1000),
+      this.OFFLINE_CAP_SECONDS
+    );
+    if (elapsedSec < 1) return;
+
+    const gain = this.essencePerSecond() * elapsedSec;
+    if (!Number.isFinite(gain) || gain <= 0) return;
+
+    this.essence.update((v) => v + gain);
+    this.totalEssence.update((v) => v + gain);
+    this.totalPlaytime.update((v) => v + Math.floor(elapsedSec));
+
+    const cappedHours = (elapsedSec / 3600).toFixed(1);
+    this.pushToast(
+      `Bem-vindo de volta! +${this.formatNumber(gain, false)} essência em ${cappedHours}h offline.`,
+      '🌙'
+    );
+  }
+
+  private pushToast(message: string, icon = '✨', ttlMs = 10000): void {
+    const toast: Toast = { id: this.nextToastId++, message, icon };
+    this.activeToasts.update((toasts) => [...toasts, toast]);
+    toast.timeoutId = setTimeout(() => {
+      this.activeToasts.update((toasts) =>
+        toasts.filter((t) => t.id !== toast.id)
+      );
+    }, ttlMs);
   }
 
   public darkEssence(): number {
@@ -365,10 +424,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const gain =
       this.clickValue() * this.comboMultiplier() * this.globalMultiplier();
-    this.essence.update((v) => v + gain);
-    this.totalEssence.update((v) => v + gain);
-
-    this.spawnClickFloater(gain);
+    if (Number.isFinite(gain) && gain > 0) {
+      this.essence.update((v) => v + gain);
+      this.totalEssence.update((v) => v + gain);
+      this.spawnClickFloater(gain);
+    }
 
     this.checkTrophyProgress(
       this.totalEssence(),
@@ -410,19 +470,22 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeLevel: this.prestigeLevel(),
       prestigeUpgradesList: this.prestigeUpgradesList(),
       totalPlaytime: this.totalPlaytime(),
+      lastSavedAt: Date.now(),
     };
     return this.serializeWithChecksum(JSON.stringify(gameState));
   }
 
   private applyGameState(gameState: any): void {
-    this.essence.set(gameState.essence || 0);
-    this.totalEssence.set(gameState.totalEssence || 0);
+    const finite = (v: any, fallback = 0) =>
+      typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : fallback;
+    this.essence.set(finite(gameState.essence));
+    this.totalEssence.set(finite(gameState.totalEssence));
     this.comboCount.set(0);
-    this.highestCombo.set(gameState.highestCombo ?? 0);
-    this.totalManualClicks.set(gameState.totalManualClicks ?? 0);
-    this.prestigeEssence.set(gameState.prestigeEssence ?? 0);
-    this.prestigeLevel.set(gameState.prestigeLevel ?? 0);
-    this.totalPlaytime.set(gameState.totalPlaytime ?? 0);
+    this.highestCombo.set(finite(gameState.highestCombo));
+    this.totalManualClicks.set(finite(gameState.totalManualClicks));
+    this.prestigeEssence.set(finite(gameState.prestigeEssence));
+    this.prestigeLevel.set(finite(gameState.prestigeLevel));
+    this.totalPlaytime.set(finite(gameState.totalPlaytime));
 
     this.upgradesList.set(
       this.mergeList(this.upgradesList(), gameState.upgradesList || [], 'name', true)
@@ -532,6 +595,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         this.applyGameState(gameState);
+        this.applyOfflineProgress(gameState.lastSavedAt);
       }
     } catch (e: any) {
       this.logError('Erro ao carregar o jogo do localStorage:', e);
@@ -848,6 +912,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public formatNumber(num: number, isDps: boolean = false): string {
+    if (!Number.isFinite(num)) {
+      if (Number.isNaN(num)) return '?';
+      return num < 0 ? '-∞' : '∞';
+    }
     if (num === 0) return '0';
     if (Math.abs(num) < 1 && isDps) return num.toFixed(2);
     if (Math.abs(num) < 1000 && !isDps) return num.toFixed(0);

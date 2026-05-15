@@ -39,6 +39,14 @@ $font-mono: "Roboto Mono", monospace;
   border: 1px solid $border;
 }
 
+// Mesma aparencia do glass sem o custo de backdrop-filter.
+// Usado nos cards que se repetem (upgrades, trofeus) onde 30+ blurs
+// simultaneos pesam na GPU.
+@mixin card-surface($bg: rgba(28, 28, 40, 0.78), $border: rgba(58, 58, 79, 0.4)) {
+  background: $bg;
+  border: 1px solid $border;
+}
+
 @mixin glow-text($color, $intensity: 8px) {
   text-shadow: 0 0 $intensity $color;
 }
@@ -536,7 +544,7 @@ strong {
 }
 
 .upgrade-card {
-  @include glass();
+  @include card-surface();
   border-radius: 12px;
   padding: 1.2rem;
   display: flex;
@@ -613,8 +621,8 @@ strong {
   .action-button {
     background: linear-gradient(135deg, $spectral-green, color.adjust($spectral-green, $lightness: -15%));
     color: $dark-void;
-    font-family: $font-mono;
-    font-size: 0.8rem;
+    font-family: $font-body;
+    font-size: 0.85rem;
     font-weight: 700;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -683,7 +691,7 @@ strong {
 }
 
 .trophy-item {
-  @include glass(rgba(22, 22, 30, 0.5));
+  @include card-surface(rgba(22, 22, 30, 0.78));
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
   display: flex;

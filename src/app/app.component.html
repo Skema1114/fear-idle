@@ -128,7 +128,7 @@
       (click)="setTab('auto')"
     >
       🔮 Automáticas
-      <span class="tab-badge">{{ totalAutoUpgradesBought() }}</span>
+      <span class="tab-badge" *ngIf="totalAutoUpgradesBought() > 0">{{ totalAutoUpgradesBought() }}</span>
     </button>
     <button
       type="button"
@@ -139,7 +139,7 @@
       (click)="setTab('click')"
     >
       ⚡ Canalização
-      <span class="tab-badge">{{ totalClickUpgradesBought() }}</span>
+      <span class="tab-badge" *ngIf="totalClickUpgradesBought() > 0">{{ totalClickUpgradesBought() }}</span>
     </button>
     <button
       type="button"

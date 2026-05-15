@@ -168,6 +168,25 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('affordability cache', () => {
+    it('marks first upgrade affordable when essence covers cost', () => {
+      const first = component.upgradesList()[0];
+      component.totalEssence.set(first.cost);
+      component.essence.set(first.cost);
+      component.currentPurchaseMode.set(1);
+      const map = component.affordableAutoMap();
+      expect(map.get(first.name)).toBe(true);
+    });
+
+    it('marks unaffordable when essence below cumulative cost (10x mode)', () => {
+      const first = component.upgradesList()[0];
+      component.totalEssence.set(first.cost);
+      component.essence.set(first.cost);
+      component.currentPurchaseMode.set(10);
+      expect(component.affordableAutoMap().get(first.name)).toBe(false);
+    });
+  });
+
   describe('buyUpgrade', () => {
     it('deducts cumulative cost and increments amount (auto, 1x)', () => {
       component.essence.set(1000);

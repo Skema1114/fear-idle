@@ -20,11 +20,12 @@ import {
   TrophyService,
 } from '../services/trophy.service';
 import { UpgradeService } from '../services/upgrade.service';
+import { ModalComponent } from './modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -47,7 +48,38 @@ export class AppComponent implements OnInit, OnDestroy {
   numericPurchaseModes: number[] = [1, 10, 100, 1000];
   purchaseModes: (number | string)[] = [...this.numericPurchaseModes, 'max'];
 
-  currentPurchaseMode: number | string = 1;
+  currentPurchaseMode = signal<number | string>(1);
+
+  affordableAutoMap = computed<Map<string, boolean>>(() => {
+    const mode = this.currentPurchaseMode();
+    const essence = this.essence();
+    const map = new Map<string, boolean>();
+    for (const up of this.unlockedUpgrades()) {
+      map.set(up.name, this.canAffordCost(up.cost, mode, essence));
+    }
+    return map;
+  });
+
+  affordableClickMap = computed<Map<string, boolean>>(() => {
+    const mode = this.currentPurchaseMode();
+    const essence = this.essence();
+    const map = new Map<string, boolean>();
+    for (const up of this.unlockedClickUpgrades()) {
+      map.set(up.name, this.canAffordCost(up.cost, mode, essence));
+    }
+    return map;
+  });
+
+  private canAffordCost(
+    baseCost: number,
+    mode: number | string,
+    essence: number
+  ): boolean {
+    if (mode === 'max') {
+      return this.calculateMaxPurchase(baseCost, essence) > 0;
+    }
+    return essence >= this.cumulativeCost(baseCost, mode as number);
+  }
 
   activeTab = signal<'auto' | 'click' | 'trophies' | 'prestige'>('auto');
   setTab(tab: 'auto' | 'click' | 'trophies' | 'prestige'): void {
@@ -996,7 +1028,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   getCostForCurrentMode(upgrade: { cost: number }): number {
-    const mode = this.currentPurchaseMode;
+    const mode = this.currentPurchaseMode();
     if (mode === 'max') {
       const maxBuy = this.calculateMaxPurchase(upgrade.cost, this.essence());
       if (maxBuy === 0) return upgrade.cost;

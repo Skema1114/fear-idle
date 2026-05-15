@@ -1048,7 +1048,7 @@ export class TrophyService {
     m.set('O Sonho Interrompido', s => s.totalEssence >= 500000000000);
     m.set('Visão do Caos', s => s.totalEssence >= 2000000000000);
     m.set('A Voz do Horror', s => s.totalEssence >= 8000000000000);
-    m.set('O Despertar Final', s => s.totalEssence >= 30000000000000);
+    m.set('O Despertar Final', s => s.totalEssence >= 45000000000000);
     m.set('Mestre do Vazio', s => s.totalEssence >= 100000000000000);
     m.set('Conquistador da Realidade', s => s.totalEssence >= 500000000000000);
     m.set('A Ascensão', s => s.totalEssence >= 1000000000000000);

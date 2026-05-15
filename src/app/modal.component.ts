@@ -31,6 +31,14 @@ import {
         [attr.aria-labelledby]="titleId"
         (click)="$event.stopPropagation()"
       >
+        <button
+          type="button"
+          class="modal-x"
+          aria-label="Fechar"
+          (click)="closed.emit()"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
         <h3 class="modal-title" [id]="titleId">{{ title }}</h3>
         <ng-content></ng-content>
       </div>
@@ -106,7 +114,7 @@ import {
       font-size: clamp(1.55rem, 4.2vw, 2.05rem);
       color: #e8d4ff;
       margin: 0 0 1rem 0;
-      padding-bottom: 0.9rem;
+      padding: 0 2.4rem 0.9rem;
       line-height: 1.18;
       word-wrap: break-word;
       overflow-wrap: break-word;
@@ -115,6 +123,44 @@ import {
         0 0 12px rgba(179, 136, 255, 0.55),
         0 0 28px rgba(179, 136, 255, 0.25);
       border-bottom: 1px solid rgba(179, 136, 255, 0.18);
+    }
+
+    .modal-x {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid rgba(179, 136, 255, 0.25);
+      border-radius: 50%;
+      background: rgba(13, 13, 18, 0.6);
+      color: #a0a0bb;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.18s ease, border-color 0.18s ease,
+                  background 0.18s ease, transform 0.18s ease,
+                  box-shadow 0.18s ease;
+      z-index: 2;
+    }
+    .modal-x span {
+      transform: translateY(-1px);
+      display: inline-block;
+    }
+    .modal-x:hover {
+      color: #fff;
+      border-color: rgba(230, 57, 70, 0.7);
+      background: rgba(230, 57, 70, 0.18);
+      transform: rotate(90deg);
+      box-shadow: 0 0 14px rgba(230, 57, 70, 0.35);
+    }
+    .modal-x:focus-visible {
+      outline: 2px solid #ffd54f;
+      outline-offset: 2px;
     }
 
     @keyframes modalScaleIn {

@@ -36,6 +36,79 @@ import {
       </div>
     </div>
   `,
+  styles: [`
+    :host {
+      display: contents;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .modal-content {
+      background: rgba(22, 22, 30, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid #3a3a4f;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      animation: modalScaleIn 0.25s ease-out;
+      color: #e8e8f0;
+      position: relative;
+      z-index: 1;
+    }
+    .modal-content::-webkit-scrollbar { width: 6px; }
+    .modal-content::-webkit-scrollbar-track { background: transparent; }
+    .modal-content::-webkit-scrollbar-thumb {
+      background: rgba(179, 136, 255, 0.45);
+      border-radius: 6px;
+    }
+    .modal-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(179, 136, 255, 0.7);
+    }
+    .stats-modal-content {
+      max-width: 600px;
+      text-align: left;
+    }
+    .modal-title {
+      font-family: "Creepster", cursive;
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      color: #b388ff;
+      margin: 0 0 0.8rem 0;
+      line-height: 1.2;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      text-shadow: 0 0 8px rgba(179, 136, 255, 0.35);
+    }
+    @keyframes modalScaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .modal-content { animation: none !important; }
+    }
+    @media (max-width: 600px) {
+      .modal-content { padding: 1.5rem; }
+      .modal-title { font-size: 1.4rem; }
+    }
+  `],
 })
 export class ModalComponent implements OnChanges, AfterViewInit {
   private static idCounter = 0;

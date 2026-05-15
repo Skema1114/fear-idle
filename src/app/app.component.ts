@@ -217,10 +217,12 @@ export class AppComponent implements OnInit, OnDestroy {
     if (!Number.isFinite(value) || value < 0) return 1;
     return Math.min(value, this.MULTIPLIER_HARD_CAP);
   }
-  clickFloaters = signal<{ id: number; value: string; x: number; y: number }[]>(
-    []
-  );
+  clickFloaters = signal<
+    { id: number; value: string; x: number; y: number; expiresAt: number }[]
+  >([]);
   private nextFloaterId = 0;
+  private readonly FLOATER_TTL_MS = 1200;
+  private readonly FLOATER_CAP = 15;
 
   readonly TROPHY_BONUS_PER_EARNED = 0.005;
   trophyBonus = computed(
@@ -496,6 +498,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.playtimeAccumulator -= whole;
       }
 
+      this.gcFloaters(tickNow);
+
       if (tickNow - this.lastTrophyCheckTime >= this.TROPHY_CHECK_INTERVAL_MS) {
         this.lastTrophyCheckTime = tickNow;
         this.checkTrophyProgress(
@@ -587,20 +591,22 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private spawnClickFloater(value: number): void {
-    if (this.clickFloaters().length >= 15) return;
-    const id = this.nextFloaterId++;
-    const x = 40 + Math.random() * 20;
-    const y = 10 + Math.random() * 15;
+    if (this.clickFloaters().length >= this.FLOATER_CAP) return;
     const floater = {
-      id,
+      id: this.nextFloaterId++,
       value: '+' + this.formatNumber(value, true),
-      x,
-      y,
+      x: 40 + Math.random() * 20,
+      y: 10 + Math.random() * 15,
+      expiresAt: Date.now() + this.FLOATER_TTL_MS,
     };
     this.clickFloaters.update((f) => [...f, floater]);
-    setTimeout(() => {
-      this.clickFloaters.update((f) => f.filter((fl) => fl.id !== id));
-    }, 1200);
+  }
+
+  private gcFloaters(now: number): void {
+    const list = this.clickFloaters();
+    if (list.length === 0) return;
+    if (list[0].expiresAt > now) return;
+    this.clickFloaters.set(list.filter((fl) => fl.expiresAt > now));
   }
 
   private serializeGameState(): string {

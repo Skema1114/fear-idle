@@ -508,30 +508,30 @@ export class TrophyService {
         icon: '😵‍💫',
       },
       {
-        title: 'Combo Primordial (10000x)',
+        title: 'Combo Primordial (5000x)',
         description:
-          'Seus cliques ecoam como os primeiros sons da criação. Alcance um combo de 10000 cliques.',
+          'Seus cliques ecoam como os primeiros sons da criação. Alcance um combo de 5000 cliques.',
         earned: false,
         icon: '🌀',
       },
       {
-        title: 'Combo do Vazio (25000x)',
+        title: 'Combo do Vazio (7500x)',
         description:
-          'Seu combo transcende a forma e o espaço. Alcance um combo de 25000 cliques.',
+          'Seu combo transcende a forma e o espaço. Alcance um combo de 7500 cliques.',
         earned: false,
         icon: '⚫',
       },
       {
-        title: 'Combo da Anarquia (50000x)',
+        title: 'Combo da Anarquia (10000x)',
         description:
-          'Sua cadência de cliques leva ao caos total. Alcance um combo de 50000 cliques.',
+          'Sua cadência de cliques leva ao caos total. Alcance um combo de 10000 cliques.',
         earned: false,
         icon: '💀',
       },
       {
-        title: 'O Ritmo Final (100000x)',
+        title: 'O Ritmo Final (15000x)',
         description:
-          'O ritmo que encerra todas as coisas. Alcance um combo de 100000 cliques.',
+          'O ritmo que encerra todas as coisas. Alcance um combo de 15000 cliques.',
         earned: false,
         icon: '⏱️',
       },
@@ -1104,10 +1104,10 @@ export class TrophyService {
     m.set('Combo Mítico (1000x)', s => s.highestCombo >= 1000);
     m.set('Combo Abissal (2000x)', s => s.highestCombo >= 2000);
     m.set('Combo Inconcebível (5000x)', s => s.highestCombo >= 5000);
-    m.set('Combo Primordial (10000x)', s => s.highestCombo >= 10000);
-    m.set('Combo do Vazio (25000x)', s => s.highestCombo >= 25000);
-    m.set('Combo da Anarquia (50000x)', s => s.highestCombo >= 50000);
-    m.set('O Ritmo Final (100000x)', s => s.highestCombo >= 100000);
+    m.set('Combo Primordial (5000x)', s => s.highestCombo >= 5000);
+    m.set('Combo do Vazio (7500x)', s => s.highestCombo >= 7500);
+    m.set('Combo da Anarquia (10000x)', s => s.highestCombo >= 10000);
+    m.set('O Ritmo Final (15000x)', s => s.highestCombo >= 15000);
 
     // === Auto upgrade trophies ===
     m.set('Primeira Manifestação', s => s.upgrades.some(up => up.amount > 0));

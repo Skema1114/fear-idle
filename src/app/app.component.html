@@ -66,14 +66,24 @@
       <div
         class="click-floater"
         *ngFor="let f of clickFloaters()"
+        [class.tier-md]="f.tier === 'md'"
+        [class.tier-lg]="f.tier === 'lg'"
+        [class.tier-xl]="f.tier === 'xl'"
         [style.left.%]="f.x"
         [style.top.%]="f.y"
+        [style.--floater-rot]="f.rot + 'deg'"
+        [style.--floater-drift]="f.drift + 'px'"
       >
         {{ f.value }}
       </div>
     </div>
 
-    <div class="combo-display" *ngIf="comboCount() > 0">
+    <div
+      class="combo-display"
+      *ngIf="comboCount() > 0"
+      [class.pulse-a]="comboPulseParity()"
+      [class.pulse-b]="!comboPulseParity()"
+    >
       <span>COMBO {{ formatNumber(comboCount()) }}x</span>
       <span>| x{{ formatNumber(comboMultiplier(), true) }}</span>
     </div>
@@ -612,7 +622,7 @@
   <div
     class="toast-notification"
     *ngFor="let toast of activeToasts(); trackBy: trackByToastId"
-    [class.show]="true"
+    [class.show]="toast.show"
   >
     <span class="toast-icon">{{ toast.icon }}</span>
     <span class="toast-message">{{ toast.message }}</span>

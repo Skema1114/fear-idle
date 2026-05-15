@@ -151,6 +151,7 @@ export class AppComponent implements OnInit, OnDestroy {
   highestCombo = signal(0);
   totalManualClicks = signal(0);
   totalPlaytime = signal(0);
+  comboPulseParity = signal(false);
   private comboResetTimeout: any;
 
   activeToasts = signal<Toast[]>([]);
@@ -218,7 +219,16 @@ export class AppComponent implements OnInit, OnDestroy {
     return Math.min(value, this.MULTIPLIER_HARD_CAP);
   }
   clickFloaters = signal<
-    { id: number; value: string; x: number; y: number; expiresAt: number }[]
+    {
+      id: number;
+      value: string;
+      x: number;
+      y: number;
+      rot: number;
+      drift: number;
+      tier: 'sm' | 'md' | 'lg' | 'xl';
+      expiresAt: number;
+    }[]
   >([]);
   private nextFloaterId = 0;
   private readonly FLOATER_TTL_MS = 1200;
@@ -543,8 +553,16 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private pushToast(message: string, icon = '✨', ttlMs = 10000): void {
-    const toast: Toast = { id: this.nextToastId++, message, icon };
+    const toast: Toast = { id: this.nextToastId++, message, icon, show: false };
     this.activeToasts.update((toasts) => [...toasts, toast]);
+    // Forca 2 paints (estado inicial + show=true) para que a transition dispare.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        this.activeToasts.update((toasts) =>
+          toasts.map((t) => (t.id === toast.id ? { ...t, show: true } : t))
+        );
+      })
+    );
     toast.timeoutId = setTimeout(() => {
       this.activeToasts.update((toasts) =>
         toasts.filter((t) => t.id !== toast.id)
@@ -559,6 +577,7 @@ export class AppComponent implements OnInit, OnDestroy {
   manualClick(): void {
     this.totalManualClicks.update((v) => v + 1);
     this.comboCount.update((v) => v + 1);
+    this.comboPulseParity.update((v) => !v);
 
     if (this.comboCount() > this.highestCombo()) {
       this.highestCombo.set(this.comboCount());
@@ -592,11 +611,19 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private spawnClickFloater(value: number): void {
     if (this.clickFloaters().length >= this.FLOATER_CAP) return;
+    const baseValue = this.clickValue() * this.globalMultiplier();
+    let tier: 'sm' | 'md' | 'lg' | 'xl' = 'sm';
+    if (value >= baseValue * 5) tier = 'xl';
+    else if (value >= baseValue * 2.5) tier = 'lg';
+    else if (value >= baseValue * 1.5) tier = 'md';
     const floater = {
       id: this.nextFloaterId++,
       value: '+' + this.formatNumber(value, true),
-      x: 40 + Math.random() * 20,
-      y: 10 + Math.random() * 15,
+      x: 20 + Math.random() * 60,
+      y: 8 + Math.random() * 20,
+      rot: (Math.random() - 0.5) * 30,
+      drift: (Math.random() - 0.5) * 40,
+      tier,
       expiresAt: Date.now() + this.FLOATER_TTL_MS,
     };
     this.clickFloaters.update((f) => [...f, floater]);
@@ -1301,20 +1328,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (trophy && !trophy.earned) {
         trophy.earned = true;
-
-        const newToast: Toast = {
-          id: this.nextToastId++,
-          message: `🏆 ${trophy.title}`,
-          icon: trophy.icon,
-        };
-        this.activeToasts.update((toasts) => [...toasts, newToast]);
-
-        newToast.timeoutId = setTimeout(() => {
-          this.activeToasts.update((toasts) =>
-            toasts.filter((t) => t.id !== newToast.id)
-          );
-        }, 10000);
-
+        this.pushToast(`🏆 ${trophy.title}`, trophy.icon, 10000);
         this.playTrophyChime();
         return updatedTrophies;
       }

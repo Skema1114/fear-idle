@@ -1,7 +1,7 @@
 <div class="header">
   <span class="essence-display"
     >🕯️ Essência:
-    <span class="value">{{ formatNumber(darkEssence()) }}</span></span
+    <span class="value essence-tick">{{ formatNumber(displayEssence()) }}</span></span
   >
   <span class="essence-display"
     >💰 Nesta Vida:
@@ -40,6 +40,17 @@
     </p>
   </div>
 
+  <div class="hint-banner" *ngIf="currentHint() as hint">
+    <span class="hint-icon" aria-hidden="true">💡</span>
+    <span class="hint-text">{{ hint }}</span>
+    <button
+      type="button"
+      class="hint-dismiss"
+      (click)="dismissHints()"
+      aria-label="Dispensar dicas"
+    >×</button>
+  </div>
+
   <div class="actions-section">
     <div class="click-area">
       <button class="primary-button click-button" (click)="manualClick()">
@@ -55,14 +66,26 @@
       <div
         class="click-floater"
         *ngFor="let f of clickFloaters()"
+        [class.tier-md]="f.tier === 'md'"
+        [class.tier-lg]="f.tier === 'lg'"
+        [class.tier-xl]="f.tier === 'xl'"
         [style.left.%]="f.x"
         [style.top.%]="f.y"
+        [style.--floater-rot]="f.rot + 'deg'"
+        [style.--floater-drift]="f.drift + 'px'"
       >
         {{ f.value }}
       </div>
     </div>
 
-    <div class="combo-display" *ngIf="comboCount() > 0">
+    <div
+      class="combo-display"
+      *ngIf="comboCount() > 0"
+      [class.pulse-a]="comboPulseParity()"
+      [class.pulse-b]="!comboPulseParity()"
+      [class.milestone-a]="comboMilestoneParity()"
+      [class.milestone-b]="!comboMilestoneParity()"
+    >
       <span>COMBO {{ formatNumber(comboCount()) }}x</span>
       <span>| x{{ formatNumber(comboMultiplier(), true) }}</span>
     </div>
@@ -73,7 +96,8 @@
           type="radio"
           name="purchase"
           [value]="mode"
-          [(ngModel)]="currentPurchaseMode"
+          [ngModel]="currentPurchaseMode()"
+          (ngModelChange)="currentPurchaseMode.set($event)"
         />
         {{ mode }}x
       </label>
@@ -82,7 +106,8 @@
           type="radio"
           name="purchase"
           value="max"
-          [(ngModel)]="currentPurchaseMode"
+          [ngModel]="currentPurchaseMode()"
+          (ngModelChange)="currentPurchaseMode.set($event)"
         />
         MAX
       </label>
@@ -105,6 +130,54 @@
     </button>
   </div>
 
+  <nav class="tab-nav" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'auto'"
+      [attr.aria-selected]="activeTab() === 'auto'"
+      (click)="setTab('auto')"
+    >
+      🔮 Automáticas
+      <span class="tab-badge" *ngIf="totalAutoUpgradesBought() > 0">{{ totalAutoUpgradesBought() }}</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'click'"
+      [attr.aria-selected]="activeTab() === 'click'"
+      (click)="setTab('click')"
+    >
+      ⚡ Canalização
+      <span class="tab-badge" *ngIf="totalClickUpgradesBought() > 0">{{ totalClickUpgradesBought() }}</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'trophies'"
+      [attr.aria-selected]="activeTab() === 'trophies'"
+      (click)="setTab('trophies')"
+    >
+      🏆 Revelações
+      <span class="tab-badge">{{ unlockedTrophiesCount() }}/{{ trophiesList().length }}</span>
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-button"
+      [class.active]="activeTab() === 'prestige'"
+      [attr.aria-selected]="activeTab() === 'prestige'"
+      (click)="setTab('prestige')"
+    >
+      💎 Legado
+      <span class="tab-badge" *ngIf="prestigeLevel() > 0">{{ prestigeLevel() }}</span>
+    </button>
+  </nav>
+
+  <section *ngIf="activeTab() === 'auto'" class="tab-panel">
   <h2 class="section-title">🔮 Manifestações Automáticas</h2>
   <ng-container *ngIf="unlockedUpgrades().length > 0; else noUpgradesAvailable">
     <div class="upgrades-grid">
@@ -115,9 +188,11 @@
           trackBy: trackByUpgradeName;
           let i = index
         "
+        [class.bought-a]="lastBoughtName() === up.name && lastBoughtParity()"
+        [class.bought-b]="lastBoughtName() === up.name && !lastBoughtParity()"
       >
         <img
-          [src]="up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'"
+          [src]="up.image || placeholderIcon"
           [alt]="up.name"
           width="56"
           height="56"
@@ -140,12 +215,12 @@
           </button>
           <button
             class="action-button"
-            (click)="buyUpgrade(i, currentPurchaseMode, 'auto')"
-            [disabled]="!canAffordUpgrade(i, currentPurchaseMode, 'auto')"
+            (click)="buyUpgrade(i, currentPurchaseMode(), 'auto')"
+            [disabled]="!affordableAutoMap().get(up.name)"
           >
             Comprar
             {{
-              currentPurchaseMode === "max" ? "MAX" : currentPurchaseMode + "x"
+              currentPurchaseMode() === "max" ? "MAX" : currentPurchaseMode() + "x"
             }}
           </button>
         </div>
@@ -160,7 +235,9 @@
       </p>
     </div>
   </ng-template>
+  </section>
 
+  <section *ngIf="activeTab() === 'click'" class="tab-panel">
   <h2 class="section-title">⚡ Manifestações de Canalização</h2>
   <ng-container
     *ngIf="unlockedClickUpgrades().length > 0; else noClickUpgradesAvailable"
@@ -173,9 +250,11 @@
           trackBy: trackByClickUpgradeName;
           let i = index
         "
+        [class.bought-a]="lastBoughtName() === up.name && lastBoughtParity()"
+        [class.bought-b]="lastBoughtName() === up.name && !lastBoughtParity()"
       >
         <img
-          [src]="up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'"
+          [src]="up.image || placeholderIcon"
           [alt]="up.name"
           width="56"
           height="56"
@@ -199,12 +278,12 @@
           </button>
           <button
             class="action-button"
-            (click)="buyUpgrade(i, currentPurchaseMode, 'click')"
-            [disabled]="!canAffordUpgrade(i, currentPurchaseMode, 'click')"
+            (click)="buyUpgrade(i, currentPurchaseMode(), 'click')"
+            [disabled]="!affordableClickMap().get(up.name)"
           >
             Comprar
             {{
-              currentPurchaseMode === "max" ? "MAX" : currentPurchaseMode + "x"
+              currentPurchaseMode() === "max" ? "MAX" : currentPurchaseMode() + "x"
             }}
           </button>
         </div>
@@ -219,7 +298,9 @@
       </p>
     </div>
   </ng-template>
+  </section>
 
+  <section *ngIf="activeTab() === 'trophies'" class="tab-panel">
   <h2 class="section-title">🏆 Revelações Sombrias</h2>
   <ul class="trophies-list">
     <li
@@ -233,7 +314,9 @@
       <span class="trophy-title">{{ t.title }}</span>
     </li>
   </ul>
+  </section>
 
+  <section *ngIf="activeTab() === 'prestige'" class="tab-panel">
   <h2 class="section-title">💎 Despertar do Legado</h2>
   <div class="prestige-section">
     <p class="prestige-info">
@@ -246,6 +329,9 @@
       Multiplicador Permanente: x{{
         formatNumber(globalMultiplier(), true)
       }}
+    </p>
+    <p class="prestige-threshold">
+      Próximo Despertar requer: {{ formatNumber(prestigeThreshold()) }} essência total
     </p>
 
     <button
@@ -275,7 +361,7 @@
         >
           <img
             [src]="
-              up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'
+              up.image || placeholderIcon
             "
             [alt]="up.name"
             width="56"
@@ -321,118 +407,121 @@
       </div>
     </ng-template>
   </div>
+  </section>
 
   <div class="game-footer">
     <p>Culto das Sombras - Fear Idle</p>
   </div>
 </div>
 
-<div class="modal-overlay" *ngIf="showImportModal">
-  <div class="modal-content">
-    <h3 class="modal-title">Importar Save</h3>
-    <p class="modal-description">Cole seu save aqui:</p>
-    <textarea class="save-textarea" [(ngModel)]="importedSaveData"></textarea>
-    <div class="modal-actions">
-      <button class="secondary-button" (click)="importSave()">Importar</button>
-      <button class="secondary-button" (click)="showImportModal = false">
-        Cancelar
-      </button>
-    </div>
+<app-modal
+  [open]="showImportModal"
+  title="Importar Save"
+  (closed)="showImportModal = false"
+>
+  <p class="modal-description">Cole seu save aqui:</p>
+  <textarea class="save-textarea" [(ngModel)]="importedSaveData"></textarea>
+  <div class="modal-actions">
+    <button class="secondary-button" (click)="importSave()">Importar</button>
+    <button class="secondary-button" (click)="showImportModal = false">
+      Cancelar
+    </button>
   </div>
-</div>
+</app-modal>
 
-<div class="modal-overlay" *ngIf="showExportTextModal">
-  <div class="modal-content">
-    <h3 class="modal-title">Código de Save</h3>
-    <p class="modal-description">
-      Copie o texto abaixo e salve-o em um local seguro:
-    </p>
-    <textarea
-      class="save-textarea"
-      [value]="exportedSaveText"
-      readonly
-    ></textarea>
-    <div class="modal-actions">
-      <button class="secondary-button" (click)="copyExportedSaveText()">
-        Copiar
-      </button>
-      <button class="secondary-button" (click)="showExportTextModal = false">
-        Fechar
-      </button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" *ngIf="showTrophyDetailsModal">
-  <div class="modal-content">
-    <h3 class="modal-title">
-      {{ selectedTrophy?.icon }} {{ selectedTrophy?.title }}
-    </h3>
-    <p class="modal-description">{{ selectedTrophy?.description }}</p>
-    <button class="modal-close-button" (click)="closeTrophyDetailsModal()">
+<app-modal
+  [open]="showExportTextModal"
+  title="Código de Save"
+  (closed)="showExportTextModal = false"
+>
+  <p class="modal-description">
+    Copie o texto abaixo e salve-o em um local seguro:
+  </p>
+  <textarea
+    class="save-textarea"
+    [value]="exportedSaveText"
+    readonly
+  ></textarea>
+  <div class="modal-actions">
+    <button class="secondary-button" (click)="copyExportedSaveText()">
+      Copiar
+    </button>
+    <button class="secondary-button" (click)="showExportTextModal = false">
       Fechar
     </button>
   </div>
-</div>
+</app-modal>
 
-<div class="modal-overlay" *ngIf="showUpgradeDetailsModal">
-  <div class="modal-content">
-    <h3 class="modal-title">{{ selectedUpgrade?.name }}</h3>
-    <img
-      [src]="
-        selectedUpgrade?.image ||
-        'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'
-      "
-      [alt]="selectedUpgrade?.name"
-      width="64"
-      height="64"
-      class="modal-upgrade-image"
-    />
-    <p class="modal-description upgrade-details-text">
-      <ng-container *ngIf="selectedUpgradeType === 'auto'">
-        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
-        Geração por Segundo: +{{
-          formatNumber($any(selectedUpgrade)?.dps || 0, true)
-        }}/s
-      </ng-container>
-      <ng-container *ngIf="selectedUpgradeType === 'click'">
-        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
-        Multiplicador por Clique: x{{
-          formatNumber($any(selectedUpgrade)?.clickMultiplier || 0, true)
-        }}
-      </ng-container>
-      <ng-container *ngIf="selectedUpgradeType === 'prestige'">
-        Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
-        Multiplicador Permanente: x{{
-          formatNumber($any(selectedUpgrade)?.multiplierValue || 0, true)
-        }}
-        (Afeta:
-        {{
-          $any(selectedUpgrade)?.type === "dps"
-            ? "DPS"
-            : $any(selectedUpgrade)?.type === "click"
-            ? "Clique"
-            : "Global"
-        }})
-      </ng-container>
-      <br />
-      Custo Atual:
-      {{ formatNumber(selectedUpgrade?.cost || 0, false) }} Essência <br />
-      <br />
-      <span class="upgrade-description-long">{{
-        selectedUpgrade?.description
-      }}</span>
-    </p>
-    <button class="modal-close-button" (click)="closeUpgradeDetailsModal()">
-      Fechar
-    </button>
-  </div>
-</div>
+<app-modal
+  [open]="showTrophyDetailsModal"
+  [title]="(selectedTrophy?.icon || '') + ' ' + (selectedTrophy?.title || '')"
+  (closed)="closeTrophyDetailsModal()"
+>
+  <p class="modal-description">{{ selectedTrophy?.description }}</p>
+  <button class="modal-close-button" (click)="closeTrophyDetailsModal()">
+    Fechar
+  </button>
+</app-modal>
 
-<div class="modal-overlay" *ngIf="showStatsModal">
-  <div class="modal-content stats-modal-content">
-    <h3 class="modal-title">Estatísticas do Culto</h3>
-    <div class="stats-grid">
+<app-modal
+  [open]="showUpgradeDetailsModal"
+  [title]="selectedUpgrade?.name || ''"
+  (closed)="closeUpgradeDetailsModal()"
+>
+  <img
+    [src]="selectedUpgrade?.image || placeholderIcon"
+    [alt]="selectedUpgrade?.name"
+    width="64"
+    height="64"
+    class="modal-upgrade-image"
+  />
+  <p class="modal-description upgrade-details-text">
+    <ng-container *ngIf="selectedUpgradeType === 'auto'">
+      Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+      Geração por Segundo: +{{
+        formatNumber($any(selectedUpgrade)?.dps || 0, true)
+      }}/s
+    </ng-container>
+    <ng-container *ngIf="selectedUpgradeType === 'click'">
+      Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+      Multiplicador por Clique: x{{
+        formatNumber($any(selectedUpgrade)?.clickMultiplier || 0, true)
+      }}
+    </ng-container>
+    <ng-container *ngIf="selectedUpgradeType === 'prestige'">
+      Quantidade: {{ formatNumber(selectedUpgrade?.amount || 0) }}<br />
+      Multiplicador Permanente: x{{
+        formatNumber($any(selectedUpgrade)?.multiplierValue || 0, true)
+      }}
+      (Afeta:
+      {{
+        $any(selectedUpgrade)?.type === "dps"
+          ? "DPS"
+          : $any(selectedUpgrade)?.type === "click"
+          ? "Clique"
+          : "Global"
+      }})
+    </ng-container>
+    <br />
+    Custo Atual:
+    {{ formatNumber(selectedUpgrade?.cost || 0, false) }} Essência <br />
+    <br />
+    <span class="upgrade-description-long">{{
+      selectedUpgrade?.description
+    }}</span>
+  </p>
+  <button class="modal-close-button" (click)="closeUpgradeDetailsModal()">
+    Fechar
+  </button>
+</app-modal>
+
+<app-modal
+  [open]="showStatsModal"
+  title="Estatísticas do Culto"
+  variant="stats"
+  (closed)="closeStatsModal()"
+>
+  <div class="stats-grid">
       <div class="stat-item">
         <span class="stat-label">Tempo Total de Jogo</span>
         <span class="stat-value">{{ formatPlaytime(totalPlaytime()) }}</span>
@@ -499,43 +588,57 @@
           >{{ unlockedTrophiesCount() }} / {{ trophiesList().length }}</span
         >
       </div>
-    </div>
-    <button class="modal-close-button" (click)="closeStatsModal()">
-      Fechar
+      <div class="stat-item">
+        <span class="stat-label">Bônus de Troféus</span>
+        <span class="stat-value">+{{ formatNumber((trophyBonus() - 1) * 100, true) }}%</span>
+      </div>
+  </div>
+  <button class="modal-close-button" (click)="closeStatsModal()">
+    Fechar
+  </button>
+</app-modal>
+
+<app-modal
+  [open]="showAlertModal"
+  title="Aviso"
+  (closed)="closeAlert()"
+>
+  <p class="modal-description">{{ alertModalMessage }}</p>
+  <button class="modal-close-button" (click)="closeAlert()">OK</button>
+</app-modal>
+
+<app-modal
+  [open]="showConfirmModal"
+  title="Confirmação"
+  [closeOnOverlay]="false"
+  (closed)="cancelConfirm()"
+>
+  <p class="modal-description">{{ confirmModalMessage }}</p>
+  <div class="modal-actions">
+    <button class="secondary-button" (click)="confirmAction()">
+      Confirmar
+    </button>
+    <button class="secondary-button" (click)="cancelConfirm()">
+      Cancelar
     </button>
   </div>
-</div>
-
-<div class="modal-overlay" *ngIf="showAlertModal">
-  <div class="modal-content">
-    <h3 class="modal-title">Aviso</h3>
-    <p class="modal-description">{{ alertModalMessage }}</p>
-    <button class="modal-close-button" (click)="closeAlert()">OK</button>
-  </div>
-</div>
-
-<div class="modal-overlay" *ngIf="showConfirmModal">
-  <div class="modal-content">
-    <h3 class="modal-title">Confirmação</h3>
-    <p class="modal-description">{{ confirmModalMessage }}</p>
-    <div class="modal-actions">
-      <button class="secondary-button" (click)="confirmAction()">
-        Confirmar
-      </button>
-      <button class="secondary-button" (click)="cancelConfirm()">
-        Cancelar
-      </button>
-    </div>
-  </div>
-</div>
+</app-modal>
 
 <div class="toast-container">
   <div
     class="toast-notification"
     *ngFor="let toast of activeToasts(); trackBy: trackByToastId"
-    [class.show]="true"
+    [class.show]="toast.show"
   >
     <span class="toast-icon">{{ toast.icon }}</span>
     <span class="toast-message">{{ toast.message }}</span>
   </div>
 </div>
+
+<div class="trophy-fanfare" *ngIf="fanfareTrophy() as fanfare" aria-hidden="true">
+  <div class="fanfare-rays"></div>
+  <div class="fanfare-icon">{{ fanfare.icon }}</div>
+  <div class="fanfare-title">{{ fanfare.title }}</div>
+</div>
+
+<div class="prestige-cinematic" *ngIf="isPrestiging()" aria-hidden="true"></div>

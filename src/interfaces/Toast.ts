@@ -4,4 +4,5 @@ export interface Toast {
   icon: string;
   bottom?: number;
   timeoutId?: any;
+  show?: boolean;
 }

@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
+  HostListener,
   inject,
+  isDevMode,
   OnDestroy,
   OnInit,
   signal,
@@ -18,11 +20,12 @@ import {
   TrophyService,
 } from '../services/trophy.service';
 import { UpgradeService } from '../services/upgrade.service';
+import { ModalComponent } from './modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -45,7 +48,78 @@ export class AppComponent implements OnInit, OnDestroy {
   numericPurchaseModes: number[] = [1, 10, 100, 1000];
   purchaseModes: (number | string)[] = [...this.numericPurchaseModes, 'max'];
 
-  currentPurchaseMode: number | string = 1;
+  currentPurchaseMode = signal<number | string>(1);
+
+  affordableAutoMap = computed<Map<string, boolean>>(() => {
+    const mode = this.currentPurchaseMode();
+    const essence = this.essence();
+    const map = new Map<string, boolean>();
+    for (const up of this.unlockedUpgrades()) {
+      map.set(up.name, this.canAffordCost(up.cost, mode, essence));
+    }
+    return map;
+  });
+
+  affordableClickMap = computed<Map<string, boolean>>(() => {
+    const mode = this.currentPurchaseMode();
+    const essence = this.essence();
+    const map = new Map<string, boolean>();
+    for (const up of this.unlockedClickUpgrades()) {
+      map.set(up.name, this.canAffordCost(up.cost, mode, essence));
+    }
+    return map;
+  });
+
+  private canAffordCost(
+    baseCost: number,
+    mode: number | string,
+    essence: number
+  ): boolean {
+    if (mode === 'max') {
+      return this.calculateMaxPurchase(baseCost, essence) > 0;
+    }
+    return essence >= this.cumulativeCost(baseCost, mode as number);
+  }
+
+  activeTab = signal<'auto' | 'click' | 'trophies' | 'prestige'>('auto');
+  setTab(tab: 'auto' | 'click' | 'trophies' | 'prestige'): void {
+    this.activeTab.set(tab);
+  }
+
+  hintsDismissed = signal<boolean>(
+    typeof localStorage !== 'undefined' &&
+      localStorage.getItem('fearIdleHintsDismissed') === '1'
+  );
+
+  dismissHints(): void {
+    this.hintsDismissed.set(true);
+    try {
+      localStorage.setItem('fearIdleHintsDismissed', '1');
+    } catch {
+      /* localStorage indisponivel — segue sem persistir */
+    }
+  }
+
+  currentHint = computed<string | null>(() => {
+    if (this.hintsDismissed()) return null;
+    if (this.prestigeLevel() >= 1) return null;
+    if (this.totalManualClicks() === 0) {
+      return 'Clique em "Canalizar Essência" para começar sua jornada.';
+    }
+    if (this.totalAutoUpgradesBought() === 0 && this.essence() >= 10) {
+      return 'Abra a aba Automáticas e compre "Vela Sussurrante" para gerar essência sozinho.';
+    }
+    if (this.totalClickUpgradesBought() === 0 && this.essence() >= 50) {
+      return 'Aba Canalização: aprimore seus cliques com upgrades manuais.';
+    }
+    if (this.comboCount() === 0 && this.totalManualClicks() < 20) {
+      return 'Cliques rápidos seguidos formam um combo — cada hit multiplica o ganho em +2%.';
+    }
+    if (this.calculatePrestigeGain() >= 1) {
+      return 'Você pode Despertar o Legado! Resete o progresso por bônus permanentes.';
+    }
+    return null;
+  });
 
   showImportModal: boolean = false;
   importedSaveData: string = '';
@@ -77,59 +151,179 @@ export class AppComponent implements OnInit, OnDestroy {
   highestCombo = signal(0);
   totalManualClicks = signal(0);
   totalPlaytime = signal(0);
+  comboPulseParity = signal(false);
+  comboMilestoneParity = signal(false);
+  lastBoughtName = signal<string | null>(null);
+  lastBoughtParity = signal(false);
+  private boughtClearTimeout: any;
+  private flashBought(name: string): void {
+    if (this.boughtClearTimeout) clearTimeout(this.boughtClearTimeout);
+    this.lastBoughtName.set(name);
+    this.lastBoughtParity.update((v) => !v);
+    this.boughtClearTimeout = setTimeout(() => {
+      this.lastBoughtName.set(null);
+    }, 600);
+  }
+  fanfareTrophy = signal<{ icon: string; title: string } | null>(null);
+  private fanfareClearTimeout: any;
+  isPrestiging = signal(false);
+  private prestigeClearTimeout: any;
+  displayEssence = signal(0);
+  private essenceRafId: number | null = null;
   private comboResetTimeout: any;
+  private readonly COMBO_MILESTONES = new Set([10, 25, 50, 100, 200, 500, 1000]);
 
   activeToasts = signal<Toast[]>([]);
   private nextToastId = 0;
-  private tickCounter = 0;
-  clickFloaters = signal<{ id: number; value: string; x: number; y: number }[]>(
-    []
-  );
+  private lastTickTime = 0;
+  private lastSaveTime = 0;
+  private lastTrophyCheckTime = 0;
+  private playtimeAccumulator = 0;
+  private readonly OFFLINE_CAP_SECONDS = 8 * 60 * 60;
+  private readonly AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000;
+  private readonly TROPHY_CHECK_INTERVAL_MS = 1000;
+  private readonly MULTIPLIER_SOFT_CAP = 50;
+  private readonly MULTIPLIER_HARD_CAP = 1e100;
+
+  readonly placeholderIcon =
+    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'><rect width='56' height='56' rx='8' fill='%231c1c28'/><text x='28' y='38' text-anchor='middle' font-family='serif' font-size='32' fill='%23e8e8f0'>?</text></svg>";
+
+  private audioContext: AudioContext | null = null;
+  private getAudioContext(): AudioContext | null {
+    if (this.audioContext) return this.audioContext;
+    const Ctor =
+      (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctor) return null;
+    try {
+      this.audioContext = new Ctor();
+      return this.audioContext;
+    } catch {
+      return null;
+    }
+  }
+  private triggerPrestigeCinematic(): void {
+    if (this.prestigeClearTimeout) clearTimeout(this.prestigeClearTimeout);
+    this.isPrestiging.set(true);
+    this.prestigeClearTimeout = setTimeout(() => {
+      this.isPrestiging.set(false);
+    }, 1200);
+  }
+
+  private triggerTrophyFanfare(icon: string, title: string): void {
+    if (this.fanfareClearTimeout) clearTimeout(this.fanfareClearTimeout);
+    this.fanfareTrophy.set({ icon, title });
+    this.fanfareClearTimeout = setTimeout(() => {
+      this.fanfareTrophy.set(null);
+    }, 2100);
+  }
+
+  private playTrophyChime(): void {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.15, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+      gain.connect(ctx.destination);
+      [880, 1320, 1760].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + i * 0.06);
+        osc.connect(gain);
+        osc.start(now + i * 0.06);
+        osc.stop(now + 0.6);
+      });
+    } catch {
+      /* silently fail */
+    }
+  }
+
+  private dampenedPow(base: number, amount: number): number {
+    if (amount <= this.MULTIPLIER_SOFT_CAP) {
+      return Math.pow(base, amount);
+    }
+    const overflow = amount - this.MULTIPLIER_SOFT_CAP;
+    const effective = this.MULTIPLIER_SOFT_CAP + Math.sqrt(overflow);
+    return Math.pow(base, effective);
+  }
+
+  private clampMultiplier(value: number): number {
+    if (!Number.isFinite(value) || value < 0) return 1;
+    return Math.min(value, this.MULTIPLIER_HARD_CAP);
+  }
+  clickFloaters = signal<
+    {
+      id: number;
+      value: string;
+      x: number;
+      y: number;
+      rot: number;
+      drift: number;
+      tier: 'sm' | 'md' | 'lg' | 'xl';
+      expiresAt: number;
+    }[]
+  >([]);
   private nextFloaterId = 0;
+  private readonly FLOATER_TTL_MS = 1200;
+  private readonly FLOATER_CAP = 15;
+
+  readonly TROPHY_BONUS_PER_EARNED = 0.005;
+  trophyBonus = computed(
+    () => 1 + this.TROPHY_BONUS_PER_EARNED * this.unlockedTrophiesCount()
+  );
 
   globalMultiplier = computed(() => {
     let multiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'global') {
-        multiplier *= Math.pow(up.multiplierValue, up.amount);
+        multiplier *= this.dampenedPow(up.multiplierValue, up.amount);
       }
     });
     multiplier *= 1 + this.prestigeLevel() * 0.1;
-
-    return multiplier;
+    multiplier *= this.trophyBonus();
+    return this.clampMultiplier(multiplier);
   });
 
   clickValue = computed(() => {
-    let base = this.baseClickValue();
+    const base = this.baseClickValue();
     let clickUpgradeMultiplier = 1;
     this.clickUpgradesList().forEach((up) => {
-      clickUpgradeMultiplier *= Math.pow(1 + up.clickMultiplier, up.amount);
+      clickUpgradeMultiplier *= this.dampenedPow(
+        1 + up.clickMultiplier,
+        up.amount
+      );
     });
     let globalClickPrestigeMultiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'click') {
-        globalClickPrestigeMultiplier *= Math.pow(
+        globalClickPrestigeMultiplier *= this.dampenedPow(
           1 + up.multiplierValue,
           up.amount
         );
       }
     });
-
-    return base * clickUpgradeMultiplier * globalClickPrestigeMultiplier;
+    return this.clampMultiplier(
+      base * clickUpgradeMultiplier * globalClickPrestigeMultiplier
+    );
   });
 
   dpsValue = computed(() => {
-    let baseDps = this.upgradesList().reduce(
+    const baseDps = this.upgradesList().reduce(
       (acc, up) => acc + up.dps * up.amount,
       0
     );
     let globalDpsPrestigeMultiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'dps') {
-        globalDpsPrestigeMultiplier *= Math.pow(up.multiplierValue, up.amount);
+        globalDpsPrestigeMultiplier *= this.dampenedPow(
+          up.multiplierValue,
+          up.amount
+        );
       }
     });
-    return baseDps * globalDpsPrestigeMultiplier;
+    return this.clampMultiplier(baseDps * globalDpsPrestigeMultiplier);
   });
 
   essencePerSecond = computed(() => this.dpsValue() * this.globalMultiplier());
@@ -199,6 +393,29 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor() {}
 
+  private logError(...args: any[]): void {
+    if (isDevMode()) {
+      console.error(...args);
+    }
+  }
+
+  private logWarn(...args: any[]): void {
+    if (isDevMode()) {
+      console.warn(...args);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.showAlertModal) this.closeAlert();
+    else if (this.showConfirmModal) this.cancelConfirm();
+    else if (this.showTrophyDetailsModal) this.closeTrophyDetailsModal();
+    else if (this.showUpgradeDetailsModal) this.closeUpgradeDetailsModal();
+    else if (this.showStatsModal) this.closeStatsModal();
+    else if (this.showExportTextModal) this.showExportTextModal = false;
+    else if (this.showImportModal) this.showImportModal = false;
+  }
+
   showAlert(message: string): void {
     this.alertModalMessage = message;
     this.showAlertModal = true;
@@ -241,6 +458,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadGame();
     this.startGameLoop();
+    this.displayEssence.set(Math.floor(this.essence()));
+    this.startEssenceTween();
   }
 
   ngOnDestroy(): void {
@@ -248,10 +467,32 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.comboResetTimeout) {
       clearTimeout(this.comboResetTimeout);
     }
+    if (this.essenceRafId !== null) {
+      cancelAnimationFrame(this.essenceRafId);
+    }
+    if (this.boughtClearTimeout) clearTimeout(this.boughtClearTimeout);
+    if (this.fanfareClearTimeout) clearTimeout(this.fanfareClearTimeout);
+    if (this.prestigeClearTimeout) clearTimeout(this.prestigeClearTimeout);
     this.activeToasts().forEach((toast) => {
       if (toast.timeoutId) clearTimeout(toast.timeoutId);
     });
     this.saveGame();
+  }
+
+  private startEssenceTween(): void {
+    const step = () => {
+      const target = Math.floor(this.essence());
+      const current = this.displayEssence();
+      if (current !== target) {
+        const diff = target - current;
+        // Aproxima 18% por frame; minimo 1 unidade quando perto.
+        const stepSize = Math.max(1, Math.ceil(Math.abs(diff) * 0.18));
+        const delta = diff > 0 ? Math.min(stepSize, diff) : Math.max(-stepSize, diff);
+        this.displayEssence.set(current + delta);
+      }
+      this.essenceRafId = requestAnimationFrame(step);
+    };
+    this.essenceRafId = requestAnimationFrame(step);
   }
 
   private encodeToBase64(str: string): string {
@@ -268,18 +509,68 @@ export class AppComponent implements OnInit, OnDestroy {
     return new TextDecoder().decode(bytes);
   }
 
+  private computeChecksum(data: string): string {
+    let hash = 0;
+    for (let i = 0; i < data.length; i++) {
+      const char = data.charCodeAt(i);
+      hash = ((hash << 5) - hash + char) | 0;
+    }
+    return (hash >>> 0).toString(36);
+  }
+
+  private serializeWithChecksum(jsonStr: string): string {
+    const checksum = this.computeChecksum(jsonStr);
+    const payload = JSON.stringify({ d: jsonStr, c: checksum });
+    return this.encodeToBase64(payload);
+  }
+
+  private deserializeWithChecksum(encoded: string): string {
+    const decoded = this.decodeFromBase64(encoded);
+
+    try {
+      const wrapper = JSON.parse(decoded);
+      if (wrapper.d && wrapper.c) {
+        const expectedChecksum = this.computeChecksum(wrapper.d);
+        if (wrapper.c !== expectedChecksum) {
+          throw new Error('Save corrompido: checksum inválido.');
+        }
+        return wrapper.d;
+      }
+    } catch (e: any) {
+      if (e.message?.includes('checksum')) throw e;
+    }
+
+    return decoded;
+  }
+
   private startGameLoop(): void {
+    const now = Date.now();
+    this.lastTickTime = now;
+    this.lastSaveTime = now;
+    this.lastTrophyCheckTime = now;
+
     this.gameInterval = setInterval(() => {
-      const gain = this.essencePerSecond() / 10;
-      if (gain > 0) {
+      const tickNow = Date.now();
+      const deltaSec = (tickNow - this.lastTickTime) / 1000;
+      this.lastTickTime = tickNow;
+
+      const gain = this.essencePerSecond() * deltaSec;
+      if (gain > 0 && Number.isFinite(gain)) {
         this.essence.update((v) => v + gain);
         this.totalEssence.update((v) => v + gain);
       }
 
-      this.tickCounter++;
+      this.playtimeAccumulator += deltaSec;
+      if (this.playtimeAccumulator >= 1) {
+        const whole = Math.floor(this.playtimeAccumulator);
+        this.totalPlaytime.update((v) => v + whole);
+        this.playtimeAccumulator -= whole;
+      }
 
-      if (this.tickCounter % 10 === 0) {
-        this.totalPlaytime.update((v) => v + 1);
+      this.gcFloaters(tickNow);
+
+      if (tickNow - this.lastTrophyCheckTime >= this.TROPHY_CHECK_INTERVAL_MS) {
+        this.lastTrophyCheckTime = tickNow;
         this.checkTrophyProgress(
           this.totalEssence(),
           this.totalManualClicks(),
@@ -290,10 +581,52 @@ export class AppComponent implements OnInit, OnDestroy {
         );
       }
 
-      if (this.tickCounter % 3000 === 0) {
+      if (tickNow - this.lastSaveTime >= this.AUTOSAVE_INTERVAL_MS) {
+        this.lastSaveTime = tickNow;
         this.saveGame();
       }
     }, 100);
+  }
+
+  private applyOfflineProgress(savedAt: number): void {
+    if (!Number.isFinite(savedAt) || savedAt <= 0) return;
+    const now = Date.now();
+    const elapsedSec = Math.min(
+      Math.max(0, (now - savedAt) / 1000),
+      this.OFFLINE_CAP_SECONDS
+    );
+    if (elapsedSec < 1) return;
+
+    const gain = this.essencePerSecond() * elapsedSec;
+    if (!Number.isFinite(gain) || gain <= 0) return;
+
+    this.essence.update((v) => v + gain);
+    this.totalEssence.update((v) => v + gain);
+    this.totalPlaytime.update((v) => v + Math.floor(elapsedSec));
+
+    const cappedHours = (elapsedSec / 3600).toFixed(1);
+    this.pushToast(
+      `Bem-vindo de volta! +${this.formatNumber(gain, false)} essência em ${cappedHours}h offline.`,
+      '🌙'
+    );
+  }
+
+  private pushToast(message: string, icon = '✨', ttlMs = 10000): void {
+    const toast: Toast = { id: this.nextToastId++, message, icon, show: false };
+    this.activeToasts.update((toasts) => [...toasts, toast]);
+    // Forca 2 paints (estado inicial + show=true) para que a transition dispare.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        this.activeToasts.update((toasts) =>
+          toasts.map((t) => (t.id === toast.id ? { ...t, show: true } : t))
+        );
+      })
+    );
+    toast.timeoutId = setTimeout(() => {
+      this.activeToasts.update((toasts) =>
+        toasts.filter((t) => t.id !== toast.id)
+      );
+    }, ttlMs);
   }
 
   public darkEssence(): number {
@@ -303,6 +636,11 @@ export class AppComponent implements OnInit, OnDestroy {
   manualClick(): void {
     this.totalManualClicks.update((v) => v + 1);
     this.comboCount.update((v) => v + 1);
+    this.comboPulseParity.update((v) => !v);
+
+    if (this.COMBO_MILESTONES.has(this.comboCount())) {
+      this.comboMilestoneParity.update((v) => !v);
+    }
 
     if (this.comboCount() > this.highestCombo()) {
       this.highestCombo.set(this.comboCount());
@@ -318,10 +656,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const gain =
       this.clickValue() * this.comboMultiplier() * this.globalMultiplier();
-    this.essence.update((v) => v + gain);
-    this.totalEssence.update((v) => v + gain);
-
-    this.spawnClickFloater(gain);
+    if (Number.isFinite(gain) && gain > 0) {
+      this.essence.update((v) => v + gain);
+      this.totalEssence.update((v) => v + gain);
+      this.spawnClickFloater(gain);
+    }
 
     this.checkTrophyProgress(
       this.totalEssence(),
@@ -334,20 +673,30 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private spawnClickFloater(value: number): void {
-    if (this.clickFloaters().length >= 15) return;
-    const id = this.nextFloaterId++;
-    const x = 40 + Math.random() * 20;
-    const y = 10 + Math.random() * 15;
+    if (this.clickFloaters().length >= this.FLOATER_CAP) return;
+    const baseValue = this.clickValue() * this.globalMultiplier();
+    let tier: 'sm' | 'md' | 'lg' | 'xl' = 'sm';
+    if (value >= baseValue * 5) tier = 'xl';
+    else if (value >= baseValue * 2.5) tier = 'lg';
+    else if (value >= baseValue * 1.5) tier = 'md';
     const floater = {
-      id,
+      id: this.nextFloaterId++,
       value: '+' + this.formatNumber(value, true),
-      x,
-      y,
+      x: 20 + Math.random() * 60,
+      y: 8 + Math.random() * 20,
+      rot: (Math.random() - 0.5) * 30,
+      drift: (Math.random() - 0.5) * 40,
+      tier,
+      expiresAt: Date.now() + this.FLOATER_TTL_MS,
     };
     this.clickFloaters.update((f) => [...f, floater]);
-    setTimeout(() => {
-      this.clickFloaters.update((f) => f.filter((fl) => fl.id !== id));
-    }, 1200);
+  }
+
+  private gcFloaters(now: number): void {
+    const list = this.clickFloaters();
+    if (list.length === 0) return;
+    if (list[0].expiresAt > now) return;
+    this.clickFloaters.set(list.filter((fl) => fl.expiresAt > now));
   }
 
   private serializeGameState(): string {
@@ -363,19 +712,23 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeLevel: this.prestigeLevel(),
       prestigeUpgradesList: this.prestigeUpgradesList(),
       totalPlaytime: this.totalPlaytime(),
+      lastSavedAt: Date.now(),
+      saveVersion: this.SAVE_VERSION,
     };
-    return this.encodeToBase64(JSON.stringify(gameState));
+    return this.serializeWithChecksum(JSON.stringify(gameState));
   }
 
   private applyGameState(gameState: any): void {
-    this.essence.set(gameState.essence || 0);
-    this.totalEssence.set(gameState.totalEssence || 0);
+    const finite = (v: any, fallback = 0) =>
+      typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : fallback;
+    this.essence.set(finite(gameState.essence));
+    this.totalEssence.set(finite(gameState.totalEssence));
     this.comboCount.set(0);
-    this.highestCombo.set(gameState.highestCombo ?? 0);
-    this.totalManualClicks.set(gameState.totalManualClicks ?? 0);
-    this.prestigeEssence.set(gameState.prestigeEssence ?? 0);
-    this.prestigeLevel.set(gameState.prestigeLevel ?? 0);
-    this.totalPlaytime.set(gameState.totalPlaytime ?? 0);
+    this.highestCombo.set(finite(gameState.highestCombo));
+    this.totalManualClicks.set(finite(gameState.totalManualClicks));
+    this.prestigeEssence.set(finite(gameState.prestigeEssence));
+    this.prestigeLevel.set(finite(gameState.prestigeLevel));
+    this.totalPlaytime.set(finite(gameState.totalPlaytime));
 
     this.upgradesList.set(
       this.mergeList(this.upgradesList(), gameState.upgradesList || [], 'name', true)
@@ -412,7 +765,7 @@ export class AppComponent implements OnInit, OnDestroy {
     try {
       localStorage.setItem('fearIdleGame', this.serializeGameState());
     } catch (e) {
-      console.error('Erro ao salvar o jogo no localStorage:', e);
+      this.logError('Erro ao salvar o jogo no localStorage:', e);
     }
   }
 
@@ -432,15 +785,15 @@ export class AppComponent implements OnInit, OnDestroy {
         .writeText(saveDataString)
         .then(() => {})
         .catch((err) => {
-          console.warn(
+          this.logWarn(
             'Falha ao copiar automaticamente para a área de transferência:',
             err
           );
         });
     } catch (e: any) {
-      console.error('Erro ao gerar save:', e);
+      this.logError('Erro ao gerar save:', e);
       this.showAlert(
-        'Erro ao gerar save. Detalhes: ' + (e.message || 'Erro desconhecido.')
+        'Erro ao gerar save. Tente novamente ou recarregue a página.'
       );
     }
   }
@@ -452,7 +805,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.showAlert('Código do save copiado!');
       })
       .catch((err) => {
-        console.error('Erro ao copiar o texto do save:', err);
+        this.logError('Erro ao copiar o texto do save:', err);
         this.showAlert(
           'Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.'
         );
@@ -465,13 +818,13 @@ export class AppComponent implements OnInit, OnDestroy {
       if (savedState) {
         let decodedData: string;
         try {
-          decodedData = this.decodeFromBase64(savedState);
+          decodedData = this.deserializeWithChecksum(savedState);
         } catch (e: any) {
-          console.error('Erro de decodificação no loadGame (Base64/UTF-8):', e);
+          this.logError('Erro de decodificação no loadGame (Base64/UTF-8):', e);
           throw new Error('Save corrompido ou de formato antigo/inválido.');
         }
 
-        const gameState = JSON.parse(decodedData);
+        const gameState = this.migrateGameState(JSON.parse(decodedData));
 
         if (
           typeof gameState.essence !== 'number' ||
@@ -485,9 +838,10 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         this.applyGameState(gameState);
+        this.applyOfflineProgress(gameState.lastSavedAt);
       }
     } catch (e: any) {
-      console.error('Erro ao carregar o jogo do localStorage:', e);
+      this.logError('Erro ao carregar o jogo do localStorage:', e);
       const corruptedSave = localStorage.getItem('fearIdleGame');
       if (corruptedSave) {
         localStorage.setItem('fearIdleGame_backup', corruptedSave);
@@ -499,6 +853,29 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isSafeNumber(value: unknown): value is number {
+    return typeof value === 'number' && isFinite(value) && value >= 0;
+  }
+
+  private readonly MAX_IMPORT_AMOUNT = 1e9;
+  private readonly MAX_IMPORT_PRESTIGE_LEVEL = 1e5;
+  private readonly SAVE_VERSION = 2;
+
+  private migrateGameState(gameState: any): any {
+    const v = typeof gameState.saveVersion === 'number' ? gameState.saveVersion : 1;
+    if (v > this.SAVE_VERSION) {
+      throw new Error(
+        `Save de versão ${v} é mais recente que a suportada (${this.SAVE_VERSION}). Atualize o jogo.`
+      );
+    }
+    // v1 -> v2: nenhuma transformacao necessaria. Campos novos
+    // (lastSavedAt, etc) sao tratados com fallback no applyGameState.
+    return gameState;
+  }
+  private isBoundedNumber(value: unknown, max: number): value is number {
+    return this.isSafeNumber(value) && value <= max;
+  }
+
   importSave(): void {
     if (!this.importedSaveData) {
       this.showAlert('Por favor, cole os dados do save no campo de texto.');
@@ -506,12 +883,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const decodedData = this.decodeFromBase64(this.importedSaveData);
-      const gameState = JSON.parse(decodedData);
+      const decodedData = this.deserializeWithChecksum(this.importedSaveData);
+      const gameState = this.migrateGameState(JSON.parse(decodedData));
 
       if (
-        typeof gameState.essence !== 'number' ||
-        typeof gameState.totalEssence !== 'number' ||
+        !this.isSafeNumber(gameState.essence) ||
+        !this.isSafeNumber(gameState.totalEssence) ||
         !Array.isArray(gameState.upgradesList) ||
         !Array.isArray(gameState.trophiesList)
       ) {
@@ -521,29 +898,32 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
       if (
-        typeof gameState.highestCombo !== 'number' ||
-        typeof gameState.totalManualClicks !== 'number' ||
-        typeof gameState.prestigeEssence !== 'number' ||
-        typeof gameState.prestigeLevel !== 'number' ||
+        !this.isSafeNumber(gameState.highestCombo) ||
+        !this.isSafeNumber(gameState.totalManualClicks) ||
+        !this.isSafeNumber(gameState.prestigeEssence) ||
+        !this.isBoundedNumber(
+          gameState.prestigeLevel,
+          this.MAX_IMPORT_PRESTIGE_LEVEL
+        ) ||
         !Array.isArray(gameState.clickUpgradesList) ||
         !Array.isArray(gameState.prestigeUpgradesList) ||
-        typeof gameState.totalPlaytime !== 'number'
+        !this.isSafeNumber(gameState.totalPlaytime)
       ) {
         throw new Error(
-          'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes ou corrompidas.'
+          'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes, corrompidas ou fora dos limites.'
         );
       }
 
       for (const up of gameState.upgradesList) {
         if (
           typeof up.name !== 'string' ||
-          typeof up.cost !== 'number' ||
-          typeof up.dps !== 'number' ||
-          typeof up.amount !== 'number' ||
+          !this.isSafeNumber(up.cost) ||
+          !this.isSafeNumber(up.dps) ||
+          !this.isBoundedNumber(up.amount, this.MAX_IMPORT_AMOUNT) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade automático com formato incorreto ou descrição ausente.'
+            'Dados de save inválidos: upgrade automático com formato incorreto, descrição ausente ou amount fora dos limites.'
           );
         }
       }
@@ -551,27 +931,27 @@ export class AppComponent implements OnInit, OnDestroy {
       for (const up of gameState.clickUpgradesList) {
         if (
           typeof up.name !== 'string' ||
-          typeof up.cost !== 'number' ||
-          typeof up.clickMultiplier !== 'number' ||
-          typeof up.amount !== 'number' ||
+          !this.isSafeNumber(up.cost) ||
+          !this.isSafeNumber(up.clickMultiplier) ||
+          !this.isBoundedNumber(up.amount, this.MAX_IMPORT_AMOUNT) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de clique com formato incorreto ou descrição ausente.'
+            'Dados de save inválidos: upgrade de clique com formato incorreto, descrição ausente ou amount fora dos limites.'
           );
         }
       }
       for (const up of gameState.prestigeUpgradesList) {
         if (
           typeof up.name !== 'string' ||
-          typeof up.cost !== 'number' ||
-          typeof up.multiplierValue !== 'number' ||
+          !this.isSafeNumber(up.cost) ||
+          !this.isSafeNumber(up.multiplierValue) ||
           typeof up.type !== 'string' ||
-          typeof up.amount !== 'number' ||
+          !this.isBoundedNumber(up.amount, this.MAX_IMPORT_AMOUNT) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de prestígio com formato incorreto ou descrição ausente.'
+            'Dados de save inválidos: upgrade de prestígio com formato incorreto, descrição ausente ou amount fora dos limites.'
           );
         }
       }
@@ -595,7 +975,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.importedSaveData = '';
       this.showAlert('Save importado com sucesso!');
     } catch (e: any) {
-      console.error('Erro ao importar save:', e);
+      this.logError('Erro ao importar save:', e);
       this.showAlert(
         'Erro ao importar save. Verifique se os dados são válidos.'
       );
@@ -622,14 +1002,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this.showStatsModal = false;
   }
 
-  calculatePrestigeGain(): number {
-    const prestigeThreshold = 10_000_000;
-    if (this.totalEssence() < prestigeThreshold) return 0;
+  private readonly PRESTIGE_BASE_THRESHOLD = 10_000_000;
+  private readonly PRESTIGE_THRESHOLD_GROWTH = 1.5;
 
-    const gain = Math.floor(
-      Math.cbrt(this.totalEssence() / prestigeThreshold)
-    );
-    return gain;
+  prestigeThreshold = computed(
+    () =>
+      this.PRESTIGE_BASE_THRESHOLD *
+      Math.pow(this.PRESTIGE_THRESHOLD_GROWTH, this.prestigeLevel())
+  );
+
+  calculatePrestigeGain(): number {
+    const threshold = this.prestigeThreshold();
+    if (this.totalEssence() < threshold) return 0;
+    return Math.floor(Math.cbrt(this.totalEssence() / threshold));
   }
 
   prestigeGame(): void {
@@ -647,6 +1032,7 @@ export class AppComponent implements OnInit, OnDestroy {
         false
       )} Essência Ancestral.`,
       () => {
+        this.triggerPrestigeCinematic();
         this.prestigeEssence.update((v) => v + gain);
         this.prestigeLevel.update((v) => v + 1);
 
@@ -726,56 +1112,34 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  getUpgradeCostForCurrentMode(upgrade: Upgrade): number {
-    const currentMode = this.currentPurchaseMode;
-    if (currentMode === 'max') {
-      const maxPurchase = this.calculateMaxPurchase(
-        upgrade.cost,
-        this.essence()
-      );
-      if (maxPurchase === 0) return upgrade.cost;
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < maxPurchase; i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
-    } else {
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < (currentMode as number); i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
+  private readonly COST_GROWTH = 1.15;
+
+  private cumulativeCost(baseCost: number, count: number): number {
+    let total = 0;
+    let cur = baseCost;
+    for (let i = 0; i < count; i++) {
+      total += cur;
+      cur = Math.round(cur * this.COST_GROWTH);
     }
+    return total;
+  }
+
+  getCostForCurrentMode(upgrade: { cost: number }): number {
+    const mode = this.currentPurchaseMode();
+    if (mode === 'max') {
+      const maxBuy = this.calculateMaxPurchase(upgrade.cost, this.essence());
+      if (maxBuy === 0) return upgrade.cost;
+      return this.cumulativeCost(upgrade.cost, maxBuy);
+    }
+    return this.cumulativeCost(upgrade.cost, mode as number);
+  }
+
+  getUpgradeCostForCurrentMode(upgrade: Upgrade): number {
+    return this.getCostForCurrentMode(upgrade);
   }
 
   getClickUpgradeCostForCurrentMode(upgrade: ClickUpgrade): number {
-    const currentMode = this.currentPurchaseMode;
-    if (currentMode === 'max') {
-      const maxPurchase = this.calculateMaxPurchase(
-        upgrade.cost,
-        this.essence()
-      );
-      if (maxPurchase === 0) return upgrade.cost;
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < maxPurchase; i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
-    } else {
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < (currentMode as number); i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
-    }
+    return this.getCostForCurrentMode(upgrade);
   }
 
   private calculateMaxPurchase(
@@ -790,13 +1154,17 @@ export class AppComponent implements OnInit, OnDestroy {
     while (currentEssence >= tempCost && purchaseCount < 1000000) {
       currentEssence -= tempCost;
       purchaseCount++;
-      tempCost = Math.round(tempCost * 1.15);
+      tempCost = Math.round(tempCost * this.COST_GROWTH);
       if (tempCost <= 0) break;
     }
     return purchaseCount;
   }
 
   public formatNumber(num: number, isDps: boolean = false): string {
+    if (!Number.isFinite(num)) {
+      if (Number.isNaN(num)) return '?';
+      return num < 0 ? '-∞' : '∞';
+    }
     if (num === 0) return '0';
     if (Math.abs(num) < 1 && isDps) return num.toFixed(2);
     if (Math.abs(num) < 1000 && !isDps) return num.toFixed(0);
@@ -855,12 +1223,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return this.calculateMaxPurchase(upgradeCost, this.essence()) > 0;
     }
 
-    let totalCost = 0;
-    let tempCost = upgradeCost;
-    for (let i = 0; i < (multiplier as number); i++) {
-      totalCost += tempCost;
-      tempCost = Math.round(tempCost * 1.15);
-    }
+    const totalCost = this.cumulativeCost(upgradeCost, multiplier as number);
     return this.essence() >= totalCost;
   }
 
@@ -887,18 +1250,18 @@ export class AppComponent implements OnInit, OnDestroy {
           if (actualMultiplier === 0) return currentUpgrades;
         }
 
-        let currentCostOfUpgrade = up.cost;
-        let totalCostExact = 0;
+        const totalCostExact = this.cumulativeCost(up.cost, actualMultiplier);
+        let finalCost = up.cost;
         for (let i = 0; i < actualMultiplier; i++) {
-          totalCostExact += currentCostOfUpgrade;
-          currentCostOfUpgrade = Math.round(currentCostOfUpgrade * 1.15);
+          finalCost = Math.round(finalCost * this.COST_GROWTH);
         }
 
         if (this.essence() < totalCostExact) return currentUpgrades;
 
         up.amount += actualMultiplier;
-        up.cost = currentCostOfUpgrade;
+        up.cost = finalCost;
         this.essence.update((v) => v - totalCostExact);
+        this.flashBought(up.name);
         return upgradesCopy;
       });
     } else {
@@ -920,18 +1283,18 @@ export class AppComponent implements OnInit, OnDestroy {
           if (actualMultiplier === 0) return clickUpgradesCopy;
         }
 
-        let currentCostOfUpgrade = up.cost;
-        let totalCostExact = 0;
+        const totalCostExact = this.cumulativeCost(up.cost, actualMultiplier);
+        let finalCost = up.cost;
         for (let i = 0; i < actualMultiplier; i++) {
-          totalCostExact += currentCostOfUpgrade;
-          currentCostOfUpgrade = Math.round(currentCostOfUpgrade * 1.15);
+          finalCost = Math.round(finalCost * this.COST_GROWTH);
         }
 
         if (this.essence() < totalCostExact) return clickUpgradesCopy;
 
         up.amount += actualMultiplier;
-        up.cost = currentCostOfUpgrade;
+        up.cost = finalCost;
         this.essence.update((v) => v - totalCostExact);
+        this.flashBought(up.name);
         return clickUpgradesCopy;
       });
     }
@@ -1031,24 +1394,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (trophy && !trophy.earned) {
         trophy.earned = true;
-
-        const newToast: Toast = {
-          id: this.nextToastId++,
-          message: `🏆 ${trophy.title}`,
-          icon: trophy.icon,
-        };
-        this.activeToasts.update((toasts) => [...toasts, newToast]);
-
-        newToast.timeoutId = setTimeout(() => {
-          this.activeToasts.update((toasts) =>
-            toasts.filter((t) => t.id !== newToast.id)
-          );
-        }, 10000);
-
-        const audio = new Audio(
-          'https://assets.mixkit.co/sfx/preview/mixkit-fairy-win-sound-2011.mp3'
-        );
-        audio.play().catch(() => {});
+        this.pushToast(`🏆 ${trophy.title}`, trophy.icon, 10000);
+        this.playTrophyChime();
+        this.triggerTrophyFanfare(trophy.icon, trophy.title);
         return updatedTrophies;
       }
       return currentTrophies;

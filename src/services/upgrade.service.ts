@@ -519,7 +519,7 @@ export class UpgradeService {
       {
         name: 'Ritmo Cósmico',
         cost: 30000000000000,
-        clickMultiplier: 0.1,
+        clickMultiplier: 0.45,
         amount: 0,
         unlockClicks: 3000000000000,
         unlockAfter: 'Batida Estelar',
@@ -530,7 +530,7 @@ export class UpgradeService {
       {
         name: 'Voz do Vazio',
         cost: 120000000000000,
-        clickMultiplier: 0.2,
+        clickMultiplier: 0.5,
         amount: 0,
         unlockClicks: 12000000000000,
         unlockAfter: 'Ritmo Cósmico',
@@ -541,7 +541,7 @@ export class UpgradeService {
       {
         name: 'Pulso da Não-Existência',
         cost: 500000000000000,
-        clickMultiplier: 0.3,
+        clickMultiplier: 0.55,
         amount: 0,
         unlockClicks: 50000000000000,
         unlockAfter: 'Voz do Vazio',
@@ -552,7 +552,7 @@ export class UpgradeService {
       {
         name: 'Consciência Amaldiçoada',
         cost: 2e15,
-        clickMultiplier: 0.4,
+        clickMultiplier: 0.6,
         amount: 0,
         unlockClicks: 200000000000000,
         unlockAfter: 'Pulso da Não-Existência',
@@ -563,7 +563,7 @@ export class UpgradeService {
       {
         name: 'Ecos do Além-Concebível',
         cost: 8e15,
-        clickMultiplier: 0.5,
+        clickMultiplier: 0.7,
         amount: 0,
         unlockClicks: 800000000000000,
         unlockAfter: 'Consciência Amaldiçoada',
@@ -574,7 +574,7 @@ export class UpgradeService {
       {
         name: 'Sussurros do Crepúsculo',
         cost: 3e16,
-        clickMultiplier: 0.6,
+        clickMultiplier: 0.8,
         amount: 0,
         unlockClicks: 3e15,
         unlockAfter: 'Ecos do Além-Concebível',

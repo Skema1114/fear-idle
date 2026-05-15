@@ -81,10 +81,11 @@
     <div
       class="combo-display"
       *ngIf="comboCount() > 0"
-      [class.pulse-a]="comboPulseParity()"
-      [class.pulse-b]="!comboPulseParity()"
-      [class.milestone-a]="comboMilestoneParity()"
-      [class.milestone-b]="!comboMilestoneParity()"
+      [class.pulse-a]="comboPulseParity() && !comboDying()"
+      [class.pulse-b]="!comboPulseParity() && !comboDying()"
+      [class.milestone-a]="comboMilestoneParity() && !comboDying()"
+      [class.milestone-b]="!comboMilestoneParity() && !comboDying()"
+      [class.dying]="comboDying()"
     >
       <span>COMBO {{ formatNumber(comboCount()) }}x</span>
       <span>| x{{ formatNumber(comboMultiplier(), true) }}</span>
@@ -197,6 +198,7 @@
           width="56"
           height="56"
         />
+        <span class="upgrade-glyph-fx" aria-hidden="true">⛧</span>
         <div class="card-details">
           <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
           <p class="upgrade-info">
@@ -259,6 +261,7 @@
           width="56"
           height="56"
         />
+        <span class="upgrade-glyph-fx" aria-hidden="true">⛧</span>
         <div class="card-details">
           <h3 class="upgrade-name" [title]="up.name">{{ up.name }}</h3>
           <p class="upgrade-info">

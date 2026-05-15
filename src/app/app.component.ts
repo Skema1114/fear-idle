@@ -153,6 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
   totalPlaytime = signal(0);
   comboPulseParity = signal(false);
   comboMilestoneParity = signal(false);
+  comboDying = signal(false);
   lastBoughtName = signal<string | null>(null);
   lastBoughtParity = signal(false);
   private boughtClearTimeout: any;
@@ -649,9 +650,14 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.comboResetTimeout) {
       clearTimeout(this.comboResetTimeout);
     }
+    this.comboDying.set(false);
 
     this.comboResetTimeout = setTimeout(() => {
-      this.comboCount.set(0);
+      this.comboDying.set(true);
+      setTimeout(() => {
+        this.comboDying.set(false);
+        this.comboCount.set(0);
+      }, 600);
     }, 3000);
 
     const gain =

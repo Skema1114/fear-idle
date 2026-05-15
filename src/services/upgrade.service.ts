@@ -16,7 +16,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/vela-sussurrante.svg',
         description:
-          'Uma vela acesa com pavio de medo. Seu brilho fraco atrai a essência mais tênue do ambiente.',
+          'A cera escorre como gordura de carniça e o pavio cicia sílabas em línguas mortas. Sua chama hesitante lambe a borda do real.',
       },
       {
         name: 'Lamento dos Condenados',
@@ -25,7 +25,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/lamento-dos-condenados.svg',
         description:
-          'Os ecos distantes de almas perdidas, cada gemido sintoniza uma nova frequência de terror.',
+          'Gargantas dissolvidas há eras ainda gemem em coro abaixo do silêncio. Cada lamento abre uma fenda úmida no tecido das horas.',
       },
       {
         name: 'Pacto Sanguíneo',
@@ -34,7 +34,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/pacto-sanguineo.svg',
         description:
-          'Um elo carmesim forjado com as forças primais, cada gota de sacrifício amplia seu poder.',
+          'Runas mordidas na pele pulsam quando o contrato respira. O que foi selado em hemoglobina não conhece esquecimento, apenas juros.',
       },
       {
         name: 'Eco dos Pesadelos',
@@ -43,7 +43,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/eco-dos-pesadelos.svg',
         description:
-          'Os sussurros dos piores medos da humanidade, ressoando e atraindo a essência do terror noturno.',
+          'Reverberações de sonhos que ninguém ousou contar, repetindo-se na cavidade entre uma pálpebra e a outra. Quem escuta acorda com sal nos dentes.',
       },
       {
         name: 'Ídolo Quebrado',
@@ -52,7 +52,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/idolo-quebrado.svg',
         description:
-          'Fragmentos de uma divindade esquecida, cada lasca ainda exala uma aura de medo primordial.',
+          'Os fragmentos lembram o formato do que jamais deveriam ter contido. Cada lasca ainda exala o hálito de algo que nunca dormiu por completo.',
       },
       {
         name: 'Ritual Profano',
@@ -61,7 +61,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/ritual-profano.svg',
         description:
-          'Círculos desenhados com sangue e segredos antigos, invocando manifestações menores de terror.',
+          'Geometria proibida traçada em pó de osso e bile, fechando-se sobre si mesma. Algo responde ao chamado sem precisar atravessar a porta.',
       },
       {
         name: 'Tomos Proibidos',
@@ -70,7 +70,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/tomos-proibidos.svg',
         description:
-          'Livros encadernados em pele, suas páginas sussurram verdades que corrompem a sanidade e atraem mais medo.',
+          'Encadernados em couro que ainda recorda o calor do dono, eles viram páginas sozinhos quando ninguém olha. A tinta cheira a ferrugem antediluviana.',
       },
       {
         name: 'Selo Espectral',
@@ -79,7 +79,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/selo-espectral.svg',
         description:
-          'Um sigilo que prende e amplifica a energia etérea, tornando o terror mais palpável e lucrativo.',
+          'O sigilo desliza pela parede como óleo de cadáver e se grava no ar. Tudo que passa por ele perde um pedaço que jamais retornará inteiro.',
       },
       {
         name: 'Lágrimas da Medusa',
@@ -88,7 +88,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/lagrimas-da-medusa.svg',
         description:
-          'Gotas de pavor petrificado, cristalizadas em pura essência, coletadas de almas que ousaram olhar.',
+          'Cristais salgados que choraram um rosto até virarem rocha. Quem segura uma sente os próprios olhos endurecerem por dentro.',
       },
       {
         name: 'Fragmento Estelar',
@@ -97,7 +97,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/fragmento-estelar.svg',
         description:
-          'Um caco de astro distante, carregando o frio e o vazio do espaço sideral, infundindo medo cósmico.',
+          'Um caco caído de uma estrela que jamais teve nome, ainda úmido do gelo entre constelações. Carrega o silêncio absoluto que existe acima das nuvens.',
       },
       {
         name: 'Coro Macabro',
@@ -106,7 +106,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/coro-macabro.svg',
         description:
-          'Vozes espectrais unidas em uma melodia profana, harmonizando o terror e ampliando sua ressonância.',
+          'Gargantas sem corpo entoam um cântico em dó menor da carniça. A harmonia é tão precisa que o ar começa a apodrecer no compasso.',
       },
       {
         name: 'Abismo da Loucura',
@@ -115,7 +115,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/abismo-da-loucura.svg',
         description:
-          'Um olhar no vazio, onde a sanidade se desfaz e a essência do medo jorra livremente.',
+          'Um buraco aberto na lógica, com bordas que se afastam à medida que você se aproxima. Olhar dentro dele é descobrir que ele já olhava de volta.',
       },
       {
         name: 'Sentinela Dimensional',
@@ -124,7 +124,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/sentinela-dimensional.svg',
         description:
-          'Entidades vigilantes que guardam portais, drenando o pavor de todas as realidades adjacentes.',
+          'Sentinelas com cabeças voltadas para dentro do crânio, montando guarda em soleiras que não pertencem a nenhum mundo. Nada passa sem deixar um nome para trás.',
       },
       {
         name: 'Véu Interplanar',
@@ -133,7 +133,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/veu-interplanar.svg',
         description:
-          'Uma fina camada entre dimensões, tornando-a porosa ao fluxo da essência do medo.',
+          'Tecido fino o suficiente para revelar a respiração do outro lado, cosido com fios de tempo decomposto. Cada poro deixa passar uma forma sem rosto.',
       },
       {
         name: 'Tempestade Cósmica',
@@ -142,7 +142,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/tempestade-cosmica.svg',
         description:
-          'Uma fúria de energia caótica do espaço, manifestando-se como medo puro e indomável.',
+          'Raios que não obedecem direção alguma, trovões que ecoam antes de explodir. Quando passa, ela leva consigo lembranças que você jurava possuir.',
       },
       {
         name: 'Portal para o Além',
@@ -151,7 +151,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/portal-para-o-alem.svg',
         description:
-          'Uma passagem para realidades inomináveis, de onde o terror escorre sem fim.',
+          'Uma boca circular aberta no nada, sem cantos, sem fundo. Dela escorre uma maré morna de coisas que já habitaram os seus pulmões.',
       },
       {
         name: 'O Sonhador em R´lyeh',
@@ -160,7 +160,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/o-sonhador-em-rlyeh.svg',
         description:
-          'A mera presença de uma mente dormente capaz de dobrar a realidade gera medo incalculável.',
+          'Sob a cidade afogada, ele respira uma vez a cada eclipse. Seus sonhos vazam pela água salgada e moldam a forma do que está acordado.',
       },
       {
         name: 'Olho de Azathoth',
@@ -169,7 +169,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/olho-de-azathoth.svg',
         description:
-          'A visão fragmentada da cegueira primordial, irradiando insanidade e horror puro.',
+          'A pupila cega do sultão idiota que dança no centro de tudo. Mesmo fechado, ele transmite a flauta lunática que sustenta a criação.',
       },
       {
         name: 'Toque de Nyarlathotep',
@@ -178,7 +178,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/toque-de-nyarlathotep.svg',
         description:
-          'A sombra rastejante de um mensageiro primordial, cada movimento sutil arranca a sanidade.',
+          'O Caos Rastejante encosta um dedo de tinta no seu pulso e sorri com mil bocas. Quem é tocado deixa de saber em qual cidade nasceu.',
       },
       {
         name: 'Despertar da Antiga Ameaça',
@@ -187,7 +187,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/despertar-da-antiga-ameaca.svg',
         description:
-          'O próprio Cthulhu, ou algo pior, se agita em seu sono cósmico, emanando ondas de terror.',
+          'Algo enorme se vira sob o leito do oceano e sob o leito das estrelas. O zumbido das placas tectônicas é apenas a respiração de algo abrindo os olhos.',
       },
       {
         name: 'Mente Colossal',
@@ -196,7 +196,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/mente-colossal.svg',
         description:
-          'Um fragmento de uma consciência que abrange galáxias, gerando medo através da mera existência.',
+          'Uma cognição tão vasta que cidades inteiras orbitam um único pensamento. Pensar em você é, para ela, um espasmo involuntário entre eras.',
       },
       {
         name: 'Espiral de Desespero',
@@ -205,7 +205,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/espiral-de-desespero.svg',
         description:
-          'Uma distorção na tapeçaria da realidade, puxando a essência de todos os medos para um ponto central.',
+          'Uma vertigem desenhada em sentido horário inverso, descendente, infinita. Tudo que ousa orbitá-la é dobrado para dentro até virar súplica.',
       },
       {
         name: 'Chama Eterna',
@@ -214,7 +214,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/chama-eterna.svg',
         description:
-          'Uma chama que consome a sanidade e incendeia o pavor em todo o universo conhecido.',
+          'Um fogo que não emite calor, apenas dúvida. Arde sem oxigênio porque queima a própria razão para que algo deixe de existir.',
       },
       {
         name: 'O Vazio Pulsante',
@@ -223,7 +223,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/o-vazio-pulsante.svg',
         description:
-          'O pulsar rítmico do nada, que se expande e contrai, engolfando tudo em horror puro.',
+          'O nada não está parado. Ele palpita num compasso lento, sístole e diástole, e cada batida arranca pequenos pedaços do mundo que sobra.',
       },
       {
         name: 'Realidade Fragmentada',
@@ -232,7 +232,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/realidade-fragmentada.svg',
         description:
-          'As fissuras no tecido da existência revelam horrores interdimensionais, liberando um fluxo constante de medo.',
+          'O real rachou como vidro envelhecido e em cada fragmento mora um cenário diferente. Em todos eles, sua imagem aparece de costas, esperando.',
       },
       {
         name: 'Eco do Caos Primordial',
@@ -241,7 +241,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/eco-do-caos-primordial.svg',
         description:
-          'O murmúrio das origens do universo, um terror tão antigo que corrompe tudo em seu caminho.',
+          'Uma reverberação anterior à primeira sílaba do tempo. Quem a escuta perde o costume de chamar as coisas pelo nome que tinham.',
       },
       {
         name: 'Tecelão de Universos',
@@ -250,7 +250,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/tecelao-de-universos.svg',
         description:
-          'Uma entidade cujos movimentos moldam a própria realidade, gerando medo como subproduto de sua existência.',
+          'Dedos longos demais para qualquer geometria, costurando galáxias em padrões que nunca se repetem. Cada nó sufoca uma estrela ao nascer.',
       },
       {
         name: 'Vontade Cósmica Indomável',
@@ -259,7 +259,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/vontade-cosmica-indomavel.svg',
         description:
-          'Uma força irrefreável que subverte a existência, amplificando o medo de toda a criação.',
+          'Um desejo sem dono, mais antigo que a própria intenção. Onde ele passa, as leis da física pedem desculpas e abrem caminho.',
       },
       {
         name: 'O Ponto de Singularidade',
@@ -268,7 +268,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/o-ponto-de-singularidade.svg',
         description:
-          'O núcleo do não-ser, um ponto onde todas as leis falham e o terror é absoluto.',
+          'Um furo menor que um átomo onde toda regra se ajoelha. Ele não engole matéria; engole o motivo de a matéria existir.',
       },
       {
         name: 'A Não-Existência',
@@ -277,7 +277,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/a-nao-existencia.svg',
         description:
-          'A própria ausência de tudo, um vazio que consome e reverte o ser ao nada, gerando pavor infinito.',
+          'Não é morte, nem oblivião, nem silêncio. É a categoria anterior a qualquer uma delas, e ela escolheu lembrar de você primeiro.',
       },
       {
         name: 'Vácuo Inominável',
@@ -286,7 +286,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/vacuo-inominavel.svg',
         description:
-          'Um abismo insondável que não pode ser descrito ou compreendido, de onde o horror jorra sem cessar.',
+          'Toda língua humana queima ao tentar pronunciá-lo. Os pergaminhos que tentaram registrá-lo se enrolam sozinhos e mordem os dedos do escriba.',
       },
       {
         name: 'A Distorção Primordial',
@@ -295,7 +295,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/a-distorcao-primordial.svg',
         description:
-          'A primeira falha na realidade, a fonte de todo o caos, que distorce a existência em medo puro.',
+          'A rachadura original, anterior ao primeiro instante. Ela ainda se alarga, e tudo o que respira é apenas espuma na sua beirada.',
       },
       {
         name: 'O Pavor Inconcebível',
@@ -304,7 +304,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/o-pavor-inconcebivel.svg',
         description:
-          'Um terror que desafia a mente humana, gerando essência de uma fonte além da imaginação.',
+          'Um medo cuja forma escapa quando a mente tenta segurá-la. Você o pressente nas costas, mas ao virar-se descobre que não tem mais costas.',
       },
       {
         name: 'Sombra de Yog-Sothoth',
@@ -313,7 +313,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/auto/sombra-de-yog-sothoth.svg',
         description:
-          'A mera sombra do Todo-Em-Um e Um-Em-Todos, que distorce o espaço-tempo e libera pavor sem limites.',
+          'A projeção do Todo-Em-Um sobre o chão da realidade, um aglomerado de esferas que pisca em dimensões alternadas. Apenas a sombra; o original ainda nem chegou.',
       },
     ];
   }
@@ -327,7 +327,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/click/toque-sutil.svg',
         description:
-          'Um leve pulsar em sua mente, aumentando ligeiramente a ressonância de seus cliques.',
+          'Suas pontas dos dedos aprendem a tatear a membrana fina que separa o aqui do nunca. Cada pressão deixa um pequeno hematoma no real.',
       },
       {
         name: 'Foco Macabro',
@@ -338,7 +338,7 @@ export class UpgradeService {
         unlockAfter: 'Toque Sutil',
         image: 'assets/icons/click/foco-macabro.svg',
         description:
-          'A concentração em visões grotescas amplifica a energia canalizada, tornando seus toques mais potentes.',
+          'Seu olhar afunila até enxergar somente o que sangra. As bordas do mundo desbotam e o que importa fica preto, brilhante e úmido.',
       },
       {
         name: 'Ritmo Insano',
@@ -349,7 +349,7 @@ export class UpgradeService {
         unlockAfter: 'Foco Macabro',
         image: 'assets/icons/click/ritmo-insano.svg',
         description:
-          'Uma batida frenética que reverbera através do seu ser, acelerando o fluxo de essência a cada clique.',
+          'Um compasso que seu coração não escolheu, mas obedece. O sangue bate em uma cadência que não pertence a corpos de carne.',
       },
       {
         name: 'Canto Hipnótico',
@@ -360,7 +360,7 @@ export class UpgradeService {
         unlockAfter: 'Ritmo Insano',
         image: 'assets/icons/click/canto-hipnotico.svg',
         description:
-          'Vozes sussurrantes de antigas invocações, hipnotizando a realidade para liberar mais essência por clique.',
+          'Sílabas que dobram a cervical da realidade até ela fechar os olhos. Quando o cântico cessa, o mundo já assinou em branco.',
       },
       {
         name: 'Conexão Psíquica',
@@ -371,7 +371,7 @@ export class UpgradeService {
         unlockAfter: 'Canto Hipnótico',
         image: 'assets/icons/click/conexao-psiquica.svg',
         description:
-          'Um elo direto com as correntes de medo da psique coletiva, multiplicando o impacto de cada canalização.',
+          'Um cabo invisível, pegajoso de pensamentos alheios, sai da sua nuca e atinge o coletivo. Cada clique puxa o medo direto da fonte úmida.',
       },
       {
         name: 'Pulso Sombrio',
@@ -382,7 +382,7 @@ export class UpgradeService {
         unlockAfter: 'Conexão Psíquica',
         image: 'assets/icons/click/pulso-sombrio.svg',
         description:
-          'Cada clique envia um pulso de energia sombria, extraindo mais essência de reinos etéreos.',
+          'Uma onda lenta e gordurosa sai da palma da sua mão e percorre os corredores entre os mundos. Janelas trincam sem motivo onde ela passa.',
       },
       {
         name: 'Memória Amaldiçoada',
@@ -393,7 +393,7 @@ export class UpgradeService {
         unlockAfter: 'Pulso Sombrio',
         image: 'assets/icons/click/memoria-amaldicoada.svg',
         description:
-          'Lembranças proibidas de horrores esquecidos são desbloqueadas, imbuindo seus cliques com poder terrível.',
+          'Você recorda coisas que jamais lhe aconteceram, e mesmo assim as cicatrizes pulsam. Cada toque arranca uma lembrança que não era para ser sua.',
       },
       {
         name: 'Ecos do Vazio',
@@ -404,7 +404,7 @@ export class UpgradeService {
         unlockAfter: 'Memória Amaldiçoada',
         image: 'assets/icons/click/ecos-do-vazio.svg',
         description:
-          'Seus toques despertam ecos do vazio primordial, de onde jorra uma torrente de essência bruta.',
+          'A cada clique, o silêncio absoluto retorna o seu som distorcido. O vazio, ao perceber que foi escutado, responde com fome.',
       },
       {
         name: 'Fúria Canalizada',
@@ -415,7 +415,7 @@ export class UpgradeService {
         unlockAfter: 'Ecos do Vazio',
         image: 'assets/icons/click/furia-canalizada.svg',
         description:
-          'A raiva dos condenados canalizada através de seus dedos, transformando-se em pura essência.',
+          'A ira de incontáveis bocas mortas atravessa seu pulso e sai pelas unhas. O que você toca aprende, por um instante, a sensação de ser queimado por dentro.',
       },
       {
         name: 'Devaneio Perpétuo',
@@ -426,7 +426,7 @@ export class UpgradeService {
         unlockAfter: 'Fúria Canalizada',
         image: 'assets/icons/click/devaneio-perpetuo.svg',
         description:
-          'Sua mente flutua em um devaneio sem fim, constantemente extraindo essência de realidades de pesadelo.',
+          'Você não dorme mais; você apenas afunda. Sua consciência atravessa galerias de salões alagados que pulsam num idioma sem vogais.',
       },
       {
         name: 'Convergência Dimensional',
@@ -437,7 +437,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/click/convergencia-dimensional.svg',
         description:
-          'Seus cliques puxam essência de múltiplos planos de existência, convergindo em um único ponto.',
+          'Várias versões de você, em camadas paralelas, clicam ao mesmo tempo. Cada toque cumpre o gesto de mil mãos sobrepostas em ressonância obscena.',
       },
       {
         name: 'Vortex de Essência',
@@ -448,7 +448,7 @@ export class UpgradeService {
         unlockAfter: 'Convergência Dimensional',
         image: 'assets/icons/click/vortex-de-essencia.svg',
         description:
-          'Um redemoinho de poder se forma sob seus dedos, sugando o medo do éter com voracidade.',
+          'Um pequeno funil escuro espirala sob a sua palma, faminto. Ele engole o ar próximo e devolve sussurros que você jamais quis traduzir.',
       },
       {
         name: 'Canto Cósmico',
@@ -459,7 +459,7 @@ export class UpgradeService {
         unlockAfter: 'Vortex de Essência',
         image: 'assets/icons/click/canto-cosmico.svg',
         description:
-          'Seu canto reverbera pelo cosmos, forçando a própria realidade a ceder mais essência.',
+          'Sua voz desce escalas em frequências que dilatam pupilas e desalinham planetas. As estrelas mortas se inclinam um pouco para ouvir.',
       },
       {
         name: 'Pulsar da Realidade',
@@ -470,7 +470,7 @@ export class UpgradeService {
         unlockAfter: 'Canto Cósmico',
         image: 'assets/icons/click/pulsar-da-realidade.svg',
         description:
-          'O ritmo dos seus cliques ecoa com o pulsar do universo, extraindo essência em cada batida.',
+          'Você passa a clicar no ritmo cardíaco do universo, sincopado e instável. Cada batida vaza um fio fino de essência pelas frestas do tempo.',
       },
       {
         name: 'Fragmento do Caos',
@@ -481,7 +481,7 @@ export class UpgradeService {
         unlockAfter: 'Pulsar da Realidade',
         image: 'assets/icons/click/fragmento-do-caos.svg',
         description:
-          'Cada toque seu invoca uma minúscula porção do caos primordial, enriquecendo a essência canalizada.',
+          'Uma lasca insignificante do desordenamento original gruda na sua falange. Cada clique a esfrega contra a realidade e ela vaza um pouco de desfeitura.',
       },
       {
         name: 'Mão Eterna',
@@ -492,7 +492,7 @@ export class UpgradeService {
         unlockAfter: 'Fragmento do Caos',
         image: 'assets/icons/click/mao-eterna.svg',
         description:
-          'Uma mão espectral que replica seus toques infinitamente, multiplicando seus ganhos.',
+          'Uma mão pálida brota da sua sombra e copia cada gesto seu com fidelidade obsessiva. Ela jamais cansa, jamais erra, jamais foi sua.',
       },
       {
         name: 'Eco do Além',
@@ -503,7 +503,7 @@ export class UpgradeService {
         unlockAfter: 'Mão Eterna',
         image: 'assets/icons/click/eco-do-alem.svg',
         description:
-          'O eco de toques de outras dimensões amplifica sua própria canalização, um murmúrio eterno de essência.',
+          'Em cada clique, um sussurro defasado retorna pelo mesmo gesto vindo de outro lugar. O som chega um pouco antes da causa, e isso deveria ser impossível.',
       },
       {
         name: 'Batida Estelar',
@@ -514,7 +514,7 @@ export class UpgradeService {
         unlockAfter: 'Eco do Além',
         image: 'assets/icons/click/batida-estelar.svg',
         description:
-          'Seus cliques sincronizam com as pulsações de estrelas moribundas, liberando ondas de essência.',
+          'Cada toque seu coincide com a última pulsação de uma estrela agonizante. O céu fica um grão mais escuro, e algo do brilho condensa em sua palma.',
       },
       {
         name: 'Ritmo Cósmico',
@@ -525,7 +525,7 @@ export class UpgradeService {
         unlockAfter: 'Batida Estelar',
         image: 'assets/icons/click/ritmo-cosmico.svg',
         description:
-          'O ritmo de seus toques se torna a batida do universo, convocando essência em uma escala inimaginável.',
+          'Você deixou de impor cadência: agora o cosmos clica junto, obedecendo o compasso da sua mão. As galáxias arfam, fora do tempo, atrás de você.',
       },
       {
         name: 'Voz do Vazio',
@@ -536,7 +536,7 @@ export class UpgradeService {
         unlockAfter: 'Ritmo Cósmico',
         image: 'assets/icons/click/voz-do-vazio.svg',
         description:
-          'Seus sussurros se tornam clamores que ressoam na não-existência, forçando o vazio a render sua essência.',
+          'Sua boca cala, mas algo dentro do seu peito ainda fala em primeira pessoa do plural. O vazio responde porque reconhece a própria voz.',
       },
       {
         name: 'Pulso da Não-Existência',
@@ -547,7 +547,7 @@ export class UpgradeService {
         unlockAfter: 'Voz do Vazio',
         image: 'assets/icons/click/pulso-da-nao-existencia.svg',
         description:
-          'Um pulso que emana da própria ausência, multiplicando seus cliques com o poder do nada.',
+          'Um latejo seco da própria ausência, que nem chega a ser som. A cada batida, algo deixa de ter acontecido, e essa subtração lhe pertence.',
       },
       {
         name: 'Consciência Amaldiçoada',
@@ -558,7 +558,7 @@ export class UpgradeService {
         unlockAfter: 'Pulso da Não-Existência',
         image: 'assets/icons/click/consciencia-amaldicoada.svg',
         description:
-          'Sua mente se torna uma prisão para o medo, onde ele se intensifica e se liberta a cada toque.',
+          'Sua mente virou uma cela revestida de pensamentos alheios. Quando você clica, alguém preso lá dentro se aproxima da fresta e ri.',
       },
       {
         name: 'Ecos do Além-Concebível',
@@ -569,7 +569,7 @@ export class UpgradeService {
         unlockAfter: 'Consciência Amaldiçoada',
         image: 'assets/icons/click/ecos-do-alem-concebivel.svg',
         description:
-          'Seus toques despertam ecos de realidades tão distorcidas que apenas sua essência pode ser compreendida.',
+          'Cada toque ressoa em planos cujas geometrias derretem a frase antes de terminá-la. Só a essência consegue voltar inteira; o pensamento se perde no trajeto.',
       },
       {
         name: 'Sussurros do Crepúsculo',
@@ -580,7 +580,7 @@ export class UpgradeService {
         unlockAfter: 'Ecos do Além-Concebível',
         image: 'assets/icons/click/sussurros-do-crepusculo.svg',
         description:
-          'Vozes que vêm do limiar da existência, ampliando seus cliques com o medo do fim e do começo.',
+          'Vozes finas como cabelo deslizam entre o último alvorecer e a primeira noite. Cada uma confessa um segredo que torna seu toque mais antigo.',
       },
     ];
   }
@@ -595,7 +595,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/visao-aprimorada-dps.svg',
         description:
-          'Um aprimoramento sutil em sua percepção, aumentando a eficiência de todas as manifestações automáticas em 5%.',
+          'Suas pupilas se alongam na vertical e passam a enxergar o calor das presenças invisíveis. As manifestações automáticas reconhecem o novo dono e trabalham mais rápido.',
       },
       {
         name: 'Toque Ressonante (Clique)',
@@ -605,7 +605,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/toque-ressonante-click.svg',
         description:
-          'Seu toque ressoa com maior poder, aumentando a eficácia de toda a canalização manual em 5%.',
+          'Cada dedo agora carrega o eco de mil mãos anteriores às suas. O contato deixa um zumbido baixo no ar, e o real obedece um pouco mais rápido.',
       },
       {
         name: 'Selo do Profano (DPS)',
@@ -615,7 +615,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/selo-do-profano-dps.svg',
         description:
-          'Um selo amaldiçoado que amplifica o terror autônomo, concedendo um bônus de 10% no DPS.',
+          'Um sigilo gravado na carne do mundo, ainda quente. Cada manifestação automática se ajoelha sobre ele antes de continuar o trabalho.',
       },
       {
         name: 'Ritmo da Existência (Clique)',
@@ -625,7 +625,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/ritmo-da-existencia-click.svg',
         description:
-          'A harmonia distorcida da existência agora acompanha seus cliques, aumentando seu poder em 10%.',
+          'A própria existência adquire um leve gaguejar entre os seus toques. O universo perde a marcação e clica com você, por reflexo doente.',
       },
       {
         name: 'Portal da Abundância (DPS)',
@@ -635,7 +635,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/portal-da-abundancia-dps.svg',
         description:
-          'Um pequeno portal que drena essência de dimensões ricas, aumentando o DPS em 20%.',
+          'Uma fenda permanente entre as paredes do real, escorrendo uma seiva escura e abundante. Suas manifestações autônomas bebem dela sem que precisem pedir.',
       },
       {
         name: 'Mente Cósmica (Clique)',
@@ -645,7 +645,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/mente-cosmica-click.svg',
         description:
-          'Sua mente se expande para compreender horrores cósmicos, resultando em 20% mais essência por clique.',
+          'Sua consciência se infla até englobar constelações silenciosas e tronos vazios. Cada toque agora carrega o peso de uma cosmologia inteira por trás.',
       },
       {
         name: 'Essência Primordial (Global)',
@@ -655,7 +655,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/essencia-primordial-global.svg',
         description:
-          'Um fragmento da própria essência do medo primordial, que multiplica TODAS as suas fontes de ganho por 1.5x.',
+          'Uma gota negra colhida do primeiro grito antes que qualquer língua existisse para articulá-lo. Ela impregna tudo o que você cultua, e tudo retorna mais pesado.',
       },
       {
         name: 'Devorador de Estrelas (Global)',
@@ -665,7 +665,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/devorador-de-estrelas-global.svg',
         description:
-          'Uma entidade que consome o brilho celestial, multiplicando todo o seu ganho de essência por 2x.',
+          'Algo com fauces longas demais para o céu mastiga astros como hóstias frias. O brilho engolido escorre por baixo, exclusivo, até o seu altar.',
       },
       {
         name: 'Fragmento do Absoluto (Global)',
@@ -675,7 +675,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/fragmento-do-absoluto-global.svg',
         description:
-          'Um caco do poder onipotente, que multiplica seu ganho total por 3x.',
+          'Um estilhaço que se recusa a refletir imagem alguma, denso como continentes mortos. Segurá-lo é descobrir que peso e culpa pesam a mesma coisa.',
       },
       {
         name: 'Anel do Vazio (DPS)',
@@ -685,7 +685,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/anel-do-vazio-dps.svg',
         description:
-          'Um anel que se contorce com o nada, aumentando o DPS em 30%.',
+          'Um aro que não tem material, apenas a ideia de cerco. Quando usado, todas as suas manifestações sentem que estão sendo vistas e produzem mais por medo.',
       },
       {
         name: 'Caminho Quebrado (Clique)',
@@ -695,7 +695,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/caminho-quebrado-click.svg',
         description:
-          'Você trilha um caminho de não-existência, tornando seus cliques 30% mais eficazes.',
+          'O chão sob você se redesenha em lajes faltantes a cada passo, e ainda assim você prossegue. Seus toques aprendem a tocar mesmo o que não está lá.',
       },
       {
         name: 'Coroa de Sombria (Global)',
@@ -705,7 +705,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/coroa-de-sombria-global.svg',
         description:
-          'Uma coroa tecida a partir das sombras mais densas, multiplicando todo o seu ganho por 5x.',
+          'Uma coroa entrelaçada com penumbras espessas, pesada como confissões guardadas por séculos. Quem a usa deixa de projetar sombra, pois já é a sombra.',
       },
       {
         name: 'O Grande Olho (Global)',
@@ -715,7 +715,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/o-grande-olho-global.svg',
         description:
-          'A visão onisciente que penetra todas as realidades, multiplicando seu ganho total por 8x.',
+          'Uma pupila do tamanho de um eclipse se abre no fundo da sua percepção. Nada permanece desconhecido, nem mesmo as coisas que se escondem dentro de você.',
       },
       {
         name: 'Coração do Caos (Global)',
@@ -725,7 +725,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/coracao-do-caos-global.svg',
         description:
-          'Um coração pulsante de desordem cósmica, que multiplica todo o seu ganho por 15x.',
+          'Um músculo úmido, descompassado, que bate em três tempos contraditórios ao mesmo tempo. Cada batida reescreve uma lei física distinta no seu favor.',
       },
       {
         name: 'Vontade Inflexível (DPS)',
@@ -735,7 +735,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/vontade-inflexivel-dps.svg',
         description:
-          'Sua determinação dobra o poder das manifestações automáticas, aumentando o DPS em 40%.',
+          'Seu querer endurece como ferro fundido em sangue antigo. Mesmo entidades indiferentes se curvam ao seu intento e produzem sem descanso.',
       },
       {
         name: 'Fúria da Realidade (Clique)',
@@ -745,7 +745,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/furia-da-realidade-click.svg',
         description:
-          'A fúria de realidades quebradas imbuída em seus toques, resultando em 40% mais essência por clique.',
+          'Você canaliza o rancor dos mundos despedaçados, cada um deles um sotaque de dor. Cada clique cospe esse rancor em pequenas fagulhas de hemoglobina.',
       },
       {
         name: 'Alma Fragmentada (Global)',
@@ -755,7 +755,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/alma-fragmentada-global.svg',
         description:
-          'Um estilhaço da alma do universo, que multiplica seu ganho total por 25x.',
+          'A sua alma se partiu em cacos brilhantes que rolam por corredores cósmicos. Cada caco trabalha para você em um plano diferente, em silêncio absoluto.',
       },
       {
         name: 'Vazio Iridescente (Global)',
@@ -765,7 +765,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/vazio-iridescente-global.svg',
         description:
-          'O próprio vazio irradia poder, multiplicando todo o seu ganho por 50x.',
+          'A ausência ganhou cor: oleosa, mutável, dolorida de olhar. Onde antes não havia nada, agora existe um nada que pulsa em tons proibidos.',
       },
       {
         name: 'Trono do Caos (Global)',
@@ -775,7 +775,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/trono-do-caos-global.svg',
         description:
-          'Você ascendeu ao trono do caos primordial, multiplicando seu ganho por 100x.',
+          'Uma cadeira esculpida em ossos que nunca pertenceram a corpos completos o recebe. Sentar-se ali é descobrir que sempre esteve sentado lá.',
       },
       {
         name: 'Consciência Infinita (DPS)',
@@ -785,7 +785,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/consciencia-infinita-dps.svg',
         description:
-          'Sua mente transcende a compreensão, aumentando o DPS em 50%.',
+          'Sua percepção se desdobra em camadas que respiram independentes. Cada manifestação automática agora tem um olho seu encostado nas costas, eternamente.',
       },
       {
         name: 'Aperto do Além (Clique)',
@@ -795,7 +795,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/aperto-do-alem-click.svg',
         description:
-          'As garras do além o impulsionam, tornando seus cliques 50% mais poderosos.',
+          'Dedos finos, friíssimos, envolvem os seus a cada gesto. Não impedem; orientam. Você passou a ser apenas a luva da mão que clica de verdade.',
       },
       {
         name: 'Canto da Criação (Global)',
@@ -805,7 +805,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/canto-da-criacao-global.svg',
         description:
-          'Seu canto ressoa com o som da própria criação, multiplicando seu ganho por 200x.',
+          'Você entoa as notas que precederam a primeira matéria, e elas voltam a ressoar. O universo recua um instante e nasce de novo, levemente errado, ao seu redor.',
       },
       {
         name: 'Dominus Vácuo (Global)',
@@ -815,7 +815,7 @@ export class UpgradeService {
         amount: 0,
         image: 'assets/icons/prestige/dominus-vacuo-global.svg',
         description:
-          'Você é o mestre do vazio, multiplicando todo o seu ganho por 500x.',
+          'Você nomeia, enfim, o que não tinha nome — e ele responde com seu próprio título. O vácuo se ajoelha porque agora reconhece o senhor que o ensinou a existir.',
       },
     ];
   }

@@ -22,516 +22,516 @@ export class TrophyService {
       {
         title: 'Primeira Brasa',
         description:
-          'Você coletou sua primeira essência, um brilho sombrio no abismo.',
+          'Uma fagulha indizível desperta no abismo, e algo do outro lado a observa.',
         earned: false,
         icon: '🕯️',
       },
       {
         title: 'Eco Inicial',
         description:
-          'Sua presença se faz sentir: alcance 100 essências totais. Os sussurros começam.',
+          'Aos 100 fragmentos, as paredes do real estremecem e sussurros começam a chamar seu nome.',
         earned: false,
         icon: '🔊',
       },
       {
         title: 'Voto de Sangue',
         description:
-          'Um pacto selado com o éter: alcance 1.000 essências totais.',
+          'Aos 1.000, o pacto se grava em linguagem morta, irrevogável como o eclipse da razão.',
         earned: false,
         icon: '🩸',
       },
       {
         title: 'Sussurros na Escuridão',
         description:
-          'A mente distorce, a escuridão se aprofunda: alcance 10.000 essências totais.',
+          'Aos 10.000, vozes sem boca habitam suas vigílias e o silêncio jamais retorna intacto.',
         earned: false,
         icon: '👻',
       },
       {
         title: 'Ídolo Restaurado',
         description:
-          'Um artefato antigo ressurge, vibrando com poder: alcance 50.000 essências totais.',
+          'Aos 50.000, um simulacro de geometria errada pulsa, lembrando-se de épocas antes do tempo.',
         earned: false,
         icon: '🗿',
       },
       {
         title: 'Conhecimento Proibido',
         description:
-          'Desvende as páginas esquecidas: alcance 100.000 essências totais.',
+          'Aos 100.000, páginas vedadas se abrem sozinhas, e cada linha desfaz um pedaço de você.',
         earned: false,
         icon: '📚',
       },
       {
         title: 'Marca do Selo',
         description:
-          'O selo de um poder maior, agora gravado em sua alma: alcance 500.000 essências totais.',
+          'Aos 500.000, um sigilo arde sob sua pele, costurado por mãos que nunca conheceram carne.',
         earned: false,
         icon: '📜',
       },
       {
         title: 'Fonte da Agonia',
         description:
-          'Beba da fonte de onde o medo jorra: alcance 2.500.000 essências totais.',
+          'Aos 2.500.000, você bebe da nascente onde o medo se origina, e sua boca aprende novos vocábulos.',
         earned: false,
         icon: '💧',
       },
       {
         title: 'Rito Completo',
         description:
-          'O círculo se fecha, o ritual se cumpre: alcance 10.000.000 essências totais.',
+          'Aos 10.000.000, o círculo se fecha sobre si mesmo e nada mais pode escapar do que foi invocado.',
         earned: false,
         icon: '🔮',
       },
       {
         title: 'Harmonia Dissonante',
         description:
-          'As vozes do abismo cantam em uníssono: alcance 50.000.000 essências totais.',
+          'Aos 50.000.000, coros sem laringe entoam acordes que dilaceram a membrana entre vigília e delírio.',
         earned: false,
         icon: '🎶',
       },
       {
         title: 'Profundezas Insanas',
         description:
-          'Seu mergulho no vazio concede poder: alcance 250.000.000 essências totais.',
+          'Aos 250.000.000, você afundou tanto que a luz acima já não tem nome em nenhuma língua viva.',
         earned: false,
         icon: '🌀',
       },
       {
         title: 'Guardião do Limiar',
         description:
-          'Você defende a fronteira entre as realidades: alcance 1.000.000.000 essências totais.',
+          'Aos 1.000.000.000, você se posta na soleira entre mundos, e o que aguarda do outro lado o reconhece.',
         earned: false,
         icon: '🛡️',
       },
       {
         title: 'Véu Rasgado',
         description:
-          'As cortinas entre os mundos se desfazem: alcance 5.000.000.000 essências totais.',
+          'Aos 5.000.000.000, as membranas da realidade se desfiam e revelam tendões cósmicos pulsando atrás.',
         earned: false,
         icon: '🌫️',
       },
       {
         title: 'Cólera Cósmica',
         description:
-          'A fúria dos deuses ressoa em sua essência: alcance 25.000.000.000 essências totais.',
+          'Aos 25.000.000.000, a fúria de deuses cegos canta em seu sangue como uma tempestade sem trovão.',
         earned: false,
         icon: '⛈️',
       },
       {
         title: 'Limiar Dimensional',
         description:
-          'Um portal se abre para realidades inomináveis: alcance 100.000.000.000 essências totais.',
+          'Aos 100.000.000.000, uma fenda em geometria não-euclidiana se escancara e exala ar de mundos mortos.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'O Sonho Interrompido',
         description:
-          'Você tocou na mente de seres além da compreensão: alcance 500.000.000.000 essências totais.',
+          'Aos 500.000.000.000, você roça a mente adormecida em R\'lyeh e o Sonhador agita-se em seu túmulo líquido.',
         earned: false,
         icon: '💤',
       },
       {
         title: 'Visão do Caos',
         description:
-          'Os olhos da anarquia cósmica se abrem para você: alcance 2.000.000.000.000 essências totais.',
+          'Aos 2.000.000.000.000, milhares de olhos sem pálpebras se abrem dentro de você, todos fitando o mesmo abismo.',
         earned: false,
         icon: '👁️‍🗨️',
       },
       {
         title: 'A Voz do Horror',
         description:
-          'Sua palavra ecoa nos abismos do terror: alcance 8.000.000.000.000 essências totais.',
+          'Aos 8.000.000.000.000, sua palavra recobra a sílaba primeira, aquela que se diz quando se quer apagar uma estrela.',
         earned: false,
         icon: '🗣️',
       },
       {
         title: 'O Despertar Final',
         description:
-          'A Antiga Ameaça se ergue em sua plenitude sob seu comando: alcance 30.000.000.000.000 essências totais!',
+          'Aos 45 trilhões, a Antiga Ameaça abre seus muitos olhos e o universo aprende novamente o significado de medo.',
         earned: false,
         icon: '🐙',
       },
       {
         title: 'Mestre do Vazio',
         description:
-          'Você transcendeu as barreiras da existência: alcance 100.000.000.000.000 essências totais.',
+          'Aos 100 trilhões, você dispensa o ser, e o nada se inclina como súdito diante de seu trono inexistente.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Conquistador da Realidade',
         description:
-          'Nada pode detê-lo, a própria realidade se dobra: alcance 500.000.000.000.000 essências totais.',
+          'Aos 500 trilhões, as leis do real se ajoelham, reescritas a cada respiração sua em tinta de eclipse.',
         earned: false,
         icon: '🏆',
       },
       {
         title: 'A Ascensão',
         description:
-          'Você se tornou uma força cósmica, um farol de medo: alcance 1.000.000.000.000.000 essências totais.',
+          'Ao primeiro quatrilhão, você se ergue como um farol negro, e civilizações longínquas adoecem ao avistá-lo.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'União Cósmica',
         description:
-          'Sua essência se fundiu com o próprio tecido do cosmos: alcance 5.000.000.000.000.000 essências totais.',
+          'Aos 5 quatrilhões, sua essência costura-se ao tecido sideral, e cada estrela passa a sangrar o seu nome.',
         earned: false,
         icon: '🪐',
       },
       {
         title: 'Além dos Sonhos',
         description:
-          'Seu poder vai além do que qualquer ser vivo pode conceber: alcance 25.000.000.000.000.000 essências totais.',
+          'Aos 25 quatrilhões, você habita a região onde os sonhos vêm morrer, e os pesadelos ali o saúdam como rei.',
         earned: false,
         icon: '🌠',
       },
       {
         title: 'Deus Exterior',
         description:
-          'Você se tornou uma entidade além da compreensão: alcance 100.000.000.000.000.000 essências totais.',
+          'Aos 100 quatrilhões, você cruza para fora do círculo, tornando-se um daqueles que outrora eram apenas sussurrados.',
         earned: false,
         icon: '🪬',
       },
       {
         title: 'O Vácuo Insondável',
         description:
-          'Mergulhe nas profundezas da não-existência: alcance 500.000.000.000.000.000 essências totais.',
+          'Aos 500 quatrilhões, você descobre que o vácuo possui profundidade, e que ela tem fome.',
         earned: false,
         icon: '⚫',
       },
       {
         title: 'Criador de Universos',
         description:
-          'Com sua vontade, novas realidades nascem do caos: alcance 1.000.000.000.000.000.000 essências totais.',
+          'Ao primeiro quintilhão, mundos brotam de sua respiração e morrem antes de conceber a própria luz.',
         earned: false,
         icon: '🌀',
       },
       {
         title: 'A Essência Primordial',
         description:
-          'Você se tornou a fonte do medo, a substância original do terror: alcance 10.000.000.000.000.000.000 essências totais.',
+          'Aos 10 quintilhões, você se torna a substância de que todo medo é feito, anterior à carne e ao verbo.',
         earned: false,
         icon: '⚛️',
       },
       {
         title: 'Além de Toda Compreensão',
         description:
-          'Seu ser transcende a própria lógica e razão: alcance 100.000.000.000.000.000.000 essências totais.',
+          'Aos 100 quintilhões, a lógica racha como vidro e nenhuma mente sã pode mais conter o que você é.',
         earned: false,
         icon: '❓',
       },
       {
         title: 'O Absoluto',
         description:
-          'Não há mais nada a ser conquistado. Você é o alfa e o ômega do medo: alcance 1.000.000.000.000.000.000.000 essências totais.',
+          'Ao primeiro sextilhão, você é o alfa indizível e o ômega calado, e não resta nada que ainda ouse existir contra você.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Infinito e Além',
         description:
-          'Sua influência se estende por infinitos universos: alcance 10.000.000.000.000.000.000.000 essências totais.',
+          'Aos 10 sextilhões, sua sombra atravessa infinitos cosmos, e cada um dobra-se ao peso de sua passagem.',
         earned: false,
         icon: '♾️',
       },
       {
         title: 'A Última Transcendência',
         description:
-          'Você é a própria tecelã do destino cósmico: alcance 100.000.000.000.000.000.000.000 essências totais.',
+          'Aos 100 sextilhões, você tece o destino com fios arrancados das próprias entranhas do tempo morto.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Rei do Multiverso',
         description:
-          'Todos os seres, em todas as dimensões, curvam-se ao seu poder: alcance 1.000.000.000.000.000.000.000.000 essências totais.',
+          'Ao primeiro septilhão, todas as dimensões prostram-se, mudas, conhecendo apenas o nome que você esqueceu.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'A Conclusão Inevitável',
         description:
-          'O terror final aguarda. Alcance 10.000.000.000.000.000.000.000.000 essências totais.',
+          'Aos 10 septilhões, o último ato do horror cósmico desenrola-se e você é, ao mesmo tempo, palco e plateia.',
         earned: false,
         icon: '🔚',
       },
       {
         title: 'Além da Realidade',
         description:
-          'Sua existência agora permeia todas as realidades, transcendendo a forma e o tempo. Alcance 100.000.000.000.000.000.000.000.000 essências totais.',
+          'Aos 100 septilhões, você atravessa a margem onde a forma desiste, e tempo e matéria recuam ao avistá-lo.',
         earned: false,
         icon: '💫',
       },
       {
         title: 'O Vazio Profundo',
         description:
-          'Você se tornou o próprio abismo de onde todo o medo emana. Alcance 1.000.000.000.000.000.000.000.000.000 essências totais.',
+          'Ao primeiro octilhão, você é o abismo do qual todo medo brota, e nada acima de você jamais soube de seu nome.',
         earned: false,
         icon: '🕳️',
       },
 
       {
         title: 'Primeiro Sussurro',
-        description: 'Sua primeira ação ressoa no vazio. Um começo modesto.',
+        description: 'O primeiro toque do iniciado abre uma rachadura mínima no véu. Algo, atrás, suspira.',
         earned: false,
         icon: '👆',
       },
       {
         title: 'Toque Persistente',
-        description: 'Sua vontade é notável. 100 cliques manuais totais.',
+        description: 'Aos 100 toques, seu pulso já bate no compasso de algo que não é seu coração.',
         earned: false,
         icon: '🔘',
       },
       {
         title: 'Dedo Veloz',
         description:
-          'A velocidade de suas invocações impressiona. 1.000 cliques manuais totais.',
+          'Aos 1.000 toques, seus dedos aprendem cadências que nenhum vivo deveria saber.',
         earned: false,
         icon: '💨',
       },
       {
         title: 'Ritmo Implacável',
         description:
-          'Sua dedicação não conhece limites. 10.000 cliques manuais totais.',
+          'Aos 10.000 toques, o sono já não vem; resta apenas a percussão litúrgica do abismo.',
         earned: false,
         icon: '🥁',
       },
       {
         title: 'Pulsar da Essência',
         description:
-          'Sua conexão com o medo é forte. 100.000 cliques manuais totais.',
+          'Aos 100.000 toques, cada batida faz vibrar uma corda invisível em algum altar esquecido.',
         earned: false,
         icon: '💖',
       },
       {
         title: 'Canalizador Incansável',
         description:
-          'A máquina do medo obedece ao seu toque. 1.000.000 cliques manuais totais.',
+          'Ao primeiro milhão de toques, a máquina do medo o reconhece como sua mão fiel e mortal.',
         earned: false,
         icon: '⚙️',
       },
       {
         title: 'Batedor Cósmico',
         description:
-          'Seus cliques ecoam pelos confins da galáxia. 10.000.000 cliques manuais totais.',
+          'Aos 10 milhões de toques, ecos de seu martelar chegam a sois extintos e os fazem estremecer.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Mão da Loucura',
         description:
-          'Sua mente e seus dedos dançam à beira do abismo. 100.000.000 cliques manuais totais.',
+          'Aos 100 milhões, seus dedos dançam à beira do delírio sagrado, conscientes de cada queda.',
         earned: false,
         icon: '😵‍💫',
       },
       {
         title: 'Pulsar do Vazio',
         description:
-          'Cada toque seu é uma pulsação na escuridão. 1.000.000.000 cliques manuais totais.',
+          'Ao primeiro bilhão de toques, cada batida é uma pulsação na carne escura do nada.',
         earned: false,
         icon: '🖤',
       },
       {
         title: 'Dedo Dimensional',
         description:
-          'Seus toques abrem fendas entre as dimensões. 10.000.000.000 cliques manuais totais.',
+          'Aos 10 bilhões, seus toques rasgam pequenas suturas entre dimensões e nada as recosta.',
         earned: false,
         icon: '🤏',
       },
       {
         title: 'Mestre do Ritmo Cósmico',
         description:
-          'Você orquestra a sinfonia do terror. 100.000.000.000 cliques manuais totais.',
+          'Aos 100 bilhões, você rege a percussão silenciosa de astros mortos como um maestro do horror.',
         earned: false,
         icon: '🎶',
       },
       {
         title: 'Voz da Criação',
         description:
-          'Seus cliques moldam a própria essência do ser. 1.000.000.000.000 cliques manuais totais.',
+          'Ao primeiro trilhão, seus toques pronunciam a sílaba muda que precede toda existência.',
         earned: false,
         icon: '🗣️',
       },
       {
         title: 'O Último Toque',
         description:
-          'Você dominou a arte da canalização manual, um verdadeiro prodígio do medo. 10.000.000.000.000 cliques manuais totais.',
+          'Aos 10 trilhões, sua mão é uma relíquia do horror, gesto único do qual nada se recupera.',
         earned: false,
         icon: '🖐️',
       },
       {
         title: 'Conexão Absoluta',
         description:
-          'Sua mente se tornou um canal direto para a essência primordial. 100.000.000.000.000 cliques totais.',
+          'Aos 100 trilhões, sua mente é antena viva sintonizada na frequência da essência primordial.',
         earned: false,
         icon: '🧠',
       },
       {
         title: 'O Toque do Caos',
         description:
-          'Seus cliques perturbam o equilíbrio cósmico. 1.000.000.000.000.000 cliques totais.',
+          'Ao primeiro quatrilhão, cada clique racha o equilíbrio cósmico como um cristal sob o peso da verdade.',
         earned: false,
         icon: '🌀',
       },
       {
         title: 'A Dança dos Universos',
         description:
-          'Sua cadência de cliques sincroniza com o movimento das galáxias. 10.000.000.000.000.000 cliques totais.',
+          'Aos 10 quatrilhões, sua cadência se acopla ao giro lento das galáxias, e elas obedecem.',
         earned: false,
         icon: '🪐',
       },
       {
         title: 'Vontade Inominável',
         description:
-          'Sua força de vontade molda o medo em todas as realidades. 100.000.000.000.000.000 cliques totais.',
+          'Aos 100 quatrilhões, sua vontade molda o medo em todas as realidades, sem que precise pensar.',
         earned: false,
         icon: '💪',
       },
       {
         title: 'A Punho do Multiverso',
         description:
-          'Seu punho agora abrange múltiplas dimensões, impactando o universo a cada clique. 1.000.000.000.000.000.000 cliques totais.',
+          'Ao primeiro quintilhão de toques, seu punho atravessa multiversos como um deus exausto martelando portas trancadas.',
         earned: false,
         icon: '👊',
       },
 
       {
         title: 'Combo Iniciante (2x)',
-        description: 'Mantenha o ritmo! Alcance um combo de 2 cliques.',
+        description: 'Dois batimentos consecutivos: o presságio escolheu sua cadência.',
         earned: false,
         icon: '🤝',
       },
       {
         title: 'Combo Místico (5x)',
         description:
-          'Seu toque evoca uma energia incomum. Alcance um combo de 5 cliques.',
+          'Aos 5 toques em série, uma corrente subterrânea de medo reconhece o ritmo e responde.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Combo Febril (10x)',
         description:
-          'Uma febre de atividade o consome. Alcance um combo de 10 cliques.',
+          'Aos 10, uma febre arcana o consome; seus dedos batem por conta própria, possuídos.',
         earned: false,
         icon: '🔥',
       },
       {
         title: 'Combo Intenso (15x)',
         description:
-          'A energia flui ininterrupta. Alcance um combo de 15 cliques.',
+          'Aos 15, sua cadência rasga o ar como uma reza às avessas, e o ar consente.',
         earned: false,
         icon: '💥',
       },
       {
         title: 'Combo Transcendental (20x)',
         description:
-          'Seus cliques superam as barreiras do mundano. Alcance um combo de 20 cliques.',
+          'Aos 20, cada toque já não pertence ao mundo dos vivos, mas a uma liturgia indizível.',
         earned: false,
         icon: '💫',
       },
       {
         title: 'Combo Perfeito (30x)',
         description:
-          'A harmonia da destruição. Alcance um combo de 30 cliques.',
+          'Aos 30, ritmo e destruição se fundem em geometria exata, sem ruído, sem perdão.',
         earned: false,
         icon: '💯',
       },
       {
         title: 'Combo Infinito (50x)',
-        description: 'Seu ritmo parece eterno. Alcance um combo de 50 cliques.',
+        description: 'Aos 50, seu pulso encontra o batimento eterno do abismo e dispensa o relógio.',
         earned: false,
         icon: '♾️',
       },
       {
         title: 'Combo Além (75x)',
         description:
-          'Seus dedos dançam além da percepção normal. Alcance um combo de 75 cliques.',
+          'Aos 75, seus dedos atravessam a percepção comum e tateiam superfícies que nunca existiram.',
         earned: false,
         icon: '⬆️',
       },
       {
         title: 'Combo Cósmico (100x)',
         description:
-          'A galáxia ressoa com seus toques. Alcance um combo de 100 cliques.',
+          'Aos 100, o vácuo entre as estrelas vibra na sua frequência e murmura sua sentença.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'Combo Celestial (150x)',
         description:
-          'Sua sinfonia de cliques toca os céus sombrios. Alcance um combo de 150 cliques.',
+          'Aos 150, sua percussão alcança os céus negros e adormece os astros em sonhos doentes.',
         earned: false,
         icon: '🌟',
       },
       {
         title: 'Combo Divino (200x)',
         description:
-          'Uma cadência digna dos deuses exteriores. Alcance um combo de 200 cliques.',
+          'Aos 200, sua cadência é digna de divindades exteriores, esses deuses idiotas e cegos do trono.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'O Último Combo (300x)',
         description:
-          'Você atingiu o auge da velocidade e sincronia. Alcance um combo de 300 cliques.',
+          'Aos 300, você toca a última batida possível antes que a forma desista de existir.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Combo Lenda (500x)',
         description:
-          'Seu combo é uma lenda sussurrada nas profundezas. Alcance um combo de 500 cliques.',
+          'Aos 500, cultistas em mundos longínquos sussurram sua cadência como mantra de loucura lúcida.',
         earned: false,
         icon: '🏆',
       },
       {
         title: 'Combo Mítico (1000x)',
         description:
-          'Sua maestria no combo é além da crença, um mito vivo. Alcance um combo de 1000 cliques.',
+          'Aos 1000, seu compasso entra para os mitos proibidos, narrado apenas em línguas mortas.',
         earned: false,
         icon: '🐉',
       },
       {
         title: 'Combo Abissal (2000x)',
         description:
-          'O som de seus cliques faz tremer o abismo. Alcance um combo de 2000 cliques.',
+          'Aos 2000, o próprio abismo desperta e ajusta sua respiração ao seu pulso impossível.',
         earned: false,
         icon: '🕳️',
       },
       {
         title: 'Combo Inconcebível (5000x)',
         description:
-          'Sua sequência de cliques desafia a própria realidade. Alcance um combo de 5000 cliques.',
+          'Aos 5000, sua sequência viola o real; a realidade observa, incapaz de classificar o que vê.',
         earned: false,
         icon: '😵‍💫',
       },
       {
         title: 'Combo Primordial (5000x)',
         description:
-          'Seus cliques ecoam como os primeiros sons da criação. Alcance um combo de 5000 cliques.',
+          'Aos 5000, seu compasso reedita o som primeiro, aquele que antecedeu até o silêncio.',
         earned: false,
         icon: '🌀',
       },
       {
         title: 'Combo do Vazio (7500x)',
         description:
-          'Seu combo transcende a forma e o espaço. Alcance um combo de 7500 cliques.',
+          'Aos 7500, seu ritmo desvaira da forma e do espaço; restam apenas batidas em coisa alguma.',
         earned: false,
         icon: '⚫',
       },
       {
         title: 'Combo da Anarquia (10000x)',
         description:
-          'Sua cadência de cliques leva ao caos total. Alcance um combo de 10000 cliques.',
+          'Aos 10000, sua cadência é decreto: as leis do real abdicam e o caos toma posse.',
         earned: false,
         icon: '💀',
       },
       {
         title: 'O Ritmo Final (15000x)',
         description:
-          'O ritmo que encerra todas as coisas. Alcance um combo de 15000 cliques.',
+          'Aos 15000, você bate o compasso terminal, aquele que encerra toda coisa e não admite réplica.',
         earned: false,
         icon: '⏱️',
       },
@@ -540,149 +540,149 @@ export class TrophyService {
       {
         title: 'Primeira Manifestação',
         description:
-          'Você invocou seu primeiro poder autônomo. O medo começa a se espalhar por conta própria.',
+          'A primeira sombra autônoma se desprende de você e começa a colher medo sem que precise olhá-la.',
         earned: false,
         icon: '🌑',
       },
       {
         title: 'Despertar de Símbolos',
         description:
-          'Cinco diferentes manifestações sombrias agora trabalham para você. O culto cresce.',
+          'Cinco sigilos distintos pulsam em uníssono, e o culto inicia sua marcha por baixo do mundo.',
         earned: false,
         icon: '符',
       },
       {
         title: 'Mestre dos Rituais',
         description:
-          'Todos os rituais menores estão sob seu domínio. O Tier 2 foi purificado.',
+          'Os rituais menores do segundo círculo curvam-se diante de você, calados como noviços recém-cegos.',
         earned: false,
         icon: '📜',
       },
       {
         title: 'Invocador de Horrores',
         description:
-          'Você comanda as entidades do abismo. Todo o Tier 3 foi subjugado.',
+          'Todas as entidades do terceiro círculo respondem ao seu nome, mesmo aquelas que jamais tiveram um.',
         earned: false,
         icon: '👹',
       },
       {
         title: 'Forjador de Portais',
         description:
-          'Os portais para outras realidades agora são seus. Todo o Tier 4 foi transposto.',
+          'Os portais do quarto círculo abrem-se para você como bocas obedientes, exalando ventos de outras matemáticas.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'Conjurador Primordial',
         description:
-          'Você domina os elementos essenciais da criação de medo. Todo o Tier 5 foi forjado.',
+          'No quinto círculo, os elementos primeiros do horror se moldam às suas mãos como argila viva.',
         earned: false,
         icon: '🔱',
       },
       {
         title: 'Conjurador Além',
         description:
-          'Você dominou o Tier 6 de manifestações automáticas. Seu alcance é incalculável.',
+          'O sexto círculo se inclina diante de você, e seu alcance se estende a regiões sem nome nem direção.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Arsenal do Terror',
         description:
-          'Dez tipos diferentes de manifestações automáticas foram invocados. Seu arsenal é vasto.',
+          'Dez manifestações distintas formam ao seu redor uma coroa de armas vivas, todas com fome própria.',
         earned: false,
         icon: '🛡️',
       },
       {
         title: 'Força Oculta',
         description:
-          'Quinze diferentes manifestações se juntam ao seu culto. Seu poder é inegável.',
+          'Quinze entidades inomináveis tomam posição em seu culto; nenhuma delas se lembra de quem as invocou.',
         earned: false,
         icon: '💪',
       },
       {
         title: 'Legado do Medo',
         description:
-          'Todas as manifestações do Tier 1 foram invocadas. O fundamento do medo está completo.',
+          'O primeiro círculo está inteiro em suas mãos, e sobre essa fundação podre você ergue o resto do horror.',
         earned: false,
         icon: '💀',
       },
       {
         title: 'Domínio das Sombras',
         description:
-          'Cem unidades de cada manifestação do Tier 1. Suas raízes são profundas.',
+          'Cem unidades de cada manifestação do primeiro círculo: suas raízes furam o solo da realidade.',
         earned: false,
         icon: '⚫',
       },
       {
         title: 'Poder de Azathoth',
         description:
-          'Cem unidades de cada manifestação do Tier 2. Uma legião de rituais e tomos.',
+          'Cem unidades de cada manifestação do segundo círculo, e o som de uma flauta ociosa pulsa ao fundo.',
         earned: false,
         icon: '👁️‍🗨️',
       },
       {
         title: 'Essência da Existência',
         description:
-          'Cem unidades de cada manifestação do Tier 3. Você controla a própria substância do terror.',
+          'Cem unidades de cada manifestação do terceiro círculo: você passa a controlar a substância de que o medo é feito.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Senhor dos Portais',
         description:
-          'Cem unidades de cada manifestação do Tier 4. O multiverso está ao seu alcance.',
+          'Cem unidades de cada manifestação do quarto círculo, e cada porta entre os mundos aguarda só o seu gesto.',
         earned: false,
         icon: '🪐',
       },
       {
         title: 'Titã da Realidade',
         description:
-          'Cem unidades de cada manifestação do Tier 5. Você molda a existência.',
+          'Cem unidades de cada manifestação do quinto círculo, e a existência cede e remoldura-se ao seu redor.',
         earned: false,
         icon: '🌋',
       },
       {
         title: 'Arquimago do Vazio',
         description:
-          'Cem unidades de cada manifestação do Tier 6. Seu conhecimento do vácuo é inigualável.',
+          'Cem unidades de cada manifestação do sexto círculo: seu saber do vácuo é uma biblioteca sem chão.',
         earned: false,
         icon: '🧙',
       },
       {
         title: 'Monarca das Trevas',
         description:
-          'Cem unidades de CADA manifestação automática. Seu império do medo é absoluto.',
+          'Cem unidades de cada manifestação automática: seu império do medo respira por todos os poros do real.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Poder Infinito',
-        description: 'Tenha 500 unidades de cada upgrade automático.',
+        description: 'Quinhentas unidades de cada manifestação automática; o horror não conhece mais saciedade.',
         earned: false,
         icon: '♾️',
       },
       {
         title: 'Realidade Dominada',
-        description: 'Tenha 1000 unidades de cada upgrade automático.',
+        description: 'Mil unidades de cada manifestação automática, e a realidade prefere obedecer a resistir.',
         earned: false,
         icon: '🏆',
       },
       {
         title: 'Conjurador Final',
-        description: 'Tenha 2000 unidades de cada upgrade automático.',
+        description: 'Duas mil unidades de cada manifestação automática: você esgotou o vocabulário da invocação.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Senhor do Medo',
-        description: 'Tenha 5000 unidades de cada upgrade automático.',
+        description: 'Cinco mil unidades de cada manifestação automática, e o medo deixa de ser emoção para virar clima.',
         earned: false,
         icon: '👹',
       },
       {
         title: 'Criador do Terror',
-        description: 'Tenha 10000 unidades de cada upgrade automático.',
+        description: 'Dez mil unidades de cada manifestação automática: o terror nasce de você como respiração.',
         earned: false,
         icon: '👾',
       },
@@ -691,113 +691,113 @@ export class TrophyService {
       {
         title: 'Primeira Canalização',
         description:
-          'Seu primeiro aprimoramento no toque manual. O pulso do medo começa.',
+          'O primeiro aprimoramento canaliza o medo por sua mão como corrente fina, mas constante.',
         earned: false,
         icon: '⚡',
       },
       {
         title: 'Maestria da Canalização',
         description:
-          'Três aprimoramentos diferentes de canalização foram adquiridos. Sua mente se afina.',
+          'Três aprimoramentos distintos afinam sua mente como instrumento dedicado ao indizível.',
         earned: false,
         icon: '🧠',
       },
       {
         title: 'Ritmo Absoluto',
         description:
-          'Cada batida sua é uma sinfonia. Todos os upgrades de canalização do Tier 2 foram dominados.',
+          'Todo o segundo círculo de canalização sob seu domínio: cada batida sua é uma liturgia exata.',
         earned: false,
         icon: '🎶',
       },
       {
         title: 'Canto das Trevas',
         description:
-          'Sua voz sussurra terrores indizíveis. Todos os upgrades de canalização do Tier 3 foram aprimorados.',
+          'Todo o terceiro círculo de canalização aprimorado, e sua voz, agora, pronuncia terrores que se materializam.',
         earned: false,
         icon: '🗣️',
       },
       {
         title: 'Canalizador Supremo',
         description:
-          'Todos os upgrades de canalização do Tier 4 foram dominados. Seu toque é o catalisador final do medo.',
+          'Todo o quarto círculo de canalização dominado; seu toque é o catalisador final do horror cósmico.',
         earned: false,
         icon: '🌟',
       },
       {
         title: 'Conexão Eterna',
         description:
-          'Cinco aprimoramentos diferentes para o clique. Sua mente está eternamente ligada ao terror.',
+          'Cinco aprimoramentos distintos costuram sua mente ao véu do terror em ponto que não se desfaz.',
         earned: false,
         icon: '🔗',
       },
       {
         title: 'Mente Sombria',
         description:
-          'Dez aprimoramentos diferentes para o clique. Sua mente é um abismo de poder.',
+          'Dez aprimoramentos diferentes, e sua mente passa a ter o aspecto de um abismo com vontade própria.',
         earned: false,
         icon: '🧠',
       },
       {
         title: 'Devorador de Pensamentos',
         description:
-          'Cem unidades de cada upgrade de canalização do Tier 1. Seus cliques devoram a sanidade.',
+          'Cem unidades de cada aprimoramento do primeiro círculo: cada clique seu engole um pouco de sanidade alheia.',
         earned: false,
         icon: '🧠',
       },
       {
         title: 'Voz do Vácuo',
         description:
-          'Cem unidades de cada upgrade de canalização do Tier 2. Sua voz ecoa no vazio.',
+          'Cem unidades de cada aprimoramento do segundo círculo, e sua voz reverbera no nada como uma resposta esperada.',
         earned: false,
         icon: '🗣️',
       },
       {
         title: 'Pulsação Primordial',
         description:
-          'Cem unidades de cada upgrade de canalização do Tier 3. Seus toques ressoam com a criação.',
+          'Cem unidades de cada aprimoramento do terceiro círculo: seus toques pulsam no compasso da criação primeira.',
         earned: false,
         icon: '💖',
       },
       {
         title: 'Mãos da Criação',
         description:
-          'Cem unidades de cada upgrade de canalização do Tier 4. Seus toques moldam o terror em si.',
+          'Cem unidades de cada aprimoramento do quarto círculo, e suas mãos moldam o terror como um oleiro molda barro.',
         earned: false,
         icon: '🖐️',
       },
       {
         title: 'Toque Final',
-        description: 'Cem unidades de cada upgrade de canalização.',
+        description: 'Cem unidades de cada aprimoramento de canalização: nada do que você tocar permanecerá inteiro.',
         earned: false,
         icon: '👆',
       },
       {
         title: 'Ritmo da Existência',
-        description: 'Tenha 500 unidades de cada upgrade de canalização.',
+        description: 'Quinhentas unidades de cada aprimoramento de canalização: seu pulso dita o batimento das coisas.',
         earned: false,
         icon: '🥁',
       },
       {
         title: 'Pulso do Multiverso',
-        description: 'Tenha 1000 unidades de cada upgrade de canalização.',
+        description: 'Mil unidades de cada aprimoramento de canalização, e todo multiverso sincroniza-se à sua arritmia sagrada.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'Toque Divino',
-        description: 'Tenha 2000 unidades de cada upgrade de canalização.',
+        description: 'Duas mil unidades de cada aprimoramento de canalização: seu toque é o de um deus exterior, distraído e cruel.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Mão Onipotente',
-        description: 'Tenha 5000 unidades de cada upgrade de canalização.',
+        description: 'Cinco mil unidades de cada aprimoramento de canalização, e nada do que sua mão alcance tem mais direito de existir.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Sinfonia do Horror',
-        description: 'Tenha 10000 unidades de cada upgrade de canalização.',
+        description: 'Dez mil unidades de cada aprimoramento de canalização: seus toques compõem a partitura final do real.',
         earned: false,
         icon: '🎶',
       },
@@ -806,56 +806,56 @@ export class TrophyService {
       {
         title: 'Equilíbrio Sombrio',
         description:
-          'Você harmonizou os caminhos do medo, investindo em pelo menos 1 de cada tipo de upgrade automático e de canalização.',
+          'Você harmonizou os dois caminhos do medo, com ao menos 1 de cada manifestação automática e de canalização.',
         earned: false,
         icon: '☯️',
       },
       {
         title: 'Poder Onisciente',
         description:
-          'Sua influência é vasta e profunda: tenha 100 unidades de cada upgrade automático e de canalização.',
+          'Cem unidades de cada manifestação automática e de canalização: seu olho interior abrange ambos os abismos.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Verdade Final',
         description:
-          'A verdade foi revelada. Desbloqueie todos os outros segredos do Culto das Sombras.',
+          'Todos os segredos do Culto das Sombras agora repousam em sua mente, e ela já não é mais sua.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Equilíbrio Absoluto',
         description:
-          'Sua maestria nos dois tipos de manifestações é inquestionável. Tenha 500 unidades de cada upgrade automático e de canalização.',
+          'Quinhentas unidades em ambos os caminhos: sua maestria dual é fato inquestionável até para o vazio.',
         earned: false,
         icon: '⚖️',
       },
       {
         title: 'Ascensão Gêmea',
         description:
-          'Você é o pináculo do poder dual. Tenha 1000 unidades de cada upgrade automático e de canalização.',
+          'Mil unidades em cada caminho, e você sobe por uma escada com dois corrimãos feitos de tendões cósmicos.',
         earned: false,
         icon: '🌟',
       },
       {
         title: 'Sinfonia do Vazio',
         description:
-          'Sua manipulação do medo ressoa por todo o vazio. Tenha 2000 unidades de cada upgrade automático e de canalização.',
+          'Duas mil unidades em ambos os caminhos: sua orquestra de medo ressoa em todas as cavidades do nada.',
         earned: false,
         icon: '🎶',
       },
       {
         title: 'Monarca da Existência',
         description:
-          'Você se tornou a força dominante em todas as esferas. Tenha 5000 unidades de cada upgrade automático e de canalização.',
+          'Cinco mil unidades em ambos os caminhos: você se entroniza sobre toda esfera, viva ou esquecida.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Poder Dual',
         description:
-          'Tenha 10000 unidades de cada upgrade automático e de canalização.',
+          'Dez mil unidades em ambos os caminhos: nenhuma forma de medo lhe escapa, nenhum gesto seu é menor que apocalipse.',
         earned: false,
         icon: '☯️',
       },
@@ -864,142 +864,142 @@ export class TrophyService {
       {
         title: 'Primeiro Legado',
         description:
-          'Você ousou reiniciar, buscando um poder maior além do véu. Prestigie pela primeira vez.',
+          'Você queima sua própria forma para renascer mais perto do abismo, e ele recebe sua oferta em silêncio.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Legado Consolidado',
-        description: 'O caminho do eterno retorno é seu. Prestigie 5 vezes.',
+        description: 'Cinco ciclos consumados; o eterno retorno deixa de ser metáfora e vira hábito carnal.',
         earned: false,
         icon: '🌟',
       },
       {
         title: 'Mestre do Legado',
-        description: 'Você domina a arte da transcedência. Prestigie 10 vezes.',
+        description: 'Dez ciclos atrás, e a transcendência reconhece em você um servo que aprendeu seu nome verdadeiro.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Herdeiro do Vazio',
         description:
-          'Seu legado se estende por muitas existências. Prestigie 25 vezes.',
+          'Vinte e cinco ciclos: seu legado se infiltra por existências paralelas como uma raiz sombria.',
         earned: false,
         icon: '💎',
       },
       {
         title: 'Lorde da Transcendência',
         description:
-          'Sua alma viajou por inumeráveis ciclos. Prestigie 50 vezes.',
+          'Cinquenta ciclos atravessados, e sua alma já é apenas um número escrito em sangue arcano.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'Poder Ancestral',
         description:
-          'Sua primeira Essência Ancestral se manifesta em um upgrade permanente.',
+          'A primeira gota de Essência Ancestral encontra morada em seu ser, gravando-se em camada que nenhuma morte apaga.',
         earned: false,
         icon: 'Ancestral',
       },
       {
         title: 'Força Eterna',
         description:
-          'Cinco upgrades de legado diferentes foram assimilados em seu ser.',
+          'Cinco aprimoramentos de legado distintos foram assimilados, e nenhum deles consente em sair.',
         earned: false,
         icon: '♾️',
       },
       {
         title: 'Multiplicador Divino',
         description:
-          'Sua influência permanente é cem vezes maior que antes. Alcance um multiplicador permanente total de 100x.',
+          'Multiplicador permanente de 100x: sua sombra agora se projeta cem vezes mais profunda em cada plano.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Ascensão do Vazio',
         description:
-          'Seu poder ignora as leis naturais. Alcance um multiplicador permanente total de 1.000x.',
+          'Multiplicador permanente de 1.000x: seu poder dispensa as leis naturais, que se afastam, envergonhadas.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'A Essência Absoluta',
         description:
-          'O terror em sua essência agora é um milhão de vezes mais potente. Alcance um multiplicador permanente total de 1.000.000x.',
+          'Multiplicador permanente de 1.000.000x: o terror em sua essência agora é uma constante do universo.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Legado Completo',
         description:
-          'Todos os segredos da Essência Ancestral foram desvendados, todos os upgrades de legado adquiridos.',
+          'Todos os aprimoramentos de Essência Ancestral foram desvendados, e o livro de seu legado não tem mais páginas em branco.',
         earned: false,
         icon: '🏆',
       },
       {
         title: 'O Verdadeiro Absoluto',
         description:
-          'Seu legado é uma força incalculável, movendo universos. Alcance um multiplicador permanente total de 1.000.000.000x.',
+          'Multiplicador permanente de 1.000.000.000x: seu legado move universos como um zelador entediado move móveis.',
         earned: false,
         icon: '✨',
       },
       {
         title: 'Rei do Legado',
-        description: 'Prestigie 100 vezes.',
+        description: 'Cem ciclos atravessados, e nenhum trono cósmico ousa permanecer vazio em sua ausência.',
         earned: false,
         icon: '👑',
       },
       {
         title: 'Fenda na Realidade',
-        description: 'Prestigie 250 vezes.',
+        description: 'Duzentos e cinquenta ciclos: a realidade já não cicatriza por onde você passou.',
         earned: false,
         icon: '🕳️',
       },
       {
         title: 'O Ciclo Infinito',
-        description: 'Prestigie 500 vezes.',
+        description: 'Quinhentos ciclos, e o tempo, exausto, abre mão de tentar contê-lo em começo ou fim.',
         earned: false,
         icon: '♾️',
       },
       {
         title: 'Avatar do Vazio',
-        description: 'Prestigie 1000 vezes.',
+        description: 'Mil ciclos transcorridos: você se tornou rosto encarnado do vazio para todo recém-nascido que chora à noite.',
         earned: false,
         icon: '🌀',
       },
       {
         title: 'O Vazio Imortal',
-        description: 'Prestigie 2500 vezes.',
+        description: 'Dois mil e quinhentos ciclos, e nem a morte se aproxima sem antes pedir audiência.',
         earned: false,
         icon: '🖤',
       },
       {
         title: 'Fonte da Essência Ancestral',
-        description: 'Acumule 100 unidades totais de upgrades de legado.',
+        description: 'Cem unidades acumuladas de aprimoramentos de legado: você jorra Essência Ancestral como ferida que se recusa a fechar.',
         earned: false,
         icon: '💎',
       },
       {
         title: 'Sabedoria Eterna',
-        description: 'Acumule 500 unidades totais de upgrades de legado.',
+        description: 'Quinhentas unidades acumuladas de aprimoramentos de legado: seu saber é uma catedral subterrânea sem porta de saída.',
         earned: false,
         icon: '📚',
       },
       {
         title: 'O Conhecimento Proibido',
-        description: 'Acumule 1000 unidades totais de upgrades de legado.',
+        description: 'Mil unidades acumuladas de aprimoramentos de legado, e cada uma delas é um olho aberto onde antes havia razão.',
         earned: false,
         icon: '👁️',
       },
       {
         title: 'Legado do Vazio',
-        description: 'Tenha 2500 unidades de upgrades de legado.',
+        description: 'Duas mil e quinhentas unidades de aprimoramentos de legado: o vazio finalmente o adota como herdeiro legítimo.',
         earned: false,
         icon: '🌌',
       },
       {
         title: 'Trono do Conhecimento',
-        description: 'Tenha 5000 unidades de upgrades de legado.',
+        description: 'Cinco mil unidades de aprimoramentos de legado: você se senta sobre um trono feito de tomos que ainda respiram.',
         earned: false,
         icon: '👑',
       },

@@ -53,98 +53,125 @@ import {
       background:
         radial-gradient(
           ellipse at center,
-          rgba(13, 13, 18, 0.55) 0%,
-          rgba(0, 0, 0, 0.88) 100%
+          rgba(8, 7, 10, 0.72) 0%,
+          rgba(8, 7, 10, 0.94) 100%
         );
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      padding: 1rem;
+      backdrop-filter: blur(10px) saturate(0.85);
+      -webkit-backdrop-filter: blur(10px) saturate(0.85);
+      padding: 1.25rem;
       animation: modalOverlayIn 0.22s ease-out;
+      will-change: opacity;
     }
 
     .modal-content {
       position: relative;
       background:
         linear-gradient(
-          145deg,
-          rgba(28, 28, 40, 0.97) 0%,
-          rgba(22, 22, 30, 0.97) 60%,
-          rgba(36, 22, 48, 0.97) 100%
+          162deg,
+          rgba(42, 31, 58, 0.97) 0%,
+          rgba(22, 19, 28, 0.98) 55%,
+          rgba(22, 19, 28, 0.98) 100%
         );
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(179, 136, 255, 0.35);
-      border-radius: 18px;
-      padding: 2.2rem 2.4rem;
-      max-width: 520px;
+      border: 1px solid rgba(74, 63, 90, 0.55);
+      border-radius: 14px;
+      padding: 2.4rem 2.6rem 2.2rem;
+      max-width: 480px;
       width: 100%;
       max-height: 85vh;
       overflow-y: auto;
       overflow-x: hidden;
       box-sizing: border-box;
-      text-align: center;
-      color: #e8e8f0;
+      text-align: left;
+      color: #d8d2c0;
+      font-family: "Nanum Myeongjo", serif;
+      font-size: 1rem;
+      line-height: 1.6;
       box-shadow:
-        0 24px 70px rgba(0, 0, 0, 0.7),
-        0 0 40px rgba(179, 136, 255, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.45, 0.5, 1);
+        0 28px 80px rgba(0, 0, 0, 0.72),
+        0 8px 24px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(8, 7, 10, 0.6),
+        inset 0 1px 0 rgba(239, 232, 216, 0.06),
+        inset 0 0 0 1px rgba(157, 125, 250, 0.04);
+      animation: modalScaleIn 0.28s cubic-bezier(0.34, 1.45, 0.5, 1);
+      will-change: transform, opacity;
     }
     .modal-content::-webkit-scrollbar { width: 6px; }
-    .modal-content::-webkit-scrollbar-track { background: transparent; }
+    .modal-content::-webkit-scrollbar-track {
+      background: rgba(8, 7, 10, 0.4);
+      border-radius: 6px;
+    }
     .modal-content::-webkit-scrollbar-thumb {
-      background: rgba(179, 136, 255, 0.45);
+      background: rgba(74, 63, 90, 0.7);
       border-radius: 6px;
     }
     .modal-content::-webkit-scrollbar-thumb:hover {
-      background: rgba(179, 136, 255, 0.7);
+      background: rgba(157, 125, 250, 0.55);
     }
 
     .stats-modal-content {
       max-width: 640px;
-      text-align: left;
     }
 
     .modal-title {
       font-family: "Creepster", cursive;
-      font-size: clamp(1.55rem, 4.2vw, 2.05rem);
-      color: #e8d4ff;
-      margin: 0 0 1rem 0;
-      padding: 0 2.4rem 0.9rem;
-      line-height: 1.18;
+      font-weight: 400;
+      font-size: clamp(1.7rem, 4.4vw, 2.2rem);
+      color: #ffb454;
+      margin: 0 0 1.4rem 0;
+      padding: 0 2.4rem 1rem 0;
+      line-height: 1.2;
+      letter-spacing: 1.6px;
       word-wrap: break-word;
       overflow-wrap: break-word;
-      letter-spacing: 1.2px;
       text-shadow:
-        0 0 12px rgba(179, 136, 255, 0.55),
-        0 0 28px rgba(179, 136, 255, 0.25);
-      border-bottom: 1px solid rgba(179, 136, 255, 0.18);
+        0 0 14px rgba(255, 180, 84, 0.45),
+        0 0 32px rgba(255, 180, 84, 0.18),
+        0 1px 0 rgba(8, 7, 10, 0.8);
+      border-bottom: 1px solid rgba(74, 63, 90, 0.55);
+      position: relative;
+    }
+    .modal-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 56px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 180, 84, 0.85) 0%,
+        rgba(255, 180, 84, 0) 100%
+      );
     }
 
     .modal-x {
       position: absolute;
-      top: 12px;
+      top: 14px;
       right: 14px;
       width: 32px;
       height: 32px;
       padding: 0;
-      border: 1px solid rgba(179, 136, 255, 0.25);
+      border: 1px solid rgba(74, 63, 90, 0.65);
       border-radius: 50%;
-      background: rgba(13, 13, 18, 0.6);
-      color: #a0a0bb;
-      font-size: 1.35rem;
+      background: rgba(8, 7, 10, 0.65);
+      color: #d8d2c0;
+      font-family: "Nanum Myeongjo", serif;
+      font-size: 1.4rem;
       line-height: 1;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.18s ease, border-color 0.18s ease,
-                  background 0.18s ease, transform 0.18s ease,
-                  box-shadow 0.18s ease;
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.28s cubic-bezier(0.34, 1.45, 0.5, 1),
+        box-shadow 0.2s ease;
       z-index: 2;
     }
     .modal-x span {
@@ -152,20 +179,34 @@ import {
       display: inline-block;
     }
     .modal-x:hover {
-      color: #fff;
-      border-color: rgba(230, 57, 70, 0.7);
-      background: rgba(230, 57, 70, 0.18);
+      color: #efe8d8;
+      border-color: rgba(193, 55, 74, 0.75);
+      background: rgba(193, 55, 74, 0.18);
       transform: rotate(90deg);
-      box-shadow: 0 0 14px rgba(230, 57, 70, 0.35);
+      box-shadow:
+        0 0 0 1px rgba(193, 55, 74, 0.25),
+        0 0 16px rgba(193, 55, 74, 0.4);
+    }
+    .modal-x:active {
+      transform: rotate(90deg) scale(0.94);
     }
     .modal-x:focus-visible {
-      outline: 2px solid #ffd54f;
+      outline: 2px solid #ffb454;
       outline-offset: 2px;
+      box-shadow: 0 0 14px rgba(255, 180, 84, 0.45);
     }
 
     @keyframes modalScaleIn {
-      from { transform: scale(0.88) translateY(8px); opacity: 0; }
-      to   { transform: scale(1) translateY(0); opacity: 1; }
+      from {
+        transform: scale(0.9) translateY(10px);
+        opacity: 0;
+        filter: blur(2px);
+      }
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        filter: blur(0);
+      }
     }
     @keyframes modalOverlayIn {
       from { opacity: 0; }
@@ -174,18 +215,26 @@ import {
 
     @media (prefers-reduced-motion: reduce) {
       .modal-content,
-      .modal-overlay {
+      .modal-overlay,
+      .modal-x {
         animation: none !important;
+        transition: none !important;
       }
     }
 
     @media (max-width: 600px) {
-      .modal-content { padding: 1.5rem 1.2rem; border-radius: 14px; }
-      .modal-title {
-        font-size: 1.45rem;
-        padding-bottom: 0.7rem;
-        margin-bottom: 0.8rem;
+      .modal-overlay { padding: 0.75rem; }
+      .modal-content {
+        padding: 1.7rem 1.4rem 1.5rem;
+        border-radius: 12px;
       }
+      .modal-title {
+        font-size: 1.5rem;
+        padding: 0 2.2rem 0.8rem 0;
+        margin-bottom: 1rem;
+        letter-spacing: 1.2px;
+      }
+      .modal-x { top: 10px; right: 10px; width: 30px; height: 30px; }
     }
   `],
 })

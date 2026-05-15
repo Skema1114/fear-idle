@@ -707,12 +707,24 @@ $lfx-mist: rgba(13, 13, 18, 0.0);
   }
 }
 
-/* timeDistort: a area de prestigio distorce o tempo em ciclos longos */
+/* timeDistort: aplicado a um pseudo-element ::after da .prestige-section
+   para nao borrar o texto/cards internos. Apenas um overlay sutil. */
 .prestige-section {
-  animation:
-    tentacleSlither 12s infinite ease-in-out,
-    timeDistort 48s infinite ease-in-out;
-  will-change: filter, transform;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(135deg, rgba(179, 136, 255, 0.04), transparent 60%);
+    animation: timeDistort 48s infinite ease-in-out;
+    will-change: filter;
+    border-radius: inherit;
+  }
+
+  > * { position: relative; z-index: 1; }
 }
 
 /* ============================================================ */

@@ -134,6 +134,119 @@ body {
   text-align: left;
 }
 
+.modal-description {
+  font-size: 1rem;
+  color: #a0a0bb;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.modal-close-button {
+  background: linear-gradient(135deg, #b388ff, #9963ff);
+  color: #e8e8f0;
+  font-family: "Nanum Myeongjo", serif;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.8rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(179, 136, 255, 0.4);
+  }
+}
+
+.save-textarea {
+  width: 100%;
+  height: 120px;
+  background: #0d0d12;
+  color: #e8e8f0;
+  border: 1px solid #3a3a4f;
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #b388ff;
+    box-shadow: 0 0 10px rgba(179, 136, 255, 0.35);
+  }
+}
+
+.modal-upgrade-image {
+  margin: 0.8rem 0 1rem 0;
+  border-radius: 12px;
+  border: 1px solid #3a3a4f;
+  background: #16161e;
+  padding: 6px;
+}
+
+.upgrade-details-text {
+  text-align: left;
+  padding: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #3a3a4f;
+  border-radius: 8px;
+  background: rgba(13, 13, 18, 0.5);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  color: #e8e8f0;
+}
+
+.upgrade-description-long {
+  color: #a0a0bb;
+  font-style: italic;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  background: rgba(13, 13, 18, 0.4);
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(58, 58, 79, 0.3);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #a0a0bb;
+  margin-bottom: 0.15rem;
+  display: block;
+}
+
+.stat-value {
+  font-family: "Roboto Mono", monospace;
+  font-size: 1rem;
+  color: #69f0ae;
+  font-weight: 700;
+  text-shadow: 0 0 3px rgba(105, 240, 174, 0.35);
+}
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
 @keyframes modalScaleIn {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }

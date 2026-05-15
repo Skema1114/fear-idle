@@ -25,7 +25,34 @@ $essence-glow-shadow: rgba(255, 213, 79, 0.4);
 $prestige-blue: #82b1ff;
 $prestige-blue-glow: rgba(130, 177, 255, 0.3);
 $prestige-blue-tint: rgba(130, 177, 255, 0.08);
+$prestige-blue-faint: rgba(130, 177, 255, 0.04);
+$prestige-blue-soft: rgba(130, 177, 255, 0.15);
+$prestige-blue-border: rgba(130, 177, 255, 0.2);
 $deep-shadow: rgba(0, 0, 0, 0.4);
+$deep-shadow-strong: rgba(0, 0, 0, 0.6);
+$badge-bg: rgba(0, 0, 0, 0.35);
+
+/* Semantic glass surfaces (header, tabs, trophy) */
+$header-bg: rgba(13, 13, 18, 0.85);
+$tab-nav-bg: rgba(13, 13, 18, 0.5);
+$trophy-item-bg: rgba(22, 22, 30, 0.78); // $deep-charcoal @ 78% alpha
+$glass-border-soft: rgba(58, 58, 79, 0.3);
+$glass-border-faint: rgba(58, 58, 79, 0.2);
+
+/* Essence-glow alphas (hint banner) */
+$essence-glow-tint: rgba(255, 213, 79, 0.08);
+$essence-glow-border: rgba(255, 213, 79, 0.25);
+
+/* Shadow-purple alphas (tabs / hovers) */
+$shadow-purple-tint: rgba(179, 136, 255, 0.08);
+$shadow-purple-soft: rgba(179, 136, 255, 0.15);
+
+/* Spectral-green alphas (toast / trophy / combo) */
+$spectral-green-tint: rgba(105, 240, 174, 0.12);
+$spectral-green-soft: rgba(105, 240, 174, 0.15);
+$spectral-green-faint: rgba(105, 240, 174, 0.05);
+$spectral-green-border: rgba(105, 240, 174, 0.3);
+$spectral-green-border-strong: rgba(105, 240, 174, 0.4);
 
 /* Typography */
 $font-title: "Creepster", cursive;
@@ -101,10 +128,10 @@ strong {
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  @include glass(rgba(13, 13, 18, 0.85), rgba(58, 58, 79, 0.3));
+  @include glass($header-bg, $glass-border-soft);
   padding: 0.6rem 1rem;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 20px $deep-shadow-strong;
   box-sizing: border-box;
 }
 
@@ -225,14 +252,19 @@ strong {
   background: linear-gradient(135deg, $blood-red, color.adjust($blood-red, $lightness: -12%));
   color: $light-ghost;
   border: 1px solid color.adjust($blood-red, $lightness: 8%);
-  padding: 1rem 2.5rem;
+  padding: 0.85rem 2rem;
   font-family: $font-title;
   font-size: 1.15rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    filter 0.18s ease;
   box-shadow: 0 4px 15px $blood-red-glow;
   position: relative;
   overflow: hidden;
@@ -243,16 +275,30 @@ strong {
   }
 
   &:active:not([disabled]) {
-    transform: translateY(1px) scale(0.98);
+    transform: translateY(0) scale(0.98);
     box-shadow: 0 2px 8px $blood-red-glow;
   }
 
-  &:disabled {
+  &:focus-visible {
+    outline: 2px solid $essence-glow;
+    outline-offset: 3px;
+  }
+
+  &:disabled,
+  &[disabled] {
     background: $faded-stone;
     color: $muted-text;
     border-color: $faded-stone;
     cursor: not-allowed;
     box-shadow: none;
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover:not([disabled]),
+    &:active:not([disabled]) {
+      transform: none;
+    }
   }
 }
 
@@ -323,7 +369,7 @@ strong {
 
 /* Combo Display */
 .combo-display {
-  @include glass(rgba(105, 240, 174, 0.12), rgba(105, 240, 174, 0.3));
+  @include glass($spectral-green-tint, $spectral-green-border);
   color: $spectral-green;
   font-family: $font-mono;
   font-size: 1rem;
@@ -414,12 +460,18 @@ strong {
 }
 
 .danger-button {
-  border-color: rgba(230, 57, 70, 0.4) !important;
+  border-color: $blood-red-glow !important;
   color: $blood-red !important;
 
   &:hover:not([disabled]) {
     border-color: $blood-red !important;
     background: rgba(230, 57, 70, 0.15) !important;
+    box-shadow: 0 4px 18px $blood-red-glow !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $essence-glow;
+    outline-offset: 3px;
   }
 }
 
@@ -432,17 +484,42 @@ strong {
   font-size: 0.9rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 
   &:hover:not([disabled]) {
     background: rgba(58, 58, 79, 0.6);
     transform: translateY(-1px);
     border-color: $shadow-purple;
+    box-shadow: 0 4px 14px $shadow-purple-glow;
   }
 
-  &:disabled {
+  &:active:not([disabled]) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $essence-glow;
+    outline-offset: 3px;
+  }
+
+  &:disabled,
+  &[disabled] {
     opacity: 0.4;
     cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover:not([disabled]),
+    &:active:not([disabled]) {
+      transform: none;
+    }
   }
 }
 
@@ -463,8 +540,8 @@ strong {
   max-width: 720px;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  background: rgba(255, 213, 79, 0.08);
-  border: 1px solid rgba(255, 213, 79, 0.25);
+  background: $essence-glow-tint;
+  border: 1px solid $essence-glow-border;
   color: $essence-glow;
   font-family: $font-body;
   font-size: 0.95rem;
@@ -488,13 +565,28 @@ strong {
   font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0 0.25rem;
+  padding: 0 0.35rem;
+  border-radius: 6px;
   opacity: 0.6;
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 
-  &:hover, &:focus-visible {
+  &:hover {
     opacity: 1;
-    outline: none;
+    background: rgba(255, 213, 79, 0.12);
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid $essence-glow;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover { transform: none; }
   }
 }
 
@@ -506,7 +598,7 @@ strong {
   justify-content: center;
   margin: 2rem 0 1rem;
   padding: 0.5rem;
-  @include glass(rgba(13, 13, 18, 0.5), rgba(58, 58, 79, 0.3));
+  @include glass($tab-nav-bg, $glass-border-soft);
   border-radius: 12px;
   position: sticky;
   top: 0;
@@ -524,7 +616,12 @@ strong {
   border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -532,19 +629,38 @@ strong {
 
   &:hover {
     color: $light-ghost;
-    background: rgba(179, 136, 255, 0.08);
+    background: $shadow-purple-tint;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:focus-visible {
-    outline: 2px solid $shadow-purple;
+    outline: 2px solid $essence-glow;
     outline-offset: 2px;
   }
 
   &.active {
     color: $light-ghost;
-    background: rgba(179, 136, 255, 0.15);
+    background: $shadow-purple-soft;
     border-color: $shadow-purple-glow;
     @include glow-text($shadow-purple-glow, 4px);
+  }
+
+  &:disabled,
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:active {
+      transform: none;
+    }
   }
 }
 
@@ -555,7 +671,7 @@ strong {
   font-size: 0.75rem;
   font-weight: 700;
   color: $essence-glow;
-  background: rgba(0, 0, 0, 0.35);
+  background: $badge-bg;
   border-radius: 999px;
   min-width: 1.5rem;
   text-align: center;
@@ -647,7 +763,7 @@ strong {
 
   &:hover {
     transform: translateY(-3px);
-    background: rgba(34, 34, 47, 0.7);
+    background: rgba(34, 34, 47, 0.7); // $card-bg-hover at 70% alpha
     border-color: $shadow-purple;
     box-shadow: 0 8px 30px $deep-shadow, 0 0 15px $shadow-purple-glow;
 
@@ -724,9 +840,14 @@ strong {
     font-weight: 700;
     padding: 0.5rem 1rem;
     border-radius: 6px;
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 
@@ -737,6 +858,12 @@ strong {
 
     &:active:not([disabled]) {
       transform: translateY(0);
+      box-shadow: 0 1px 4px $spectral-green-glow;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $essence-glow;
+      outline-offset: 3px;
     }
 
     &.details-button {
@@ -751,16 +878,30 @@ strong {
         background: rgba(58, 58, 79, 0.4);
         color: $light-ghost;
         border-color: $shadow-purple;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      &:active:not([disabled]) {
+        transform: translateY(0);
         box-shadow: none;
       }
     }
 
-    &:disabled {
+    &:disabled,
+    &[disabled] {
       background: $faded-stone;
       color: color.adjust($muted-text, $lightness: -15%);
+      border-color: $faded-stone;
       cursor: not-allowed;
       box-shadow: none;
       opacity: 0.5;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &:hover:not([disabled]),
+      &:active:not([disabled]) {
+        transform: none;
+      }
     }
   }
 }
@@ -789,7 +930,7 @@ strong {
 }
 
 .trophy-item {
-  @include card-surface(rgba(22, 22, 30, 0.78));
+  @include card-surface($trophy-item-bg);
   border-radius: 8px;
   animation: cardEnter 0.3s ease-out backwards;
 
@@ -809,7 +950,7 @@ strong {
     border-color: $spectral-green;
     color: $spectral-green;
     box-shadow: 0 0 10px $spectral-green-glow;
-    background: rgba(105, 240, 174, 0.05);
+    background: $spectral-green-faint;
 
     .trophy-icon {
       filter: none;
@@ -843,7 +984,7 @@ strong {
 
 /* ========== PRESTIGE SECTION ========== */
 .prestige-section {
-  @include glass(rgba(130, 177, 255, 0.04), rgba(130, 177, 255, 0.15));
+  @include glass($prestige-blue-faint, $prestige-blue-soft);
   border-radius: 16px;
   padding: 2rem;
   text-align: center;
@@ -875,7 +1016,7 @@ strong {
     border-color: color.adjust($shadow-purple, $lightness: 10%);
     color: $light-ghost;
     font-size: 1.15rem;
-    padding: 1rem 2.5rem;
+    padding: 0.85rem 2rem;
     margin-top: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 20px $shadow-purple-glow;
@@ -885,17 +1026,37 @@ strong {
       transform: translateY(-2px);
     }
 
+    &:active:not([disabled]) {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 2px 10px $shadow-purple-glow;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $essence-glow;
+      outline-offset: 3px;
+    }
+
     &:not([disabled]) {
       animation: prestigeShimmer 2.4s ease-in-out infinite;
     }
 
-    &:disabled {
+    &:disabled,
+    &[disabled] {
       background: $faded-stone;
       color: $muted-text;
       border-color: $faded-stone;
       cursor: not-allowed;
       box-shadow: none;
+      opacity: 0.6;
       animation: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      &:hover:not([disabled]),
+      &:active:not([disabled]) {
+        transform: none;
+      }
     }
   }
 
@@ -909,7 +1070,7 @@ strong {
   }
 
   .prestige-upgrade-card {
-    border-color: rgba(130, 177, 255, 0.2);
+    border-color: $prestige-blue-border;
 
     &:hover {
       border-color: $prestige-blue;
@@ -919,14 +1080,28 @@ strong {
     .prestige-action-button {
       background: linear-gradient(135deg, $shadow-purple, color.adjust($shadow-purple, $lightness: -15%));
       color: $light-ghost;
+      border-color: color.adjust($shadow-purple, $lightness: 10%);
 
       &:hover:not([disabled]) {
-        box-shadow: 0 4px 12px $shadow-purple-glow;
+        box-shadow: 0 4px 14px $shadow-purple-glow;
+        transform: translateY(-1px);
       }
 
-      &:disabled {
+      &:active:not([disabled]) {
+        transform: translateY(0);
+        box-shadow: 0 1px 6px $shadow-purple-glow;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $essence-glow;
+        outline-offset: 3px;
+      }
+
+      &:disabled,
+      &[disabled] {
         background: $faded-stone;
         color: color.adjust($muted-text, $lightness: -15%);
+        border-color: $faded-stone;
         cursor: not-allowed;
         box-shadow: none;
         opacity: 0.5;
@@ -960,7 +1135,7 @@ strong {
 }
 
 .toast-notification {
-  @include glass(rgba(105, 240, 174, 0.15), rgba(105, 240, 174, 0.4));
+  @include card-surface($spectral-green-soft, $spectral-green-border-strong);
   color: $spectral-green;
   padding: 0.7rem 1.2rem;
   border-radius: 10px;
@@ -1002,7 +1177,7 @@ strong {
   padding: 2rem 1rem;
   color: $faded-stone;
   font-size: 0.8rem;
-  border-top: 1px solid rgba(58, 58, 79, 0.2);
+  border-top: 1px solid $glass-border-faint;
   margin-top: 3rem;
 
   a {
@@ -1041,13 +1216,24 @@ strong {
   }
 
   .primary-button {
-    padding: 0.8rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1rem;
   }
 
   .click-button {
     min-width: unset;
     width: 100%;
+  }
+
+  .secondary-button,
+  .danger-button {
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .action-button {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
   }
 
   .combo-display {

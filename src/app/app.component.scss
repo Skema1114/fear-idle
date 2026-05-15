@@ -936,62 +936,10 @@ strong {
 }
 
 /* ========== MODALS ========== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  backdrop-filter: blur(10px);
-}
-
-.modal-content {
-  @include glass(rgba(22, 22, 30, 0.95), $faded-stone);
-  border-radius: 16px;
-  padding: 2.5rem;
-  max-width: 480px;
-  width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-  animation: modalScaleIn 0.25s ease-out;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba($shadow-purple, 0.45);
-    border-radius: 6px;
-
-    &:hover {
-      background: rgba($shadow-purple, 0.7);
-    }
-  }
-}
-
-.modal-title {
-  font-family: $font-title;
-  font-size: clamp(1.3rem, 4vw, 1.8rem);
-  color: $shadow-purple;
-  margin-bottom: 0.8rem;
-  line-height: 1.2;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  @include glow-text($shadow-purple-glow, 8px);
-}
+/* .modal-overlay, .modal-content, .modal-title e .stats-modal-content
+   moveram para src/styles.scss (global). ViewEncapsulation do
+   ModalComponent nao recebe estilos scopados de app.component, entao
+   precisam ser globais para alcancar o template do modal. */
 
 .modal-description {
   font-size: 1rem;
@@ -1046,10 +994,7 @@ strong {
   }
 }
 
-@keyframes modalScaleIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+/* modalScaleIn keyframe migrado para styles.scss junto com modal-content */
 
 /* Upgrade Details Modal */
 .modal-upgrade-image {
@@ -1077,11 +1022,7 @@ strong {
   font-style: italic;
 }
 
-/* Stats Modal */
-.stats-modal-content {
-  max-width: 600px;
-  text-align: left;
-}
+/* .stats-modal-content migrado para styles.scss (global) */
 
 .stats-grid {
   display: grid;
@@ -1325,26 +1266,9 @@ strong {
   100% { transform: scale(1); }
 }
 
-@keyframes trophyOverlayIn {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@keyframes trophyOverlayOut {
-  0%   { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@keyframes trophyContentIn {
-  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.55) rotate(-6deg); filter: blur(6px); }
-  55%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08) rotate(2deg); filter: blur(0); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); filter: blur(0); }
-}
-
-@keyframes trophyContentOut {
-  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.18); filter: blur(2px); }
-}
+/* trophyOverlayIn/Out e trophyContentIn/Out removidos:
+   fanfare virou card lateral com keyframes trophyCardIn/Out
+   declarados ao lado do .trophy-fanfare. */
 
 @keyframes krakenBreath {
   0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
@@ -1420,61 +1344,74 @@ strong {
   100% { opacity: 0; transform: translateY(-70px) translateX(var(--floater-drift, 0)) scale(0.7) rotate(var(--floater-rot, 0deg)); }
 }
 
-/* ========== TROPHY FANFARE OVERLAY (LOVECRAFTIAN KRAKEN) ========== */
+/* ========== TROPHY FANFARE (LOVECRAFTIAN CARD — corner, non-blocking) ========== */
 .trophy-fanfare {
   position: fixed;
-  inset: 0;
+  bottom: 24px;
+  right: 24px;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  height: 200px;
   z-index: 11000;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(13, 13, 18, 0.92) 30%,
-    rgba(13, 13, 18, 0.98) 70%
+  border-radius: 16px;
+  padding: 1.1rem 1.3rem;
+  box-sizing: border-box;
+  background: linear-gradient(
+    135deg,
+    rgba(13, 13, 18, 0.96) 0%,
+    rgba(28, 28, 40, 0.94) 60%,
+    rgba(38, 22, 48, 0.96) 100%
   );
+  border: 1px solid rgba(179, 136, 255, 0.4);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(179, 136, 255, 0.25),
+    inset 0 0 30px rgba(13, 13, 18, 0.6);
   overflow: hidden;
   animation:
-    trophyOverlayIn 0.5s ease-out both,
-    trophyOverlayOut 0.4s ease-in 2.1s forwards;
+    trophyCardIn 0.5s cubic-bezier(0.34, 1.5, 0.5, 1) both,
+    trophyCardOut 0.4s ease-in 1.6s forwards;
 
-  // Kraken layer: centered, behind the content
+  // Kraken visual contido dentro do card, ao fundo
   .fanfare-kraken {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 25%;
     width: 0;
     height: 0;
     transform: translate(-50%, -50%);
     animation: krakenBreath 4.5s ease-in-out infinite;
     will-change: transform, opacity;
+    pointer-events: none;
   }
 
-  // Massive central "eye" / void sphere
   .kraken-eye {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 320px;
-    height: 320px;
-    margin: -160px 0 0 -160px;
+    width: 180px;
+    height: 180px;
+    margin: -90px 0 0 -90px;
     border-radius: 50%;
     background: radial-gradient(
       circle at center,
-      rgba(179, 136, 255, 0.55) 0%,
-      rgba(179, 136, 255, 0.25) 28%,
-      rgba(230, 57, 70, 0.12) 55%,
-      rgba(13, 13, 18, 0) 78%
+      rgba(179, 136, 255, 0.5) 0%,
+      rgba(179, 136, 255, 0.22) 30%,
+      rgba(230, 57, 70, 0.12) 60%,
+      rgba(13, 13, 18, 0) 82%
     );
     animation: eyePulse 3.2s ease-in-out infinite;
     will-change: opacity, box-shadow;
   }
 
-  // Outer halo ring, slowly rotating
   .kraken-halo {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 560px;
-    height: 560px;
+    width: 280px;
+    height: 280px;
+    margin: -140px 0 0 -140px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
@@ -1486,29 +1423,28 @@ strong {
       rgba(230, 57, 70, 0.08) 300deg,
       rgba(179, 136, 255, 0) 360deg
     );
-    filter: blur(18px);
+    filter: blur(14px);
     animation: krakenHalo 8s linear infinite;
     will-change: transform, opacity;
   }
 
-  // Tentacles: thin gradient bars emanating from center
   .kraken-tentacle {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 280px;
-    height: 6px;
-    margin-top: -3px;
+    width: 130px;
+    height: 4px;
+    margin-top: -2px;
     border-radius: 999px;
     background: linear-gradient(
       90deg,
       rgba(179, 136, 255, 0) 0%,
       rgba(179, 136, 255, 0.55) 25%,
-      rgba(179, 136, 255, 0.75) 55%,
-      rgba(230, 57, 70, 0.35) 85%,
+      rgba(179, 136, 255, 0.7) 55%,
+      rgba(230, 57, 70, 0.3) 85%,
       rgba(179, 136, 255, 0) 100%
     );
-    filter: blur(1.5px) drop-shadow(0 0 6px rgba(179, 136, 255, 0.35));
+    filter: blur(1px) drop-shadow(0 0 4px rgba(179, 136, 255, 0.35));
     transform-origin: 0 50%;
     animation: tentacleWrithe 5.5s ease-in-out infinite;
     will-change: transform, opacity;
@@ -1523,51 +1459,50 @@ strong {
   .kraken-tentacle.t7 { --t-angle: 270deg; animation-delay: -3.6s; }
   .kraken-tentacle.t8 { --t-angle: 315deg; animation-delay: -4.2s; }
 
-  // Centered content sits above the kraken
+  // Conteudo na direita do card, kraken se sobrepondo a esquerda
   .fanfare-content {
     position: absolute;
     top: 50%;
-    left: 50%;
-    text-align: center;
-    transform: translate(-50%, -50%);
-    animation:
-      trophyContentIn 0.55s cubic-bezier(0.34, 1.7, 0.64, 1) both,
-      trophyContentOut 0.4s ease-in 2.1s forwards;
-    will-change: transform, opacity, filter;
+    right: 1rem;
+    transform: translateY(-50%);
+    text-align: right;
+    max-width: 60%;
+    z-index: 2;
   }
 
   .fanfare-label {
     font-family: $font-body;
-    font-size: 0.85rem;
-    letter-spacing: 0.5em;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
     text-transform: uppercase;
-    color: rgba(230, 57, 70, 0.78);
-    text-shadow: 0 0 8px rgba(230, 57, 70, 0.45);
-    margin-bottom: 0.9rem;
-    padding-left: 0.5em; // compensate visual centering with letter-spacing
+    color: rgba(230, 57, 70, 0.82);
+    text-shadow: 0 0 6px rgba(230, 57, 70, 0.45);
+    margin-bottom: 0.35rem;
+    padding-left: 0.4em;
   }
 
   .fanfare-icon {
-    font-size: 5.5rem;
+    font-size: 2.4rem;
     line-height: 1;
     filter:
-      drop-shadow(0 0 30px rgba(255, 213, 79, 0.55))
-      drop-shadow(0 0 60px rgba(179, 136, 255, 0.55));
+      drop-shadow(0 0 14px rgba(255, 213, 79, 0.55))
+      drop-shadow(0 0 28px rgba(179, 136, 255, 0.5));
   }
 
   .fanfare-title {
     font-family: $font-title;
-    font-size: 1.75rem;
+    font-size: 1.05rem;
     color: $essence-glow;
-    @include glow-text($essence-glow-shadow, 12px);
-    margin-top: 0.75rem;
-    letter-spacing: 2px;
+    @include glow-text($essence-glow-shadow, 8px);
+    margin-top: 0.3rem;
+    letter-spacing: 1.5px;
+    line-height: 1.15;
   }
 
   @media (prefers-reduced-motion: reduce) {
     animation:
-      trophyOverlayIn 0.2s ease-out both,
-      trophyOverlayOut 0.2s ease-in 2.2s forwards;
+      trophyCardIn 0.15s ease-out both,
+      trophyCardOut 0.15s ease-in 1.7s forwards;
 
     .fanfare-kraken,
     .kraken-eye,
@@ -1575,12 +1510,36 @@ strong {
     .kraken-tentacle {
       animation: none !important;
     }
+  }
+}
 
-    .fanfare-content {
-      animation:
-        trophyOverlayIn 0.2s ease-out both,
-        trophyOverlayOut 0.2s ease-in 2.2s forwards;
-    }
+@keyframes trophyCardIn {
+  from { opacity: 0; transform: translate(60px, 0) scale(0.9); }
+  to   { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+
+@keyframes trophyCardOut {
+  from { opacity: 1; transform: translate(0, 0) scale(1); }
+  to   { opacity: 0; transform: translate(60px, 0) scale(0.95); }
+}
+
+@media (max-width: 600px) {
+  .trophy-fanfare {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+    height: 130px;
+    padding: 0.8rem 1rem;
+
+    .fanfare-icon { font-size: 1.8rem; }
+    .fanfare-title { font-size: 0.95rem; }
+    .fanfare-label { font-size: 0.6rem; letter-spacing: 0.3em; }
+
+    .kraken-eye { width: 130px; height: 130px; margin: -65px 0 0 -65px; }
+    .kraken-halo { width: 200px; height: 200px; margin: -100px 0 0 -100px; }
+    .kraken-tentacle { width: 90px; }
   }
 }
 

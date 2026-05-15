@@ -215,7 +215,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.fanfareTrophy.set({ icon, title });
     this.fanfareClearTimeout = setTimeout(() => {
       this.fanfareTrophy.set(null);
-    }, 2500);
+    }, 2000);
   }
 
   private playTrophyChime(): void {

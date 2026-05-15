@@ -680,30 +680,8 @@ $lfx-mist: rgba(13, 13, 18, 0.0);
   > * { position: relative; z-index: 1; }
 }
 
-/* auralBleed: gradient radial vermelho-sangue pulsando nas bordas do modal */
-.modal-overlay {
-  position: fixed;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        ellipse at center,
-        transparent 45%,
-        rgba(230, 57, 70, 0.12) 75%,
-        rgba(230, 57, 70, 0.28) 100%
-      );
-    mix-blend-mode: screen;
-    animation: auralBleed 5s infinite ease-in-out;
-    will-change: opacity, filter;
-    z-index: 0;
-  }
-
-  > * { position: relative; z-index: 1; }
-}
+/* auralBleed em .modal-overlay::before migrou para styles.scss
+   (precisa ser global por causa do ModalComponent encapsulation) */
 
 /* echoCall: eco visual radial atras de click-floater tier-xl (ganhos massivos) */
 .click-floater.tier-xl {

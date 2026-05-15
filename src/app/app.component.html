@@ -639,9 +639,23 @@
 </div>
 
 <div class="trophy-fanfare" *ngIf="fanfareTrophy() as fanfare" aria-hidden="true">
-  <div class="fanfare-rays"></div>
-  <div class="fanfare-icon">{{ fanfare.icon }}</div>
-  <div class="fanfare-title">{{ fanfare.title }}</div>
+  <div class="fanfare-kraken">
+    <div class="kraken-eye"></div>
+    <div class="kraken-halo"></div>
+    <span class="kraken-tentacle t1"></span>
+    <span class="kraken-tentacle t2"></span>
+    <span class="kraken-tentacle t3"></span>
+    <span class="kraken-tentacle t4"></span>
+    <span class="kraken-tentacle t5"></span>
+    <span class="kraken-tentacle t6"></span>
+    <span class="kraken-tentacle t7"></span>
+    <span class="kraken-tentacle t8"></span>
+  </div>
+  <div class="fanfare-content">
+    <div class="fanfare-label">REVELACAO SOMBRIA</div>
+    <div class="fanfare-icon">{{ fanfare.icon }}</div>
+    <div class="fanfare-title">{{ fanfare.title }}</div>
+  </div>
 </div>
 
 <div class="prestige-cinematic" *ngIf="isPrestiging()" aria-hidden="true"></div>

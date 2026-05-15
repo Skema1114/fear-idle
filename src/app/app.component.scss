@@ -956,16 +956,40 @@ strong {
   padding: 2.5rem;
   max-width: 480px;
   width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   text-align: center;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   animation: modalScaleIn 0.25s ease-out;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($shadow-purple, 0.45);
+    border-radius: 6px;
+
+    &:hover {
+      background: rgba($shadow-purple, 0.7);
+    }
+  }
 }
 
 .modal-title {
   font-family: $font-title;
-  font-size: 1.8rem;
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
   color: $shadow-purple;
   margin-bottom: 0.8rem;
+  line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   @include glow-text($shadow-purple-glow, 8px);
 }
 
@@ -974,6 +998,8 @@ strong {
   color: $muted-text;
   margin-bottom: 1.5rem;
   line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .save-textarea {
@@ -1299,21 +1325,59 @@ strong {
   100% { transform: scale(1); }
 }
 
-@keyframes trophyFanfareIn {
-  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4) rotate(-12deg); }
-  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(4deg); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+@keyframes trophyOverlayIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-@keyframes trophyFanfareRays {
-  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
-  50%  { opacity: 0.75; }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5) rotate(180deg); }
+@keyframes trophyOverlayOut {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-@keyframes trophyFanfareOut {
+@keyframes trophyContentIn {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.55) rotate(-6deg); filter: blur(6px); }
+  55%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08) rotate(2deg); filter: blur(0); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); filter: blur(0); }
+}
+
+@keyframes trophyContentOut {
   0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.18); filter: blur(2px); }
+}
+
+@keyframes krakenBreath {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+  50%      { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+}
+
+@keyframes eyePulse {
+  0%, 100% {
+    opacity: 0.7;
+    box-shadow:
+      0 0 60px 20px rgba(179, 136, 255, 0.45),
+      0 0 140px 40px rgba(179, 136, 255, 0.25),
+      inset 0 0 40px rgba(13, 13, 18, 0.9);
+  }
+  50% {
+    opacity: 1;
+    box-shadow:
+      0 0 90px 30px rgba(179, 136, 255, 0.7),
+      0 0 200px 60px rgba(230, 57, 70, 0.18),
+      inset 0 0 50px rgba(13, 13, 18, 0.95);
+  }
+}
+
+@keyframes tentacleWrithe {
+  0%, 100% { transform: rotate(var(--t-angle, 0deg)) translateX(140px) scaleY(1) skewY(0deg); opacity: 0.65; }
+  25%      { transform: rotate(calc(var(--t-angle, 0deg) + 4deg)) translateX(150px) scaleY(1.15) skewY(3deg); opacity: 0.85; }
+  50%      { transform: rotate(calc(var(--t-angle, 0deg) - 3deg)) translateX(160px) scaleY(0.9) skewY(-2deg); opacity: 0.9; }
+  75%      { transform: rotate(calc(var(--t-angle, 0deg) + 2deg)) translateX(148px) scaleY(1.05) skewY(2deg); opacity: 0.75; }
+}
+
+@keyframes krakenHalo {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.4; }
+  50%      { transform: translate(-50%, -50%) scale(1.12) rotate(180deg); opacity: 0.7; }
 }
 
 @keyframes prestigeFlash {
@@ -1356,56 +1420,167 @@ strong {
   100% { opacity: 0; transform: translateY(-70px) translateX(var(--floater-drift, 0)) scale(0.7) rotate(var(--floater-rot, 0deg)); }
 }
 
-/* ========== TROPHY FANFARE OVERLAY ========== */
+/* ========== TROPHY FANFARE OVERLAY (LOVECRAFTIAN KRAKEN) ========== */
 .trophy-fanfare {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  inset: 0;
   z-index: 11000;
   pointer-events: none;
-  text-align: center;
-  animation: trophyFanfareIn 0.5s cubic-bezier(0.34, 1.7, 0.64, 1),
-             trophyFanfareOut 0.5s ease-in 1.6s forwards;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(13, 13, 18, 0.92) 30%,
+    rgba(13, 13, 18, 0.98) 70%
+  );
+  overflow: hidden;
+  animation:
+    trophyOverlayIn 0.5s ease-out both,
+    trophyOverlayOut 0.4s ease-in 2.1s forwards;
+
+  // Kraken layer: centered, behind the content
+  .fanfare-kraken {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%);
+    animation: krakenBreath 4.5s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  // Massive central "eye" / void sphere
+  .kraken-eye {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    height: 320px;
+    margin: -160px 0 0 -160px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      rgba(179, 136, 255, 0.55) 0%,
+      rgba(179, 136, 255, 0.25) 28%,
+      rgba(230, 57, 70, 0.12) 55%,
+      rgba(13, 13, 18, 0) 78%
+    );
+    animation: eyePulse 3.2s ease-in-out infinite;
+    will-change: opacity, box-shadow;
+  }
+
+  // Outer halo ring, slowly rotating
+  .kraken-halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 560px;
+    height: 560px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      rgba(179, 136, 255, 0) 0deg,
+      rgba(179, 136, 255, 0.18) 60deg,
+      rgba(230, 57, 70, 0.08) 120deg,
+      rgba(179, 136, 255, 0) 180deg,
+      rgba(179, 136, 255, 0.18) 240deg,
+      rgba(230, 57, 70, 0.08) 300deg,
+      rgba(179, 136, 255, 0) 360deg
+    );
+    filter: blur(18px);
+    animation: krakenHalo 8s linear infinite;
+    will-change: transform, opacity;
+  }
+
+  // Tentacles: thin gradient bars emanating from center
+  .kraken-tentacle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      rgba(179, 136, 255, 0) 0%,
+      rgba(179, 136, 255, 0.55) 25%,
+      rgba(179, 136, 255, 0.75) 55%,
+      rgba(230, 57, 70, 0.35) 85%,
+      rgba(179, 136, 255, 0) 100%
+    );
+    filter: blur(1.5px) drop-shadow(0 0 6px rgba(179, 136, 255, 0.35));
+    transform-origin: 0 50%;
+    animation: tentacleWrithe 5.5s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  .kraken-tentacle.t1 { --t-angle: 0deg;   animation-delay: 0s;    }
+  .kraken-tentacle.t2 { --t-angle: 45deg;  animation-delay: -0.6s; }
+  .kraken-tentacle.t3 { --t-angle: 90deg;  animation-delay: -1.2s; }
+  .kraken-tentacle.t4 { --t-angle: 135deg; animation-delay: -1.8s; }
+  .kraken-tentacle.t5 { --t-angle: 180deg; animation-delay: -2.4s; }
+  .kraken-tentacle.t6 { --t-angle: 225deg; animation-delay: -3.0s; }
+  .kraken-tentacle.t7 { --t-angle: 270deg; animation-delay: -3.6s; }
+  .kraken-tentacle.t8 { --t-angle: 315deg; animation-delay: -4.2s; }
+
+  // Centered content sits above the kraken
+  .fanfare-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    animation:
+      trophyContentIn 0.55s cubic-bezier(0.34, 1.7, 0.64, 1) both,
+      trophyContentOut 0.4s ease-in 2.1s forwards;
+    will-change: transform, opacity, filter;
+  }
+
+  .fanfare-label {
+    font-family: $font-body;
+    font-size: 0.85rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: rgba(230, 57, 70, 0.78);
+    text-shadow: 0 0 8px rgba(230, 57, 70, 0.45);
+    margin-bottom: 0.9rem;
+    padding-left: 0.5em; // compensate visual centering with letter-spacing
+  }
 
   .fanfare-icon {
-    font-size: 5rem;
-    filter: drop-shadow(0 0 30px $essence-glow-shadow)
-            drop-shadow(0 0 60px rgba(255, 213, 79, 0.7));
+    font-size: 5.5rem;
+    line-height: 1;
+    filter:
+      drop-shadow(0 0 30px rgba(255, 213, 79, 0.55))
+      drop-shadow(0 0 60px rgba(179, 136, 255, 0.55));
   }
 
   .fanfare-title {
     font-family: $font-title;
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     color: $essence-glow;
-    @include glow-text($essence-glow-shadow, 10px);
-    margin-top: 0.6rem;
+    @include glow-text($essence-glow-shadow, 12px);
+    margin-top: 0.75rem;
     letter-spacing: 2px;
   }
 
-  .fanfare-rays {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 240px;
-    height: 240px;
-    background: conic-gradient(
-      from 0deg,
-      rgba(255, 213, 79, 0.4) 0deg,
-      transparent 30deg,
-      rgba(255, 213, 79, 0.4) 60deg,
-      transparent 90deg,
-      rgba(255, 213, 79, 0.4) 120deg,
-      transparent 150deg,
-      rgba(255, 213, 79, 0.4) 180deg,
-      transparent 210deg,
-      rgba(255, 213, 79, 0.4) 240deg,
-      transparent 270deg,
-      rgba(255, 213, 79, 0.4) 300deg,
-      transparent 330deg
-    );
-    border-radius: 50%;
-    z-index: -1;
-    animation: trophyFanfareRays 1.6s ease-out forwards;
+  @media (prefers-reduced-motion: reduce) {
+    animation:
+      trophyOverlayIn 0.2s ease-out both,
+      trophyOverlayOut 0.2s ease-in 2.2s forwards;
+
+    .fanfare-kraken,
+    .kraken-eye,
+    .kraken-halo,
+    .kraken-tentacle {
+      animation: none !important;
+    }
+
+    .fanfare-content {
+      animation:
+        trophyOverlayIn 0.2s ease-out both,
+        trophyOverlayOut 0.2s ease-in 2.2s forwards;
+    }
   }
 }
 

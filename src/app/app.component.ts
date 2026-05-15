@@ -215,7 +215,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.fanfareTrophy.set({ icon, title });
     this.fanfareClearTimeout = setTimeout(() => {
       this.fanfareTrophy.set(null);
-    }, 2100);
+    }, 2500);
   }
 
   private playTrophyChime(): void {
@@ -1400,7 +1400,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (trophy && !trophy.earned) {
         trophy.earned = true;
-        this.pushToast(`🏆 ${trophy.title}`, trophy.icon, 10000);
         this.playTrophyChime();
         this.triggerTrophyFanfare(trophy.icon, trophy.title);
         return updatedTrophies;

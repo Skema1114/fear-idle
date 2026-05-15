@@ -263,6 +263,118 @@ $lfx-mist: rgba(13, 13, 18, 0.0);
   74% { opacity: 1; }
 }
 
+/* 16. psychicWhisper — text-shadow lateral irregular: sensacao de voz mental */
+@keyframes psychicWhisper {
+  0%, 100% {
+    text-shadow:
+      0 0 0 rgba(179, 136, 255, 0),
+      0 0 0 rgba(230, 57, 70, 0);
+    filter: none;
+  }
+  18% {
+    text-shadow:
+      -3px 0 0 rgba(179, 136, 255, 0.18),
+      3px 0 0 rgba(105, 240, 174, 0.12);
+  }
+  35% {
+    text-shadow:
+      0 0 0 rgba(179, 136, 255, 0),
+      0 0 0 rgba(230, 57, 70, 0);
+  }
+  62% {
+    text-shadow:
+      4px 0 0 rgba(230, 57, 70, 0.16),
+      -2px 1px 0 rgba(179, 136, 255, 0.14);
+    filter: blur(0.3px);
+  }
+  80% {
+    text-shadow:
+      0 0 6px rgba(179, 136, 255, 0.22);
+  }
+}
+
+/* 17. voidVeinPulse — gradient vivo subindo nas bordas, painel respira */
+@keyframes voidVeinPulse {
+  0%, 100% {
+    opacity: 0.0;
+    background-position: 0% 0%;
+  }
+  35% {
+    opacity: 0.55;
+  }
+  65% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.0;
+    background-position: 0% 200%;
+  }
+}
+
+/* 18. ritualSigilFloat — sigilo arcano levitando e rodando lentamente */
+@keyframes ritualSigilFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.0;
+  }
+  20% {
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-4px) rotate(180deg);
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+    opacity: 0.0;
+  }
+}
+
+/* 19. auralBleed — borda do modal sangrando, medo vazando da tela */
+@keyframes auralBleed {
+  0%, 100% {
+    opacity: 0.25;
+    filter: blur(8px);
+  }
+  50% {
+    opacity: 0.55;
+    filter: blur(14px);
+  }
+}
+
+/* 20. echoCall — eco visual atras de ganhos massivos, scale + decay */
+@keyframes echoCall {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.55;
+    filter: blur(0px);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.4);
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+/* 21. timeDistort — secao prestigio levemente distorce o tempo (loop longo) */
+@keyframes timeDistort {
+  0%, 100% {
+    filter: hue-rotate(0deg) blur(0);
+  }
+  20% {
+    filter: hue-rotate(-8deg) blur(0.3px);
+  }
+  50% {
+    filter: hue-rotate(14deg) blur(0.6px);
+  }
+  80% {
+    filter: hue-rotate(-6deg) blur(0.2px);
+  }
+}
+
 /* ============================================================ */
 /* APLICACOES NOS SELETORES EXISTENTES                           */
 /* ============================================================ */
@@ -504,6 +616,128 @@ $lfx-mist: rgba(13, 13, 18, 0.0);
 }
 
 /* ============================================================ */
+/* AMBIENT FX — efeitos ambientais adicionais (16-21)            */
+/* ============================================================ */
+
+/* psychicWhisper aplicado em hover dos cards: a "voz" so chega ao se aproximar */
+.upgrade-card:hover .upgrade-info,
+.upgrade-card:focus-within .upgrade-info {
+  animation: psychicWhisper 3.4s infinite ease-in-out;
+  will-change: text-shadow, filter;
+}
+
+/* voidVeinPulse: veias roxas vivas no tab-nav, atraves de ::after */
+.tab-nav {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(179, 136, 255, 0.18) 20%,
+        transparent 40%,
+        rgba(230, 57, 70, 0.10) 60%,
+        transparent 80%,
+        rgba(179, 136, 255, 0.16) 100%
+      );
+    background-size: 100% 200%;
+    mix-blend-mode: screen;
+    opacity: 0;
+    z-index: 0;
+    animation: voidVeinPulse 11s infinite ease-in-out;
+    will-change: opacity, background-position;
+  }
+
+  > * { position: relative; z-index: 1; }
+}
+
+/* ritualSigilFloat: sigilo arcano flutuando no hint-banner */
+.hint-banner {
+  position: relative;
+
+  &::before {
+    content: "\2726"; /* ✦ */
+    position: absolute;
+    top: 50%;
+    left: 0.4rem;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    color: $lfx-essence-glow;
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 10px $lfx-essence-glow-soft;
+    animation: ritualSigilFloat 8s infinite ease-in-out;
+    will-change: transform, opacity;
+    z-index: 0;
+  }
+
+  > * { position: relative; z-index: 1; }
+}
+
+/* auralBleed: gradient radial vermelho-sangue pulsando nas bordas do modal */
+.modal-overlay {
+  position: fixed;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        ellipse at center,
+        transparent 45%,
+        rgba(230, 57, 70, 0.12) 75%,
+        rgba(230, 57, 70, 0.28) 100%
+      );
+    mix-blend-mode: screen;
+    animation: auralBleed 5s infinite ease-in-out;
+    will-change: opacity, filter;
+    z-index: 0;
+  }
+
+  > * { position: relative; z-index: 1; }
+}
+
+/* echoCall: eco visual radial atras de click-floater tier-xl (ganhos massivos) */
+.click-floater.tier-xl {
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(230, 57, 70, 0.45) 0%,
+      rgba(230, 57, 70, 0.18) 35%,
+      transparent 70%
+    );
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: echoCall 1.2s ease-out 1;
+    will-change: transform, opacity, filter;
+    z-index: -1;
+  }
+}
+
+/* timeDistort: a area de prestigio distorce o tempo em ciclos longos */
+.prestige-section {
+  animation:
+    tentacleSlither 12s infinite ease-in-out,
+    timeDistort 48s infinite ease-in-out;
+  will-change: filter, transform;
+}
+
+/* ============================================================ */
 /* REDUCED MOTION — respeita preferencia do usuario              */
 /* ============================================================ */
 
@@ -516,6 +750,8 @@ $lfx-mist: rgba(13, 13, 18, 0.0);
   .upgrade-card .upgrade-name,
   .upgrade-card.bought-a .upgrade-glyph-fx,
   .upgrade-card.bought-b .upgrade-glyph-fx,
+  .upgrade-card:hover .upgrade-info,
+  .upgrade-card:focus-within .upgrade-info,
   .trophy-item.earned,
   .combo-display.dying,
   .prestige-section,
@@ -528,6 +764,10 @@ $lfx-mist: rgba(13, 13, 18, 0.0);
   .header::after,
   .essence-display,
   .click-floater,
+  .click-floater.tier-xl::before,
+  .tab-nav::after,
+  .hint-banner::before,
+  .modal-overlay::before,
   :host::before {
     animation-duration: 0.001s !important;
     animation-iteration-count: 1 !important;

@@ -152,7 +152,26 @@ export class AppComponent implements OnInit, OnDestroy {
   totalManualClicks = signal(0);
   totalPlaytime = signal(0);
   comboPulseParity = signal(false);
+  comboMilestoneParity = signal(false);
+  lastBoughtName = signal<string | null>(null);
+  lastBoughtParity = signal(false);
+  private boughtClearTimeout: any;
+  private flashBought(name: string): void {
+    if (this.boughtClearTimeout) clearTimeout(this.boughtClearTimeout);
+    this.lastBoughtName.set(name);
+    this.lastBoughtParity.update((v) => !v);
+    this.boughtClearTimeout = setTimeout(() => {
+      this.lastBoughtName.set(null);
+    }, 600);
+  }
+  fanfareTrophy = signal<{ icon: string; title: string } | null>(null);
+  private fanfareClearTimeout: any;
+  isPrestiging = signal(false);
+  private prestigeClearTimeout: any;
+  displayEssence = signal(0);
+  private essenceRafId: number | null = null;
   private comboResetTimeout: any;
+  private readonly COMBO_MILESTONES = new Set([10, 25, 50, 100, 200, 500, 1000]);
 
   activeToasts = signal<Toast[]>([]);
   private nextToastId = 0;
@@ -182,6 +201,22 @@ export class AppComponent implements OnInit, OnDestroy {
       return null;
     }
   }
+  private triggerPrestigeCinematic(): void {
+    if (this.prestigeClearTimeout) clearTimeout(this.prestigeClearTimeout);
+    this.isPrestiging.set(true);
+    this.prestigeClearTimeout = setTimeout(() => {
+      this.isPrestiging.set(false);
+    }, 1200);
+  }
+
+  private triggerTrophyFanfare(icon: string, title: string): void {
+    if (this.fanfareClearTimeout) clearTimeout(this.fanfareClearTimeout);
+    this.fanfareTrophy.set({ icon, title });
+    this.fanfareClearTimeout = setTimeout(() => {
+      this.fanfareTrophy.set(null);
+    }, 2100);
+  }
+
   private playTrophyChime(): void {
     const ctx = this.getAudioContext();
     if (!ctx) return;
@@ -423,6 +458,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadGame();
     this.startGameLoop();
+    this.displayEssence.set(Math.floor(this.essence()));
+    this.startEssenceTween();
   }
 
   ngOnDestroy(): void {
@@ -430,10 +467,32 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.comboResetTimeout) {
       clearTimeout(this.comboResetTimeout);
     }
+    if (this.essenceRafId !== null) {
+      cancelAnimationFrame(this.essenceRafId);
+    }
+    if (this.boughtClearTimeout) clearTimeout(this.boughtClearTimeout);
+    if (this.fanfareClearTimeout) clearTimeout(this.fanfareClearTimeout);
+    if (this.prestigeClearTimeout) clearTimeout(this.prestigeClearTimeout);
     this.activeToasts().forEach((toast) => {
       if (toast.timeoutId) clearTimeout(toast.timeoutId);
     });
     this.saveGame();
+  }
+
+  private startEssenceTween(): void {
+    const step = () => {
+      const target = Math.floor(this.essence());
+      const current = this.displayEssence();
+      if (current !== target) {
+        const diff = target - current;
+        // Aproxima 18% por frame; minimo 1 unidade quando perto.
+        const stepSize = Math.max(1, Math.ceil(Math.abs(diff) * 0.18));
+        const delta = diff > 0 ? Math.min(stepSize, diff) : Math.max(-stepSize, diff);
+        this.displayEssence.set(current + delta);
+      }
+      this.essenceRafId = requestAnimationFrame(step);
+    };
+    this.essenceRafId = requestAnimationFrame(step);
   }
 
   private encodeToBase64(str: string): string {
@@ -578,6 +637,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.totalManualClicks.update((v) => v + 1);
     this.comboCount.update((v) => v + 1);
     this.comboPulseParity.update((v) => !v);
+
+    if (this.COMBO_MILESTONES.has(this.comboCount())) {
+      this.comboMilestoneParity.update((v) => !v);
+    }
 
     if (this.comboCount() > this.highestCombo()) {
       this.highestCombo.set(this.comboCount());
@@ -969,6 +1032,7 @@ export class AppComponent implements OnInit, OnDestroy {
         false
       )} Essência Ancestral.`,
       () => {
+        this.triggerPrestigeCinematic();
         this.prestigeEssence.update((v) => v + gain);
         this.prestigeLevel.update((v) => v + 1);
 
@@ -1197,6 +1261,7 @@ export class AppComponent implements OnInit, OnDestroy {
         up.amount += actualMultiplier;
         up.cost = finalCost;
         this.essence.update((v) => v - totalCostExact);
+        this.flashBought(up.name);
         return upgradesCopy;
       });
     } else {
@@ -1229,6 +1294,7 @@ export class AppComponent implements OnInit, OnDestroy {
         up.amount += actualMultiplier;
         up.cost = finalCost;
         this.essence.update((v) => v - totalCostExact);
+        this.flashBought(up.name);
         return clickUpgradesCopy;
       });
     }
@@ -1330,6 +1396,7 @@ export class AppComponent implements OnInit, OnDestroy {
         trophy.earned = true;
         this.pushToast(`🏆 ${trophy.title}`, trophy.icon, 10000);
         this.playTrophyChime();
+        this.triggerTrophyFanfare(trophy.icon, trophy.title);
         return updatedTrophies;
       }
       return currentTrophies;

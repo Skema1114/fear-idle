@@ -1,7 +1,7 @@
 <div class="header">
   <span class="essence-display"
     >🕯️ Essência:
-    <span class="value">{{ formatNumber(darkEssence()) }}</span></span
+    <span class="value essence-tick">{{ formatNumber(displayEssence()) }}</span></span
   >
   <span class="essence-display"
     >💰 Nesta Vida:
@@ -83,6 +83,8 @@
       *ngIf="comboCount() > 0"
       [class.pulse-a]="comboPulseParity()"
       [class.pulse-b]="!comboPulseParity()"
+      [class.milestone-a]="comboMilestoneParity()"
+      [class.milestone-b]="!comboMilestoneParity()"
     >
       <span>COMBO {{ formatNumber(comboCount()) }}x</span>
       <span>| x{{ formatNumber(comboMultiplier(), true) }}</span>
@@ -186,6 +188,8 @@
           trackBy: trackByUpgradeName;
           let i = index
         "
+        [class.bought-a]="lastBoughtName() === up.name && lastBoughtParity()"
+        [class.bought-b]="lastBoughtName() === up.name && !lastBoughtParity()"
       >
         <img
           [src]="up.image || placeholderIcon"
@@ -246,6 +250,8 @@
           trackBy: trackByClickUpgradeName;
           let i = index
         "
+        [class.bought-a]="lastBoughtName() === up.name && lastBoughtParity()"
+        [class.bought-b]="lastBoughtName() === up.name && !lastBoughtParity()"
       >
         <img
           [src]="up.image || placeholderIcon"
@@ -628,3 +634,11 @@
     <span class="toast-message">{{ toast.message }}</span>
   </div>
 </div>
+
+<div class="trophy-fanfare" *ngIf="fanfareTrophy() as fanfare" aria-hidden="true">
+  <div class="fanfare-rays"></div>
+  <div class="fanfare-icon">{{ fanfare.icon }}</div>
+  <div class="fanfare-title">{{ fanfare.title }}</div>
+</div>
+
+<div class="prestige-cinematic" *ngIf="isPrestiging()" aria-hidden="true"></div>

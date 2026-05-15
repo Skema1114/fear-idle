@@ -1,0 +1,537 @@
+@use "sass:color";
+
+/* ============================================================ */
+/* LOVECRAFT FX — Efeitos visuais de horror cosmico              */
+/* Standalone: nao depende de variaveis externas.                */
+/* Importe via @use 'lovecraft-fx'; em app.component.scss        */
+/* ============================================================ */
+
+/* Paleta local (hardcoded para nao colidir com $vars do consumer) */
+$lfx-blood-red: #e63946;
+$lfx-blood-red-soft: rgba(230, 57, 70, 0.4);
+$lfx-blood-red-faint: rgba(230, 57, 70, 0.12);
+$lfx-shadow-purple: #b388ff;
+$lfx-shadow-purple-soft: rgba(179, 136, 255, 0.35);
+$lfx-shadow-purple-faint: rgba(179, 136, 255, 0.08);
+$lfx-spectral-green: #69f0ae;
+$lfx-spectral-green-soft: rgba(105, 240, 174, 0.45);
+$lfx-essence-glow: #ffd54f;
+$lfx-essence-glow-soft: rgba(255, 213, 79, 0.5);
+$lfx-prestige-blue: #82b1ff;
+$lfx-light-ghost: #e8e8f0;
+$lfx-void: #0d0d12;
+$lfx-mist: rgba(13, 13, 18, 0.0);
+
+/* ============================================================ */
+/* KEYFRAMES                                                     */
+/* ============================================================ */
+
+/* 1. eldritchWaver — letras oscilam sutilmente, sensacao de instabilidade */
+@keyframes eldritchWaver {
+  0%, 100% {
+    transform: translateX(0);
+    letter-spacing: normal;
+  }
+  25% {
+    transform: translateX(-1.2px);
+    letter-spacing: 0.4px;
+  }
+  50% {
+    transform: translateX(1.5px);
+    letter-spacing: 0.2px;
+  }
+  75% {
+    transform: translateX(-0.8px);
+    letter-spacing: 0.6px;
+  }
+}
+
+/* 2. voidPulse — respiracao lenta do card, algo vivo dentro */
+@keyframes voidPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 rgba(0, 0, 0, 0),
+      inset 0 0 0 rgba(179, 136, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(179, 136, 255, 0.08),
+      inset 0 0 22px rgba(179, 136, 255, 0.04);
+  }
+}
+
+/* 3. eyeBlink — olho que abre e fecha, escala vertical */
+@keyframes eyeBlink {
+  0%, 92%, 100% {
+    transform: scaleY(1);
+    opacity: 0.22;
+  }
+  94% {
+    transform: scaleY(0.05);
+    opacity: 0.6;
+  }
+  96% {
+    transform: scaleY(1);
+    opacity: 0.35;
+  }
+}
+
+/* 4. tentacleSlither — gradient ondula na borda, ilusao de movimento serpentino */
+@keyframes tentacleSlither {
+  0%, 100% {
+    filter: hue-rotate(0deg);
+    transform: translateX(0);
+  }
+  50% {
+    filter: hue-rotate(20deg);
+    transform: translateX(2px);
+  }
+}
+
+/* 5. bloodDrip — gota descendo via transform, ciclo longo e sutil */
+@keyframes bloodDrip {
+  0% {
+    transform: translateY(-8px) scaleY(0.6);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  80% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(120vh) scaleY(1.4);
+    opacity: 0;
+  }
+}
+
+/* 6. ancientSigil — simbolo arcano girando em background */
+@keyframes ancientSigil {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* 7. runeFlicker — borda piscando irregular como rune iluminada */
+@keyframes runeFlicker {
+  0%, 19%, 21%, 49%, 51%, 79%, 81%, 100% {
+    border-color: rgba(255, 213, 79, 0.85);
+    box-shadow: 0 0 12px rgba(255, 213, 79, 0.4);
+  }
+  20%, 50%, 80% {
+    border-color: rgba(255, 213, 79, 0.25);
+    box-shadow: 0 0 4px rgba(255, 213, 79, 0.1);
+  }
+}
+
+/* 8. sanityFlicker — combo dissipando, opacity caotica antes do fim */
+@keyframes sanityFlicker {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  20% {
+    opacity: 0.3;
+    transform: scale(0.98) translateX(-2px);
+  }
+  40% {
+    opacity: 0.8;
+    transform: scale(1.02) translateX(3px);
+  }
+  60% {
+    opacity: 0.1;
+    transform: scale(0.94);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+    filter: blur(6px);
+  }
+}
+
+/* 9. cosmicMist — neblina deslizando, overlay fixo sutil */
+@keyframes cosmicMist {
+  0% {
+    transform: translate3d(-25%, -10%, 0) rotate(0deg);
+    opacity: 0.08;
+  }
+  50% {
+    opacity: 0.14;
+  }
+  100% {
+    transform: translate3d(25%, 10%, 0) rotate(2deg);
+    opacity: 0.08;
+  }
+}
+
+/* 10. whisperText — text-shadow multiplo deslocando, sussurros visuais */
+@keyframes whisperText {
+  0%, 100% {
+    text-shadow:
+      0 0 4px rgba(179, 136, 255, 0.5),
+      1px 0 0 rgba(230, 57, 70, 0.15),
+      -1px 0 0 rgba(105, 240, 174, 0.15);
+  }
+  33% {
+    text-shadow:
+      0 0 6px rgba(179, 136, 255, 0.6),
+      -2px 0 0 rgba(230, 57, 70, 0.25),
+      2px 0 0 rgba(105, 240, 174, 0.2);
+  }
+  66% {
+    text-shadow:
+      0 0 5px rgba(179, 136, 255, 0.55),
+      2px 1px 0 rgba(230, 57, 70, 0.2),
+      -2px -1px 0 rgba(105, 240, 174, 0.18);
+  }
+}
+
+/* 11. voidStare — olho central do prestige pulsando lentamente */
+@keyframes voidStare {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.06;
+    filter: blur(2px);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.14;
+    filter: blur(1px);
+  }
+}
+
+/* 12. glyphSpawn — simbolos arcanos surgindo brevemente nos cards comprados */
+@keyframes glyphSpawn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4) rotate(-30deg);
+  }
+  20% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
+  }
+  60% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1) rotate(15deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotate(40deg);
+  }
+}
+
+/* 13. paranoidShake — tremor curto ao desbloquear trofeu */
+@keyframes paranoidShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-1px, 1px); }
+  40% { transform: translate(1px, -1px); }
+  60% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+}
+
+/* 14. ichorBleed — sangue cosmico escorrendo no fundo do header */
+@keyframes ichorBleed {
+  0%, 100% {
+    opacity: 0.0;
+    transform: translateY(-100%);
+  }
+  20% {
+    opacity: 0.25;
+  }
+  80% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* 15. flickerEssence — bonus: numeros do header pulsando como vela */
+@keyframes flickerEssence {
+  0%, 100% { opacity: 1; }
+  47% { opacity: 1; }
+  48% { opacity: 0.6; }
+  49% { opacity: 1; }
+  73% { opacity: 0.85; }
+  74% { opacity: 1; }
+}
+
+/* ============================================================ */
+/* APLICACOES NOS SELETORES EXISTENTES                           */
+/* ============================================================ */
+
+/* Titulos de secao: oscilacao eldritch + ocasional whisper */
+.section-title {
+  animation: eldritchWaver 6s infinite ease-in-out;
+  will-change: transform;
+}
+
+/* Titulo grande do jogo: oscila e sussurra */
+.intro-section h1 {
+  animation:
+    eldritchWaver 8s infinite ease-in-out,
+    whisperText 5s infinite ease-in-out;
+  will-change: transform, text-shadow;
+}
+
+/* Titulo do modal: sussurros visuais constantes */
+.modal-title {
+  animation:
+    whisperText 4s infinite ease-in-out,
+    eldritchWaver 7s infinite ease-in-out;
+}
+
+/* Cards de upgrade: respiracao void + olho em pseudo ::after (nao colide com ::before do shine) */
+.upgrade-card {
+  animation: voidPulse 8s infinite ease-in-out;
+  position: relative;
+
+  /* Olho que pisca, posicionado no canto superior direito */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #{$lfx-blood-red} 0%, transparent 70%);
+    opacity: 0.22;
+    pointer-events: none;
+    transform-origin: center;
+    animation: eyeBlink 14s infinite ease-in-out;
+    z-index: 2;
+  }
+
+  /* Variacao do delay por nth-child para que olhos nao pisquem em sincronia */
+  &:nth-child(3n) {
+    &::after { animation-delay: -3s; animation-duration: 17s; }
+  }
+  &:nth-child(3n + 1) {
+    &::after { animation-delay: -7s; animation-duration: 13s; }
+  }
+  &:nth-child(3n + 2) {
+    &::after { animation-delay: -11s; animation-duration: 16s; }
+  }
+}
+
+/* Nome do upgrade: leve oscilacao para reforcar mood */
+.upgrade-card .upgrade-name {
+  display: inline-block;
+  animation: eldritchWaver 9s infinite ease-in-out;
+}
+
+/* Cards comprados (.bought-a/.bought-b): glyph arcano que surge periodicamente */
+.upgrade-card.bought-a,
+.upgrade-card.bought-b {
+  .upgrade-glyph-fx {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.2rem;
+    color: $lfx-shadow-purple;
+    pointer-events: none;
+    opacity: 0;
+    animation: glyphSpawn 9s infinite ease-in-out;
+    z-index: 1;
+    text-shadow: 0 0 12px $lfx-shadow-purple-soft;
+  }
+
+  /* Se nao houver elemento explicito, usamos pseudo wrapper */
+  &::before {
+    /* Nao sobrescrevemos: app.component.scss ja define ::before. */
+  }
+}
+
+/* Trofeu desbloqueado: rune piscando + leve shake no momento da entrada */
+.trophy-item.earned {
+  animation:
+    runeFlicker 4s infinite steps(1, end),
+    paranoidShake 0.22s ease-out 1;
+}
+
+/* Combo dissipando — adicionar classe .dying via TS antes de remover */
+.combo-display.dying {
+  animation: sanityFlicker 0.6s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Prestige section: tentaculo na borda + sigilo de fundo + olho central */
+.prestige-section {
+  position: relative;
+  animation: tentacleSlither 12s infinite ease-in-out;
+  overflow: hidden;
+
+  /* Sigilo arcano girando ao fundo */
+  &::before {
+    content: "\262F"; /* ☯ */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22rem;
+    color: $lfx-shadow-purple;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+    animation: ancientSigil 90s linear infinite;
+    will-change: transform;
+  }
+
+  /* Olho cosmico no centro pulsando */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      $lfx-blood-red 0%,
+      transparent 55%
+    );
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: voidStare 7s infinite ease-in-out;
+    will-change: transform, opacity;
+  }
+
+  /* Garantir que conteudo interno fique acima */
+  > * { position: relative; z-index: 1; }
+}
+
+/* Botao despertar: ondulacao serpentina sutil */
+.prestige-button {
+  animation: tentacleSlither 6s infinite ease-in-out;
+}
+
+/* Botao canalizar: nada agressivo, apenas voidPulse leve para sentir "vivo" */
+.click-button {
+  animation: voidPulse 5s infinite ease-in-out;
+}
+
+/* Header: gota de sangue + ichor escorrendo no fundo */
+.header {
+  position: relative;
+  overflow: hidden;
+
+  /* Gota descendo no canto direito */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 14%;
+    width: 3px;
+    height: 14px;
+    background: linear-gradient(to bottom, $lfx-blood-red, transparent);
+    border-radius: 0 0 50% 50%;
+    pointer-events: none;
+    opacity: 0;
+    animation: bloodDrip 25s infinite ease-in;
+    z-index: 0;
+    will-change: transform, opacity;
+  }
+
+  /* Ichor escorrendo no fundo do header */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      $lfx-blood-red-faint 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+    opacity: 0;
+    animation: ichorBleed 30s infinite ease-in-out;
+    z-index: 0;
+    will-change: transform, opacity;
+  }
+
+  > * { position: relative; z-index: 1; }
+}
+
+/* Essence no header: leve flicker tipo vela */
+.essence-display {
+  animation: flickerEssence 7s infinite ease-in-out;
+}
+
+/* Numeros voadores: trail sutil de sussurro */
+.click-floater {
+  animation-name: whisperText;
+  animation-duration: 1.2s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  /* Nao sobrescreve a animacao principal do componente, apenas adiciona text-shadow */
+}
+
+/* ============================================================ */
+/* OVERLAY GLOBAL — neblina cosmica no body                     */
+/* ============================================================ */
+
+/* Aplica overlay de neblina no proprio host do component */
+:host {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(179, 136, 255, 0.06), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(230, 57, 70, 0.05), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(105, 240, 174, 0.03), transparent 50%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.08;
+    animation: cosmicMist 45s infinite ease-in-out alternate;
+    will-change: transform, opacity;
+  }
+}
+
+/* ============================================================ */
+/* REDUCED MOTION — respeita preferencia do usuario              */
+/* ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .section-title,
+  .intro-section h1,
+  .modal-title,
+  .upgrade-card,
+  .upgrade-card::after,
+  .upgrade-card .upgrade-name,
+  .upgrade-card.bought-a .upgrade-glyph-fx,
+  .upgrade-card.bought-b .upgrade-glyph-fx,
+  .trophy-item.earned,
+  .combo-display.dying,
+  .prestige-section,
+  .prestige-section::before,
+  .prestige-section::after,
+  .prestige-button,
+  .click-button,
+  .header,
+  .header::before,
+  .header::after,
+  .essence-display,
+  .click-floater,
+  :host::before {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition: none !important;
+  }
+}

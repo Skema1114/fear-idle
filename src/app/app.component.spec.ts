@@ -46,6 +46,11 @@ describe('AppComponent', () => {
   });
 
   describe('manualClick', () => {
+    beforeEach(() => {
+      // Esvazia trofeus para isolar a matematica do click (trofeus dao bonus).
+      component.trophiesList.set([]);
+    });
+
     it('increments essence on click (combo already counts on first hit)', () => {
       component.manualClick();
       // combo=1 → 1 * 1.02 * 1 = 1.02
@@ -113,6 +118,53 @@ describe('AppComponent', () => {
       expect(component.calculatePrestigeGain()).toBe(2);
       component.totalEssence.set(270_000_000); // cbrt(27) = 3
       expect(component.calculatePrestigeGain()).toBe(3);
+    });
+
+    it('threshold scales by 1.5^prestigeLevel', () => {
+      expect(component.prestigeThreshold()).toBeCloseTo(10_000_000, 0);
+      component.prestigeLevel.set(1);
+      expect(component.prestigeThreshold()).toBeCloseTo(15_000_000, 0);
+      component.prestigeLevel.set(5);
+      expect(component.prestigeThreshold()).toBeCloseTo(10_000_000 * Math.pow(1.5, 5), 0);
+    });
+  });
+
+  describe('trophy bonus', () => {
+    it('adds 0.5% global per earned trophy', () => {
+      const all = component.trophiesList().map((t) => ({ ...t, earned: true }));
+      component.trophiesList.set(all);
+      const expected = 1 + 0.005 * all.length;
+      expect(component.trophyBonus()).toBeCloseTo(expected, 5);
+      expect(component.globalMultiplier()).toBeCloseTo(expected, 5);
+    });
+
+    it('is 1 when no trophies earned', () => {
+      component.trophiesList.set([]);
+      expect(component.trophyBonus()).toBe(1);
+    });
+  });
+
+  describe('multiplier safety', () => {
+    it('clamps globalMultiplier to finite value even with extreme amounts', () => {
+      const prestige = component.prestigeUpgradesList();
+      const trono = prestige.findIndex((u) => u.name === 'Trono do Caos (Global)');
+      expect(trono).toBeGreaterThanOrEqual(0);
+      const copy = [...prestige];
+      copy[trono] = { ...copy[trono], amount: 1000 };
+      component.prestigeUpgradesList.set(copy);
+      const mult = component.globalMultiplier();
+      expect(Number.isFinite(mult)).toBe(true);
+      expect(mult).toBeGreaterThan(1);
+    });
+
+    it('preserves full power below soft cap (amount=10)', () => {
+      const prestige = component.prestigeUpgradesList();
+      const idx = prestige.findIndex((u) => u.name === 'Essência Primordial (Global)');
+      const copy = [...prestige];
+      copy[idx] = { ...copy[idx], amount: 10 };
+      component.prestigeUpgradesList.set(copy);
+      // 1.5^10 * (1 + 0 * 0.1) = 57.665
+      expect(component.globalMultiplier()).toBeCloseTo(Math.pow(1.5, 10), 3);
     });
   });
 

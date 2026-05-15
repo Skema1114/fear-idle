@@ -53,6 +53,41 @@ export class AppComponent implements OnInit, OnDestroy {
     this.activeTab.set(tab);
   }
 
+  hintsDismissed = signal<boolean>(
+    typeof localStorage !== 'undefined' &&
+      localStorage.getItem('fearIdleHintsDismissed') === '1'
+  );
+
+  dismissHints(): void {
+    this.hintsDismissed.set(true);
+    try {
+      localStorage.setItem('fearIdleHintsDismissed', '1');
+    } catch {
+      /* localStorage indisponivel — segue sem persistir */
+    }
+  }
+
+  currentHint = computed<string | null>(() => {
+    if (this.hintsDismissed()) return null;
+    if (this.prestigeLevel() >= 1) return null;
+    if (this.totalManualClicks() === 0) {
+      return 'Clique em "Canalizar Essência" para começar sua jornada.';
+    }
+    if (this.totalAutoUpgradesBought() === 0 && this.essence() >= 10) {
+      return 'Abra a aba Automáticas e compre "Vela Sussurrante" para gerar essência sozinho.';
+    }
+    if (this.totalClickUpgradesBought() === 0 && this.essence() >= 50) {
+      return 'Aba Canalização: aprimore seus cliques com upgrades manuais.';
+    }
+    if (this.comboCount() === 0 && this.totalManualClicks() < 20) {
+      return 'Cliques rápidos seguidos formam um combo — cada hit multiplica o ganho em +2%.';
+    }
+    if (this.calculatePrestigeGain() >= 1) {
+      return 'Você pode Despertar o Legado! Resete o progresso por bônus permanentes.';
+    }
+    return null;
+  });
+
   showImportModal: boolean = false;
   importedSaveData: string = '';
 
@@ -94,54 +129,121 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly OFFLINE_CAP_SECONDS = 8 * 60 * 60;
   private readonly AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000;
   private readonly TROPHY_CHECK_INTERVAL_MS = 1000;
+  private readonly MULTIPLIER_SOFT_CAP = 50;
+  private readonly MULTIPLIER_HARD_CAP = 1e100;
+
+  readonly placeholderIcon =
+    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'><rect width='56' height='56' rx='8' fill='%231c1c28'/><text x='28' y='38' text-anchor='middle' font-family='serif' font-size='32' fill='%23e8e8f0'>?</text></svg>";
+
+  private audioContext: AudioContext | null = null;
+  private getAudioContext(): AudioContext | null {
+    if (this.audioContext) return this.audioContext;
+    const Ctor =
+      (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctor) return null;
+    try {
+      this.audioContext = new Ctor();
+      return this.audioContext;
+    } catch {
+      return null;
+    }
+  }
+  private playTrophyChime(): void {
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.15, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+      gain.connect(ctx.destination);
+      [880, 1320, 1760].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + i * 0.06);
+        osc.connect(gain);
+        osc.start(now + i * 0.06);
+        osc.stop(now + 0.6);
+      });
+    } catch {
+      /* silently fail */
+    }
+  }
+
+  private dampenedPow(base: number, amount: number): number {
+    if (amount <= this.MULTIPLIER_SOFT_CAP) {
+      return Math.pow(base, amount);
+    }
+    const overflow = amount - this.MULTIPLIER_SOFT_CAP;
+    const effective = this.MULTIPLIER_SOFT_CAP + Math.sqrt(overflow);
+    return Math.pow(base, effective);
+  }
+
+  private clampMultiplier(value: number): number {
+    if (!Number.isFinite(value) || value < 0) return 1;
+    return Math.min(value, this.MULTIPLIER_HARD_CAP);
+  }
   clickFloaters = signal<{ id: number; value: string; x: number; y: number }[]>(
     []
   );
   private nextFloaterId = 0;
 
+  readonly TROPHY_BONUS_PER_EARNED = 0.005;
+  trophyBonus = computed(
+    () => 1 + this.TROPHY_BONUS_PER_EARNED * this.unlockedTrophiesCount()
+  );
+
   globalMultiplier = computed(() => {
     let multiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'global') {
-        multiplier *= Math.pow(up.multiplierValue, up.amount);
+        multiplier *= this.dampenedPow(up.multiplierValue, up.amount);
       }
     });
     multiplier *= 1 + this.prestigeLevel() * 0.1;
-
-    return multiplier;
+    multiplier *= this.trophyBonus();
+    return this.clampMultiplier(multiplier);
   });
 
   clickValue = computed(() => {
-    let base = this.baseClickValue();
+    const base = this.baseClickValue();
     let clickUpgradeMultiplier = 1;
     this.clickUpgradesList().forEach((up) => {
-      clickUpgradeMultiplier *= Math.pow(1 + up.clickMultiplier, up.amount);
+      clickUpgradeMultiplier *= this.dampenedPow(
+        1 + up.clickMultiplier,
+        up.amount
+      );
     });
     let globalClickPrestigeMultiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'click') {
-        globalClickPrestigeMultiplier *= Math.pow(
+        globalClickPrestigeMultiplier *= this.dampenedPow(
           1 + up.multiplierValue,
           up.amount
         );
       }
     });
-
-    return base * clickUpgradeMultiplier * globalClickPrestigeMultiplier;
+    return this.clampMultiplier(
+      base * clickUpgradeMultiplier * globalClickPrestigeMultiplier
+    );
   });
 
   dpsValue = computed(() => {
-    let baseDps = this.upgradesList().reduce(
+    const baseDps = this.upgradesList().reduce(
       (acc, up) => acc + up.dps * up.amount,
       0
     );
     let globalDpsPrestigeMultiplier = 1;
     this.prestigeUpgradesList().forEach((up) => {
       if (up.type === 'dps') {
-        globalDpsPrestigeMultiplier *= Math.pow(up.multiplierValue, up.amount);
+        globalDpsPrestigeMultiplier *= this.dampenedPow(
+          up.multiplierValue,
+          up.amount
+        );
       }
     });
-    return baseDps * globalDpsPrestigeMultiplier;
+    return this.clampMultiplier(baseDps * globalDpsPrestigeMultiplier);
   });
 
   essencePerSecond = computed(() => this.dpsValue() * this.globalMultiplier());
@@ -737,14 +839,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this.showStatsModal = false;
   }
 
-  calculatePrestigeGain(): number {
-    const prestigeThreshold = 10_000_000;
-    if (this.totalEssence() < prestigeThreshold) return 0;
+  private readonly PRESTIGE_BASE_THRESHOLD = 10_000_000;
+  private readonly PRESTIGE_THRESHOLD_GROWTH = 1.5;
 
-    const gain = Math.floor(
-      Math.cbrt(this.totalEssence() / prestigeThreshold)
-    );
-    return gain;
+  prestigeThreshold = computed(
+    () =>
+      this.PRESTIGE_BASE_THRESHOLD *
+      Math.pow(this.PRESTIGE_THRESHOLD_GROWTH, this.prestigeLevel())
+  );
+
+  calculatePrestigeGain(): number {
+    const threshold = this.prestigeThreshold();
+    if (this.totalEssence() < threshold) return 0;
+    return Math.floor(Math.cbrt(this.totalEssence() / threshold));
   }
 
   prestigeGame(): void {
@@ -1164,10 +1271,7 @@ export class AppComponent implements OnInit, OnDestroy {
           );
         }, 10000);
 
-        const audio = new Audio(
-          'https://assets.mixkit.co/sfx/preview/mixkit-fairy-win-sound-2011.mp3'
-        );
-        audio.play().catch(() => {});
+        this.playTrophyChime();
         return updatedTrophies;
       }
       return currentTrophies;

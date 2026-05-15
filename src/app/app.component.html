@@ -40,6 +40,17 @@
     </p>
   </div>
 
+  <div class="hint-banner" *ngIf="currentHint() as hint">
+    <span class="hint-icon" aria-hidden="true">💡</span>
+    <span class="hint-text">{{ hint }}</span>
+    <button
+      type="button"
+      class="hint-dismiss"
+      (click)="dismissHints()"
+      aria-label="Dispensar dicas"
+    >×</button>
+  </div>
+
   <div class="actions-section">
     <div class="click-area">
       <button class="primary-button click-button" (click)="manualClick()">
@@ -165,7 +176,7 @@
         "
       >
         <img
-          [src]="up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'"
+          [src]="up.image || placeholderIcon"
           [alt]="up.name"
           width="56"
           height="56"
@@ -225,7 +236,7 @@
         "
       >
         <img
-          [src]="up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'"
+          [src]="up.image || placeholderIcon"
           [alt]="up.name"
           width="56"
           height="56"
@@ -301,6 +312,9 @@
         formatNumber(globalMultiplier(), true)
       }}
     </p>
+    <p class="prestige-threshold">
+      Próximo Despertar requer: {{ formatNumber(prestigeThreshold()) }} essência total
+    </p>
 
     <button
       class="primary-button prestige-button"
@@ -329,7 +343,7 @@
         >
           <img
             [src]="
-              up.image || 'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'
+              up.image || placeholderIcon
             "
             [alt]="up.name"
             width="56"
@@ -436,7 +450,7 @@
     <img
       [src]="
         selectedUpgrade?.image ||
-        'https://placehold.co/56x56/1c1c28/e8e8f0?text=?'
+        placeholderIcon
       "
       [alt]="selectedUpgrade?.name"
       width="64"
@@ -553,6 +567,10 @@
         <span class="stat-value"
           >{{ unlockedTrophiesCount() }} / {{ trophiesList().length }}</span
         >
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Bônus de Troféus</span>
+        <span class="stat-value">+{{ formatNumber((trophyBonus() - 1) * 100, true) }}%</span>
       </div>
     </div>
     <button class="modal-close-button" (click)="closeStatsModal()">

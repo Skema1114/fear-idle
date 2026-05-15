@@ -397,7 +397,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showImportModal">
-  <div class="modal-content">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">Importar Save</h3>
     <p class="modal-description">Cole seu save aqui:</p>
     <textarea class="save-textarea" [(ngModel)]="importedSaveData"></textarea>
@@ -411,7 +411,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showExportTextModal">
-  <div class="modal-content">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">Código de Save</h3>
     <p class="modal-description">
       Copie o texto abaixo e salve-o em um local seguro:
@@ -433,7 +433,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showTrophyDetailsModal">
-  <div class="modal-content">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">
       {{ selectedTrophy?.icon }} {{ selectedTrophy?.title }}
     </h3>
@@ -445,7 +445,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showUpgradeDetailsModal">
-  <div class="modal-content">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">{{ selectedUpgrade?.name }}</h3>
     <img
       [src]="
@@ -499,7 +499,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showStatsModal">
-  <div class="modal-content stats-modal-content">
+  <div class="modal-content stats-modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">Estatísticas do Culto</h3>
     <div class="stats-grid">
       <div class="stat-item">
@@ -580,7 +580,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showAlertModal">
-  <div class="modal-content">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">Aviso</h3>
     <p class="modal-description">{{ alertModalMessage }}</p>
     <button class="modal-close-button" (click)="closeAlert()">OK</button>
@@ -588,7 +588,7 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showConfirmModal">
-  <div class="modal-content">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h3 class="modal-title">Confirmação</h3>
     <p class="modal-description">{{ confirmModalMessage }}</p>
     <div class="modal-actions">

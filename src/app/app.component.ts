@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
+  HostListener,
   inject,
   isDevMode,
   OnDestroy,
@@ -325,6 +326,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.showAlertModal) this.closeAlert();
+    else if (this.showConfirmModal) this.cancelConfirm();
+    else if (this.showTrophyDetailsModal) this.closeTrophyDetailsModal();
+    else if (this.showUpgradeDetailsModal) this.closeUpgradeDetailsModal();
+    else if (this.showStatsModal) this.closeStatsModal();
+    else if (this.showExportTextModal) this.showExportTextModal = false;
+    else if (this.showImportModal) this.showImportModal = false;
+  }
+
   showAlert(message: string): void {
     this.alertModalMessage = message;
     this.showAlertModal = true;
@@ -573,6 +585,7 @@ export class AppComponent implements OnInit, OnDestroy {
       prestigeUpgradesList: this.prestigeUpgradesList(),
       totalPlaytime: this.totalPlaytime(),
       lastSavedAt: Date.now(),
+      saveVersion: this.SAVE_VERSION,
     };
     return this.serializeWithChecksum(JSON.stringify(gameState));
   }
@@ -683,7 +696,7 @@ export class AppComponent implements OnInit, OnDestroy {
           throw new Error('Save corrompido ou de formato antigo/inválido.');
         }
 
-        const gameState = JSON.parse(decodedData);
+        const gameState = this.migrateGameState(JSON.parse(decodedData));
 
         if (
           typeof gameState.essence !== 'number' ||
@@ -716,6 +729,25 @@ export class AppComponent implements OnInit, OnDestroy {
     return typeof value === 'number' && isFinite(value) && value >= 0;
   }
 
+  private readonly MAX_IMPORT_AMOUNT = 1e9;
+  private readonly MAX_IMPORT_PRESTIGE_LEVEL = 1e5;
+  private readonly SAVE_VERSION = 2;
+
+  private migrateGameState(gameState: any): any {
+    const v = typeof gameState.saveVersion === 'number' ? gameState.saveVersion : 1;
+    if (v > this.SAVE_VERSION) {
+      throw new Error(
+        `Save de versão ${v} é mais recente que a suportada (${this.SAVE_VERSION}). Atualize o jogo.`
+      );
+    }
+    // v1 -> v2: nenhuma transformacao necessaria. Campos novos
+    // (lastSavedAt, etc) sao tratados com fallback no applyGameState.
+    return gameState;
+  }
+  private isBoundedNumber(value: unknown, max: number): value is number {
+    return this.isSafeNumber(value) && value <= max;
+  }
+
   importSave(): void {
     if (!this.importedSaveData) {
       this.showAlert('Por favor, cole os dados do save no campo de texto.');
@@ -724,7 +756,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     try {
       const decodedData = this.deserializeWithChecksum(this.importedSaveData);
-      const gameState = JSON.parse(decodedData);
+      const gameState = this.migrateGameState(JSON.parse(decodedData));
 
       if (
         !this.isSafeNumber(gameState.essence) ||
@@ -741,13 +773,16 @@ export class AppComponent implements OnInit, OnDestroy {
         !this.isSafeNumber(gameState.highestCombo) ||
         !this.isSafeNumber(gameState.totalManualClicks) ||
         !this.isSafeNumber(gameState.prestigeEssence) ||
-        !this.isSafeNumber(gameState.prestigeLevel) ||
+        !this.isBoundedNumber(
+          gameState.prestigeLevel,
+          this.MAX_IMPORT_PRESTIGE_LEVEL
+        ) ||
         !Array.isArray(gameState.clickUpgradesList) ||
         !Array.isArray(gameState.prestigeUpgradesList) ||
         !this.isSafeNumber(gameState.totalPlaytime)
       ) {
         throw new Error(
-          'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes ou corrompidas.'
+          'Dados de save inválidos: propriedades de clique/combo/prestígio/tempo de jogo ausentes, corrompidas ou fora dos limites.'
         );
       }
 
@@ -756,11 +791,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.name !== 'string' ||
           !this.isSafeNumber(up.cost) ||
           !this.isSafeNumber(up.dps) ||
-          !this.isSafeNumber(up.amount) ||
+          !this.isBoundedNumber(up.amount, this.MAX_IMPORT_AMOUNT) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade automático com formato incorreto ou descrição ausente.'
+            'Dados de save inválidos: upgrade automático com formato incorreto, descrição ausente ou amount fora dos limites.'
           );
         }
       }
@@ -770,11 +805,11 @@ export class AppComponent implements OnInit, OnDestroy {
           typeof up.name !== 'string' ||
           !this.isSafeNumber(up.cost) ||
           !this.isSafeNumber(up.clickMultiplier) ||
-          !this.isSafeNumber(up.amount) ||
+          !this.isBoundedNumber(up.amount, this.MAX_IMPORT_AMOUNT) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de clique com formato incorreto ou descrição ausente.'
+            'Dados de save inválidos: upgrade de clique com formato incorreto, descrição ausente ou amount fora dos limites.'
           );
         }
       }
@@ -784,11 +819,11 @@ export class AppComponent implements OnInit, OnDestroy {
           !this.isSafeNumber(up.cost) ||
           !this.isSafeNumber(up.multiplierValue) ||
           typeof up.type !== 'string' ||
-          !this.isSafeNumber(up.amount) ||
+          !this.isBoundedNumber(up.amount, this.MAX_IMPORT_AMOUNT) ||
           typeof up.description !== 'string'
         ) {
           throw new Error(
-            'Dados de save inválidos: upgrade de prestígio com formato incorreto ou descrição ausente.'
+            'Dados de save inválidos: upgrade de prestígio com formato incorreto, descrição ausente ou amount fora dos limites.'
           );
         }
       }
@@ -948,56 +983,34 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  getUpgradeCostForCurrentMode(upgrade: Upgrade): number {
-    const currentMode = this.currentPurchaseMode;
-    if (currentMode === 'max') {
-      const maxPurchase = this.calculateMaxPurchase(
-        upgrade.cost,
-        this.essence()
-      );
-      if (maxPurchase === 0) return upgrade.cost;
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < maxPurchase; i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
-    } else {
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < (currentMode as number); i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
+  private readonly COST_GROWTH = 1.15;
+
+  private cumulativeCost(baseCost: number, count: number): number {
+    let total = 0;
+    let cur = baseCost;
+    for (let i = 0; i < count; i++) {
+      total += cur;
+      cur = Math.round(cur * this.COST_GROWTH);
     }
+    return total;
+  }
+
+  getCostForCurrentMode(upgrade: { cost: number }): number {
+    const mode = this.currentPurchaseMode;
+    if (mode === 'max') {
+      const maxBuy = this.calculateMaxPurchase(upgrade.cost, this.essence());
+      if (maxBuy === 0) return upgrade.cost;
+      return this.cumulativeCost(upgrade.cost, maxBuy);
+    }
+    return this.cumulativeCost(upgrade.cost, mode as number);
+  }
+
+  getUpgradeCostForCurrentMode(upgrade: Upgrade): number {
+    return this.getCostForCurrentMode(upgrade);
   }
 
   getClickUpgradeCostForCurrentMode(upgrade: ClickUpgrade): number {
-    const currentMode = this.currentPurchaseMode;
-    if (currentMode === 'max') {
-      const maxPurchase = this.calculateMaxPurchase(
-        upgrade.cost,
-        this.essence()
-      );
-      if (maxPurchase === 0) return upgrade.cost;
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < maxPurchase; i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
-    } else {
-      let totalCost = 0;
-      let tempCost = upgrade.cost;
-      for (let i = 0; i < (currentMode as number); i++) {
-        totalCost += tempCost;
-        tempCost = Math.round(tempCost * 1.15);
-      }
-      return totalCost;
-    }
+    return this.getCostForCurrentMode(upgrade);
   }
 
   private calculateMaxPurchase(
@@ -1012,7 +1025,7 @@ export class AppComponent implements OnInit, OnDestroy {
     while (currentEssence >= tempCost && purchaseCount < 1000000) {
       currentEssence -= tempCost;
       purchaseCount++;
-      tempCost = Math.round(tempCost * 1.15);
+      tempCost = Math.round(tempCost * this.COST_GROWTH);
       if (tempCost <= 0) break;
     }
     return purchaseCount;
@@ -1081,12 +1094,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return this.calculateMaxPurchase(upgradeCost, this.essence()) > 0;
     }
 
-    let totalCost = 0;
-    let tempCost = upgradeCost;
-    for (let i = 0; i < (multiplier as number); i++) {
-      totalCost += tempCost;
-      tempCost = Math.round(tempCost * 1.15);
-    }
+    const totalCost = this.cumulativeCost(upgradeCost, multiplier as number);
     return this.essence() >= totalCost;
   }
 
@@ -1113,17 +1121,16 @@ export class AppComponent implements OnInit, OnDestroy {
           if (actualMultiplier === 0) return currentUpgrades;
         }
 
-        let currentCostOfUpgrade = up.cost;
-        let totalCostExact = 0;
+        const totalCostExact = this.cumulativeCost(up.cost, actualMultiplier);
+        let finalCost = up.cost;
         for (let i = 0; i < actualMultiplier; i++) {
-          totalCostExact += currentCostOfUpgrade;
-          currentCostOfUpgrade = Math.round(currentCostOfUpgrade * 1.15);
+          finalCost = Math.round(finalCost * this.COST_GROWTH);
         }
 
         if (this.essence() < totalCostExact) return currentUpgrades;
 
         up.amount += actualMultiplier;
-        up.cost = currentCostOfUpgrade;
+        up.cost = finalCost;
         this.essence.update((v) => v - totalCostExact);
         return upgradesCopy;
       });
@@ -1146,17 +1153,16 @@ export class AppComponent implements OnInit, OnDestroy {
           if (actualMultiplier === 0) return clickUpgradesCopy;
         }
 
-        let currentCostOfUpgrade = up.cost;
-        let totalCostExact = 0;
+        const totalCostExact = this.cumulativeCost(up.cost, actualMultiplier);
+        let finalCost = up.cost;
         for (let i = 0; i < actualMultiplier; i++) {
-          totalCostExact += currentCostOfUpgrade;
-          currentCostOfUpgrade = Math.round(currentCostOfUpgrade * 1.15);
+          finalCost = Math.round(finalCost * this.COST_GROWTH);
         }
 
         if (this.essence() < totalCostExact) return clickUpgradesCopy;
 
         up.amount += actualMultiplier;
-        up.cost = currentCostOfUpgrade;
+        up.cost = finalCost;
         this.essence.update((v) => v - totalCostExact);
         return clickUpgradesCopy;
       });

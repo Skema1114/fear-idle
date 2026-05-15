@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /* Culto das Sombras - Dark Cosmic Horror Theme */
 /* Fonts loaded via index.html <link> for performance */
 
@@ -7,18 +9,22 @@ $deep-charcoal: #16161e;
 $card-bg: #1c1c28;
 $card-bg-hover: #22222f;
 $faded-stone: #3a3a4f;
-$muted-text: #8888a0;
+$muted-text: #a0a0bb;
 $light-ghost: #e8e8f0;
 $blood-red: #e63946;
 $blood-red-glow: rgba(230, 57, 70, 0.4);
+$blood-red-glow-strong: rgba(230, 57, 70, 0.6);
 $shadow-purple: #b388ff;
 $shadow-purple-glow: rgba(179, 136, 255, 0.35);
 $spectral-green: #69f0ae;
 $spectral-green-glow: rgba(105, 240, 174, 0.35);
+$spectral-green-glow-strong: rgba(105, 240, 174, 0.5);
 $essence-glow: #ffd54f;
 $essence-glow-shadow: rgba(255, 213, 79, 0.4);
 $prestige-blue: #82b1ff;
 $prestige-blue-glow: rgba(130, 177, 255, 0.3);
+$prestige-blue-tint: rgba(130, 177, 255, 0.08);
+$deep-shadow: rgba(0, 0, 0, 0.4);
 
 /* Typography */
 $font-title: "Creepster", cursive;
@@ -194,9 +200,9 @@ strong {
 }
 
 .primary-button {
-  background: linear-gradient(135deg, $blood-red, darken($blood-red, 12%));
+  background: linear-gradient(135deg, $blood-red, color.adjust($blood-red, $lightness: -12%));
   color: $light-ghost;
-  border: 1px solid lighten($blood-red, 8%);
+  border: 1px solid color.adjust($blood-red, $lightness: 8%);
   padding: 1rem 2.5rem;
   font-family: $font-title;
   font-size: 1.15rem;
@@ -211,7 +217,7 @@ strong {
 
   &:hover:not([disabled]) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.6);
+    box-shadow: 0 6px 25px $blood-red-glow-strong;
   }
 
   &:active:not([disabled]) {
@@ -271,7 +277,7 @@ strong {
 
 @keyframes comboPulse {
   from { box-shadow: 0 0 10px $spectral-green-glow; }
-  to { box-shadow: 0 0 25px rgba(105, 240, 174, 0.5); }
+  to { box-shadow: 0 0 25px $spectral-green-glow-strong; }
 }
 
 /* Purchase Modes */
@@ -544,7 +550,7 @@ strong {
     transform: translateY(-3px);
     background: rgba(34, 34, 47, 0.7);
     border-color: $shadow-purple;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px $shadow-purple-glow;
+    box-shadow: 0 8px 30px $deep-shadow, 0 0 15px $shadow-purple-glow;
   }
 
   img {
@@ -553,7 +559,7 @@ strong {
     margin-bottom: 0.8rem;
     border-radius: 10px;
     border: 1px solid $faded-stone;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 8px $deep-shadow;
     transition: all 0.25s ease;
     background: $deep-charcoal;
     padding: 4px;
@@ -605,7 +611,7 @@ strong {
   }
 
   .action-button {
-    background: linear-gradient(135deg, $spectral-green, darken($spectral-green, 15%));
+    background: linear-gradient(135deg, $spectral-green, color.adjust($spectral-green, $lightness: -15%));
     color: $dark-void;
     font-family: $font-mono;
     font-size: 0.8rem;
@@ -645,7 +651,7 @@ strong {
 
     &:disabled {
       background: $faded-stone;
-      color: darken($muted-text, 15%);
+      color: color.adjust($muted-text, $lightness: -15%);
       cursor: not-allowed;
       box-shadow: none;
       opacity: 0.5;
@@ -732,7 +738,7 @@ strong {
   text-align: center;
   margin-top: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0 30px rgba(130, 177, 255, 0.08);
+  box-shadow: 0 0 30px $prestige-blue-tint;
 
   .prestige-info {
     font-size: 1rem;
@@ -754,8 +760,8 @@ strong {
   }
 
   .prestige-button {
-    background: linear-gradient(135deg, $shadow-purple, darken($shadow-purple, 18%));
-    border-color: lighten($shadow-purple, 10%);
+    background: linear-gradient(135deg, $shadow-purple, color.adjust($shadow-purple, $lightness: -18%));
+    border-color: color.adjust($shadow-purple, $lightness: 10%);
     color: $light-ghost;
     font-size: 1.15rem;
     padding: 1rem 2.5rem;
@@ -791,11 +797,11 @@ strong {
 
     &:hover {
       border-color: $prestige-blue;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px $prestige-blue-glow;
+      box-shadow: 0 8px 30px $deep-shadow, 0 0 15px $prestige-blue-glow;
     }
 
     .prestige-action-button {
-      background: linear-gradient(135deg, $shadow-purple, darken($shadow-purple, 15%));
+      background: linear-gradient(135deg, $shadow-purple, color.adjust($shadow-purple, $lightness: -15%));
       color: $light-ghost;
 
       &:hover:not([disabled]) {
@@ -804,7 +810,7 @@ strong {
 
       &:disabled {
         background: $faded-stone;
-        color: darken($muted-text, 15%);
+        color: color.adjust($muted-text, $lightness: -15%);
         cursor: not-allowed;
         box-shadow: none;
         opacity: 0.5;
@@ -882,7 +888,7 @@ strong {
 }
 
 .modal-close-button {
-  background: linear-gradient(135deg, $shadow-purple, darken($shadow-purple, 12%));
+  background: linear-gradient(135deg, $shadow-purple, color.adjust($shadow-purple, $lightness: -12%));
   color: $light-ghost;
   font-family: $font-body;
   font-size: 0.95rem;
@@ -982,7 +988,7 @@ strong {
   color: $spectral-green;
   padding: 0.7rem 1.2rem;
   border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 10px $spectral-green-glow;
+  box-shadow: 0 4px 20px $deep-shadow, 0 0 10px $spectral-green-glow;
   display: flex;
   align-items: center;
   gap: 8px;

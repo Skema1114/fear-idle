@@ -168,6 +168,33 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('buyUpgrade', () => {
+    it('deducts cumulative cost and increments amount (auto, 1x)', () => {
+      component.essence.set(1000);
+      component.totalEssence.set(1000);
+      const name = component.upgradesList()[0].name;
+      const beforeAmount = component.upgradesList()[0].amount;
+      const beforeCost = component.upgradesList()[0].cost;
+      component.buyUpgrade(0, 1, 'auto');
+      const after = component.upgradesList().find((u) => u.name === name)!;
+      expect(after.amount).toBe(beforeAmount + 1);
+      expect(component.essence()).toBe(1000 - beforeCost);
+    });
+
+    it('cost grows by 1.15x per purchase (auto, 3x)', () => {
+      component.essence.set(1e9);
+      component.totalEssence.set(1e9);
+      const baseCost = component.upgradesList()[0].cost;
+      const expectedTotal =
+        baseCost +
+        Math.round(baseCost * 1.15) +
+        Math.round(Math.round(baseCost * 1.15) * 1.15);
+      const startEssence = component.essence();
+      component.buyUpgrade(0, 3, 'auto');
+      expect(startEssence - component.essence()).toBe(expectedTotal);
+    });
+  });
+
   describe('save round-trip', () => {
     it('persists essence and upgrades across reload', () => {
       component.essence.set(12345);
